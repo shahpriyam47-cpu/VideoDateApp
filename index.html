@@ -301,7 +301,32 @@
     iceServers: [
       { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"] }
     ]
-  };
+  },
+  const iceServers = [
+  {
+    urls: "stun:stun.relay.metered.ca:80",
+  },
+  {
+    urls: "turn:global.relay.metered.ca:80",
+    username: "e6990d0accfa17f4a8054adb",
+    credential: "6WlT2txD3GuZmGtz",
+  },
+  {
+    urls: "turn:global.relay.metered.ca:80?transport=tcp",
+    username: "e6990d0accfa17f4a8054adb",
+    credential: "6WlT2txD3GuZmGtz",
+  },
+  {
+    urls: "turn:global.relay.metered.ca:443",
+    username: "e6990d0accfa17f4a8054adb",
+    credential: "6WlT2txD3GuZmGtz",
+  },
+  {
+    urls: "turns:global.relay.metered.ca:443?transport=tcp",
+    username: "e6990d0accfa17f4a8054adb",
+    credential: "6WlT2txD3GuZmGtz",
+  },
+];
 
   /* =====================================================================
      CONTENT  (edit freely: add your own words, clues, inside jokes)
