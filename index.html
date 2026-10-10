@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Chat & Word Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .video-container { position: relative; width: 100%; padding-top: 75%; background: #000; border-radius: 0.5rem; overflow: hidden; }
+        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        #localVideo { position: absolute; bottom: 10px; right: 10px; width: 30%; height: auto; border: 2px solid white; border-radius: 0.5rem; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .letter-box { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-bottom: 4px solid #374151; margin: 0 5px; text-transform: uppercase; }
+        .keyboard-btn { padding: 10px; font-weight: bold; background-color: #e5e7eb; border-radius: 0.25rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+        .keyboard-btn:hover:not(:disabled) { background-color: #d1d5db; }
+        .keyboard-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+
+<div id="app" class="flex-1 flex flex-col p-4 max-w-6xl mx-auto w-full gap-4">
+    <!-- Header & Controls -->
+    <div class="bg-white p-4 rounded-lg shadow flex flex-wrap justify-between items-center gap-4">
+        <h1 class="text-2xl font-bold text-indigo-600">SyncPlay Video Chat</h1>
+        <div class="flex items-center gap-2">
+            <button id="createRoomBtn" class="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700">Create Room</button>
+            <span class="text-gray-500 font-bold">OR</span>
+            <input type="text" id="roomIdInput" placeholder="Enter Room ID" class="border rounded px-3 py-2 outline-none focus:border-indigo-500">
+            <button id="joinRoomBtn" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">Join Room</button>
+        </div>
+    </div>
+
+    <!-- Status Messages -->
+    <div id="statusMsg" class="hidden bg-blue-100 text-blue-800 p-3 rounded text-center font-medium"></div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
+        <!-- Video Section -->
+        <div class="bg-white p-4 rounded-lg shadow flex flex-col gap-2">
+            <h2 class="text-xl font-bold">Video Call</h2>
+            <div class="video-container">
+                <video id="remoteVideo" autoplay playsinline></video>
+                <video id="localVideo" autoplay playsinline muted></video>
+            </div>
+            <div class="text-sm text-gray-500 text-center mt-2" id="connectionStatus">Waiting to connect...</div>
+        </div>
+
+        <!-- Game Section -->
+        <div class="bg-white p-4 rounded-lg shadow flex flex-col gap-4 relative">
+            <div id="gameOverlay" class="absolute inset-0 bg-white/80 z-20 flex items-center justify-center rounded-lg backdrop-blur-sm">
+                <p class="text-xl font-bold text-gray-700">Join a room to play!</p>
+            </div>
+            
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">Collaborative Word Guess</h2>
+                <div class="text-lg font-bold text-red-500">Mistakes: <span id="mistakeCount">0</span>/6</div>
+            </div>
+
+            <div id="wordDisplay" class="flex justify-center my-8 flex-wrap">
+                <!-- Letters injected here -->
+            </div>
+
+            <div id="gameMessage" class="text-center font-bold text-xl h-8"></div>
+
+            <div id="keyboard" class="grid grid-cols-7 gap-2 mt-auto">
+                <!-- Keyboard injected here -->
+            </div>
+            
+            <button id="newGameBtn" class="mt-4 bg-indigo-100 text-indigo-700 font-bold py-2 rounded hover:bg-indigo-200 hidden">Start New Game</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Global variables
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'demo-video-game';
+    const firebaseConfig = {
+  apiKey: "AIzaSyAkbJgkuJxPX9_GjALpIFMMEAGRru_ity8",
+  authDomain: "tu-ne-hu.firebaseapp.com",
+  projectId: "tu-ne-hu",
+  storageBucket: "tu-ne-hu.firebasestorage.app",
+  messagingSenderId: "579692726493",
+  appId: "1:579692726493:web:a550cfa59d3d2e5c137334",
+  measurementId: "G-J4MQ3DE333"
+};
+    let initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+    
+    let app, db, auth, user;
+    let peerConnection = null;
+    let localStream = null;
+    let remoteStream = null;
+    let currentRoomId = null;
+    let isCaller = false;
+    let roomUnsubscribe = null;
+
+    const servers = {
+        iceServers: [
+            { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }
+        ]
+    };
+
+    // Words for the game
+    const WORDS = ["JAVASCRIPT", "FIREBASE", "WEBRTC", "DEVELOPER", "GIRAFFE", "ELEPHANT", "BICYCLE", "UNIVERSE", "SUNFLOWER", "CHOCOLATE"];
+
+    // DOM Elements
+    const createRoomBtn = document.getElementById('createRoomBtn');
+    const joinRoomBtn = document.getElementById('joinRoomBtn');
+    const roomIdInput = document.getElementById('roomIdInput');
+    const statusMsg = document.getElementById('statusMsg');
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const gameOverlay = document.getElementById('gameOverlay');
+    const wordDisplay = document.getElementById('wordDisplay');
+    const keyboard = document.getElementById('keyboard');
+    const mistakeCount = document.getElementById('mistakeCount');
+    const gameMessage = document.getElementById('gameMessage');
+    const newGameBtn = document.getElementById('newGameBtn');
+
+    // Initialize Firebase
+    if (Object.keys(firebaseConfig).length > 0) {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        initAuth();
+    } else {
+        showStatus("Firebase configuration missing. Running in local-only mode (calls won't work).");
+    }
+
+    async function initAuth() {
+        try {
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+            } else {
+                await signInAnonymously(auth);
+            }
+            user = auth.currentUser;
+            console.log("Authenticated as:", user.uid);
+            setupEventListeners();
+            initKeyboard();
+        } catch (error) {
+            console.error("Auth error:", error);
+            showStatus("Authentication failed.");
+        }
+    }
+
+    function showStatus(msg) {
+        statusMsg.textContent = msg;
+        statusMsg.classList.remove('hidden');
+    }
+
+    async function getLocalMedia() {
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            localVideo.srcObject = localStream;
+        } catch (error) {
+            console.error("Error accessing media devices.", error);
+            showStatus("Camera/Microphone access denied.");
+            throw error;
+        }
+    }
+
+    function createPeerConnection() {
+        peerConnection = new RTCPeerConnection(servers);
+        remoteStream = new MediaStream();
+        remoteVideo.srcObject = remoteStream;
+
+        if (localStream) {
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+        }
+
+        peerConnection.ontrack = (event) => {
+            event.streams[0].getTracks().forEach(track => {
+                remoteStream.addTrack(track);
+            });
+        };
+
+        peerConnection.onconnectionstatechange = () => {
+            connectionStatus.textContent = "Status: " + peerConnection.connectionState;
+            if(peerConnection.connectionState === 'connected') {
+                gameOverlay.classList.add('hidden');
+            }
+        };
+    }
+
+    async function createRoom() {
+        if (!user) return;
+        await getLocalMedia();
+        createPeerConnection();
+        isCaller = true;
+        
+        currentRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+        
+        showStatus(`Room Created: ${currentRoomId}. Waiting for partner...`);
+        roomIdInput.value = currentRoomId;
+
+        // Initialize game state
+        const initialWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+        await setDoc(roomRef, {
+            callerCandidates: [],
+            calleeCandidates: [],
+            gameState: {
+                word: initialWord,
+                guesses: [],
+                status: 'playing' // playing, won, lost
+            }
+        });
+
+        // Collect ICE candidates
+        peerConnection.onicecandidate = async (event) => {
+            if (event.candidate) {
+                await updateDoc(roomRef, {
+                    callerCandidates: arrayUnion(event.candidate.toJSON())
+                });
+            }
+        };
+
+        // Create offer
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        await updateDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp } });
+
+        listenToRoom(roomRef);
+    }
+
+    async function joinRoom() {
+        if (!user) return;
+        currentRoomId = roomIdInput.value.trim().toUpperCase();
+        if (!currentRoomId) return;
+
+        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+        const roomSnap = await getDoc(roomRef);
+
+        if (!roomSnap.exists()) {
+            showStatus("Room not found!");
+            return;
+        }
+
+        await getLocalMedia();
+        createPeerConnection();
+        isCaller = false;
+        showStatus(`Joined Room: ${currentRoomId}`);
+        gameOverlay.classList.add('hidden');
+
+        // Collect ICE candidates
+        peerConnection.onicecandidate = async (event) => {
+            if (event.candidate) {
+                await updateDoc(roomRef, {
+                    calleeCandidates: arrayUnion(event.candidate.toJSON())
+                });
+            }
+        };
+
+        const roomData = roomSnap.data();
+        const offer = roomData.offer;
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+        
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } });
+
+        // Add already existing caller candidates
+        if (roomData.callerCandidates) {
+            roomData.callerCandidates.forEach(c => {
+                peerConnection.addIceCandidate(new RTCIceCandidate(c));
+            });
+        }
+
+        listenToRoom(roomRef);
+    }
+
+    function listenToRoom(roomRef) {
+        if (roomUnsubscribe) roomUnsubscribe();
+
+        roomUnsubscribe = onSnapshot(roomRef, async (snapshot) => {
+            const data = snapshot.data();
+            if (!data) return;
+
+            // Handle Answer for Caller
+            if (isCaller && !peerConnection.currentRemoteDescription && data.answer) {
+                const rtcSessionDescription = new RTCSessionDescription(data.answer);
+                await peerConnection.setRemoteDescription(rtcSessionDescription);
+            }
+
+            // Handle new ICE candidates
+            if (isCaller && data.calleeCandidates) {
+                data.calleeCandidates.forEach(c => {
+                    try { peerConnection.addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
+                });
+            } else if (!isCaller && data.callerCandidates) {
+                data.callerCandidates.forEach(c => {
+                    try { peerConnection.addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
+                });
+            }
+
+            // Handle Game State updates
+            if (data.gameState) {
+                updateGameUI(data.gameState);
+            }
+        }, (err) => console.error("Listen Error", err));
+    }
+
+    function initKeyboard() {
+        keyboard.innerHTML = '';
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        letters.forEach(letter => {
+            const btn = document.createElement('button');
+            btn.className = "keyboard-btn";
+            btn.textContent = letter;
+            btn.onclick = () => guessLetter(letter);
+            btn.id = `btn-${letter}`;
+            keyboard.appendChild(btn);
+        });
+    }
+
+    async function guessLetter(letter) {
+        if (!user || !currentRoomId) return;
+        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+        
+        // Optimistically disable
+        document.getElementById(`btn-${letter}`).disabled = true;
+        
+        await updateDoc(roomRef, {
+            "gameState.guesses": arrayUnion(letter)
+        });
+    }
+
+    function updateGameUI(gameState) {
+        if (!gameState) return;
+        
+        const { word, guesses, status } = gameState;
+        
+        // Render word
+        wordDisplay.innerHTML = '';
+        let mistakes = 0;
+        let isWon = true;
+
+        word.split('').forEach(char => {
+            const box = document.createElement('div');
+            box.className = 'letter-box';
+            if (guesses.includes(char)) {
+                box.textContent = char;
+            } else {
+                box.textContent = '';
+                isWon = false;
+            }
+            wordDisplay.appendChild(box);
+        });
+
+        // Calculate mistakes
+        guesses.forEach(g => {
+            if (!word.includes(g)) mistakes++;
+        });
+
+        mistakeCount.textContent = mistakes;
+
+        // Update keyboard UI
+        const buttons = document.querySelectorAll('.keyboard-btn');
+        buttons.forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('bg-green-500', 'bg-red-500', 'text-white');
+            
+            if (guesses.includes(btn.textContent)) {
+                btn.disabled = true;
+                if (word.includes(btn.textContent)) {
+                    btn.classList.add('bg-green-500', 'text-white');
+                } else {
+                    btn.classList.add('bg-red-500', 'text-white');
+                }
+            }
+        });
+
+        // Check end condition logic and update db if status changed locally
+        let newStatus = status;
+        if (mistakes >= 6 && status === 'playing') newStatus = 'lost';
+        else if (isWon && status === 'playing') newStatus = 'won';
+
+        if (newStatus !== status && isCaller) {
+             const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+             updateDoc(roomRef, { "gameState.status": newStatus });
+        }
+
+        // Apply visual end state
+        if (newStatus === 'won') {
+            gameMessage.textContent = "You Won!";
+            gameMessage.className = "text-center font-bold text-xl h-8 text-green-600";
+            disableKeyboard();
+            newGameBtn.classList.remove('hidden');
+        } else if (newStatus === 'lost') {
+            gameMessage.textContent = `Game Over! The word was ${word}`;
+            gameMessage.className = "text-center font-bold text-xl h-8 text-red-600";
+            disableKeyboard();
+            newGameBtn.classList.remove('hidden');
+        } else {
+            gameMessage.textContent = "";
+            newGameBtn.classList.add('hidden');
+        }
+    }
+
+    function disableKeyboard() {
+        document.querySelectorAll('.keyboard-btn').forEach(b => b.disabled = true);
+    }
+
+    async function startNewGame() {
+        if (!user || !currentRoomId) return;
+        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+        const newWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+        
+        await updateDoc(roomRef, {
+            gameState: {
+                word: newWord,
+                guesses: [],
+                status: 'playing'
+            }
+        });
+    }
+
+    function setupEventListeners() {
+        createRoomBtn.addEventListener('click', createRoom);
+        joinRoomBtn.addEventListener('click', joinRoom);
+        newGameBtn.addEventListener('click', startNewGame);
+    }
+
+</script>
+</body>
+</html>
