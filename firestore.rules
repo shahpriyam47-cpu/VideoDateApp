@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /artifacts/our-little-room/public/data/rooms/{roomId} {
+      function signedIn() {
+        return request.auth != null;
+      }
+
+      function isMember(data) {
+        return signedIn()
+          && (data.members.a == request.auth.uid || data.members.b == request.auth.uid);
+      }
+
+      allow create: if signedIn()
+        && request.resource.data.members.a == request.auth.uid
+        && request.resource.data.members.b == null;
+
+      // The invite code opens an unclaimed room; after it is claimed, members alone can read it.
+      allow get: if signedIn()
+        && (isMember(resource.data) || resource.data.members.b == null);
+
+      allow list: if false;
+
+      allow update: if (
+        isMember(resource.data)
+        && request.resource.data.members == resource.data.members
+      ) || (
+        signedIn()
+        && resource.data.members.b == null
+        && request.resource.data.members.a == resource.data.members.a
+        && request.resource.data.members.b == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['members', 'answer', 'names'])
+      );
+
+      allow delete: if false;
+    }
+  }
+}
