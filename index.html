@@ -1,434 +1,845 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Chat & Word Game</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .video-container { position: relative; width: 100%; padding-top: 75%; background: #000; border-radius: 0.5rem; overflow: hidden; }
-        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        #localVideo { position: absolute; bottom: 10px; right: 10px; width: 30%; height: auto; border: 2px solid white; border-radius: 0.5rem; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .letter-box { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-bottom: 4px solid #374151; margin: 0 5px; text-transform: uppercase; }
-        .keyboard-btn { padding: 10px; font-weight: bold; background-color: #e5e7eb; border-radius: 0.25rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
-        .keyboard-btn:hover:not(:disabled) { background-color: #d1d5db; }
-        .keyboard-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>our little room</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#f3ecdc; --paper-2:#ebe1ca; --desk:#d8cdb4;
+    --ink:#2a2018; --sepia:#8b7b62; --rule:#cdbf9f;
+    --red:#8a2f2f; --blue:#27406b; --green:#3d6b4a;
+    --serif:'Cormorant Garamond','IM Fell English',Georgia,'Times New Roman',serif;
+    --fell:'IM Fell English',Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--serif); font-size:19px; line-height:1.5; color:var(--ink);
+    background:
+      radial-gradient(ellipse at 50% 0%, #e6dcc3 0%, var(--desk) 60%, #c9bd9f 100%);
+    min-height:100vh; padding:2rem 1rem 3rem;
+  }
+  button,input{font-family:inherit; color:inherit}
+
+  /* ---------- the book ---------- */
+  .book{
+    max-width:1180px; margin:0 auto; position:relative;
+    display:grid; grid-template-columns:1fr 1fr;
+    background:var(--paper);
+    border-radius:3px;
+    box-shadow:0 1px 0 #fff8 inset, 0 30px 60px -20px #3a2c1a66, 0 0 0 1px #b8a982;
+  }
+  .book::before{ /* gutter shadow */
+    content:""; position:absolute; top:0; bottom:0; left:calc(50% - 38px); width:76px; pointer-events:none; z-index:2;
+    background:linear-gradient(to right, transparent, #3a2c1a22 46%, #3a2c1a33 50%, #3a2c1a22 54%, transparent);
+  }
+  .page{padding:2.6rem 3rem 3.6rem; position:relative; min-height:82vh}
+  .page.right{background:linear-gradient(to right, transparent, #ffffff10)}
+  .folio{position:absolute; bottom:1.2rem; left:0; right:0; text-align:center; color:var(--sepia); font-style:italic; font-size:.9rem; letter-spacing:.2em}
+
+  /* ---------- type ---------- */
+  h1{font-family:var(--fell); font-style:italic; font-weight:400; font-size:3.1rem; line-height:1.05; margin:.2rem 0 .1rem; text-transform:lowercase}
+  .kicker{font-variant:small-caps; letter-spacing:.22em; color:var(--sepia); font-size:.95rem}
+  h2{font-family:var(--fell); font-weight:400; font-size:1.55rem; margin:0 0 .4rem; text-transform:lowercase}
+  .chap{font-family:var(--serif); font-variant:small-caps; letter-spacing:.15em; color:var(--red); margin-right:.5rem}
+  .orn{text-align:center; color:var(--sepia); letter-spacing:.6em; margin:1.1rem 0; font-size:1.1rem}
+  .lede{margin:.3rem 0 1rem; color:#4a3d2c}
+  .lede::first-letter{font-family:var(--fell); float:left; font-size:3.3rem; line-height:.82; padding:.06em .1em 0 0; color:var(--red)}
+  .small{font-size:.95rem; color:var(--sepia); font-style:italic}
+
+  /* ---------- buttons & inputs ---------- */
+  .btn{
+    background:transparent; border:1px solid var(--ink); padding:.35rem 1rem; cursor:pointer;
+    font-variant:small-caps; letter-spacing:.14em; font-size:1rem; transition:.15s;
+  }
+  .btn:hover:not(:disabled){background:var(--ink); color:var(--paper)}
+  .btn:disabled{opacity:.4; cursor:not-allowed}
+  .btn.red{border-color:var(--red); color:var(--red)} .btn.red:hover:not(:disabled){background:var(--red); color:var(--paper)}
+  .linkbtn{background:none; border:0; border-bottom:1px solid var(--sepia); color:var(--sepia); cursor:pointer; font-style:italic; padding:0; font-size:.95rem}
+  .linkbtn:hover{color:var(--red); border-color:var(--red)}
+  input[type=text]{
+    background:transparent; border:0; border-bottom:1px solid var(--ink); padding:.25rem .1rem; font-size:1.05rem; outline:none; width:100%;
+  }
+  input[type=text]:focus{border-bottom-color:var(--red)}
+  .row{display:flex; gap:.8rem; align-items:flex-end; flex-wrap:wrap}
+  .field{flex:1; min-width:120px}
+  .field label{display:block; font-variant:small-caps; letter-spacing:.15em; color:var(--sepia); font-size:.85rem}
+
+  /* ---------- note line ---------- */
+  #note{display:none; margin:.8rem 0; padding:.5rem .8rem; border-left:3px solid var(--red); background:#8a2f2f10; font-style:italic}
+
+  /* ---------- video "plate" ---------- */
+  figure.stage{margin:1rem 0 .4rem; background:var(--paper-2); padding:.55rem .55rem .3rem; border:1px solid var(--rule); box-shadow:0 2px 0 #fff8 inset, 0 8px 18px -10px #3a2c1a88}
+  .screen{position:relative; width:100%; padding-top:70%; background:#1b1510; overflow:hidden}
+  .screen video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:sepia(.28) contrast(1.05) saturate(.9)}
+  .screen #localVideo{inset:auto; right:8px; bottom:8px; width:28%; height:auto; aspect-ratio:4/3; border:2px solid var(--paper); transform:scaleX(-1); z-index:3; background:#000}
+  figcaption{text-align:center; font-style:italic; color:var(--sepia); font-size:.92rem; padding:.3rem 0}
+  .controls{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; margin:.6rem 0}
+
+  .roombox{border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); padding:.9rem 0; margin:.8rem 0}
+  .code{font-family:var(--fell); font-size:2.2rem; letter-spacing:.35em; color:var(--red)}
+
+  /* ---------- contents ---------- */
+  .toc{list-style:none; padding:0; margin:.4rem 0 1.2rem}
+  .toc li{display:flex; align-items:baseline; gap:.4rem}
+  .toc button{display:flex; align-items:baseline; width:100%; gap:.5rem; background:none; border:0; cursor:pointer; padding:.15rem 0; text-align:left; font-size:1.15rem}
+  .toc .dots{flex:1; border-bottom:1px dotted var(--sepia); transform:translateY(-.25em)}
+  .toc .pg{color:var(--sepia); font-style:italic}
+  .toc button:hover .t,.toc button.on .t{color:var(--red); font-style:italic}
+  .toc button.on .t{border-bottom:1px solid var(--red)}
+
+  .closed{position:absolute; inset:0; z-index:5; background:#f3ecdce8; display:flex; align-items:center; justify-content:center; text-align:center; padding:2rem}
+  .closed p{font-family:var(--fell); font-style:italic; font-size:1.5rem; max-width:18ch; margin:0}
+
+  .chapter{display:none} .chapter.on{display:block}
+
+  /* ---------- crossword ---------- */
+  .cwwrap{overflow-x:auto; padding:.3rem 0 .6rem}
+  #cwGrid{display:grid; gap:0; width:max-content; margin:0 auto}
+  .cell{position:relative; width:40px; height:40px}
+  .cell.block{visibility:hidden}
+  .cell input{
+    width:100%; height:100%; border:1px solid var(--ink); margin:-.5px; background:#fbf6ea; text-align:center; text-transform:uppercase;
+    font-family:var(--fell); font-size:1.4rem; padding:0; outline:none; cursor:pointer; caret-color:transparent; border-radius:0; color:var(--ink);
+  }
+  .cell input.inword{background:#efe0b8}
+  .cell input.sel{background:#e4c98a}
+  .cell input.by-a{color:var(--red)} .cell input.by-b{color:var(--blue)}
+  .cell input.wrong{background:#e9b8aa; text-decoration:line-through}
+  .cell .num{position:absolute; top:1px; left:3px; font-size:.65rem; line-height:1; color:var(--sepia); pointer-events:none; z-index:2}
+  .clues{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:.8rem; font-size:1rem}
+  .clues h3{font-variant:small-caps; letter-spacing:.2em; font-weight:400; font-size:.95rem; color:var(--sepia); margin:.2rem 0; border-bottom:1px solid var(--rule)}
+  .clues ol{list-style:none; padding:0; margin:.2rem 0}
+  .clues li{padding:.12rem .3rem; cursor:pointer; line-height:1.25; margin-bottom:.2rem}
+  .clues li b{color:var(--red); font-weight:600; margin-right:.3rem}
+  .clues li.on{background:#e4c98a66}
+  .tools{display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; margin:.5rem 0}
+  .msg{min-height:1.7rem; text-align:center; font-family:var(--fell); font-style:italic; font-size:1.25rem; color:var(--green)}
+
+  /* ---------- hundred words ---------- */
+  .target{text-align:center; margin:.2rem 0 .6rem}
+  .target b{font-family:var(--fell); font-size:2.2rem; font-weight:400; font-style:italic; color:var(--red); border-bottom:2px solid var(--red); padding:0 .5rem}
+  .score{display:flex; justify-content:center; gap:1.2rem; font-variant:small-caps; letter-spacing:.12em}
+  .score .a{color:var(--red)} .score .b{color:var(--blue)}
+  #cloud{display:grid; grid-template-columns:repeat(auto-fill,minmax(62px,1fr)); gap:.1rem .2rem; margin:.7rem 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); padding:.6rem 0}
+  #cloud button{background:none; border:0; padding:.2rem 0; cursor:pointer; font-style:italic; font-size:1.02rem; text-align:center}
+  #cloud button:hover:not(:disabled){text-decoration:underline; text-underline-offset:3px}
+  #cloud button.a{color:var(--red); text-decoration:line-through; font-weight:600}
+  #cloud button.b{color:var(--blue); text-decoration:line-through; font-weight:600}
+  #cloud button.nope{animation:nope .3s}
+  @keyframes nope{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+  /* ---------- guess the word ---------- */
+  #hmWord{display:flex; justify-content:center; flex-wrap:wrap; gap:.4rem; margin:1.4rem 0 .6rem}
+  .lb{width:34px; height:42px; border-bottom:2px solid var(--ink); text-align:center; font-family:var(--fell); font-size:1.8rem; text-transform:uppercase; line-height:1.3}
+  .mist{text-align:center; letter-spacing:.2em; font-variant:small-caps; color:var(--red)}
+  #hmKeys{display:flex; flex-wrap:wrap; gap:.35rem; justify-content:center; margin-top:1rem}
+  #hmKeys button{width:38px; height:38px; background:none; border:1px solid var(--rule); cursor:pointer; font-size:1.1rem; text-transform:uppercase}
+  #hmKeys button:hover:not(:disabled){border-color:var(--ink)}
+  #hmKeys button.hit{background:var(--green); color:var(--paper); border-color:var(--green)}
+  #hmKeys button.miss{background:var(--red); color:var(--paper); border-color:var(--red); opacity:.75}
+
+  /* ---------- small screens ---------- */
+  @media (max-width:880px){
+    body{padding:.6rem .4rem 2rem; font-size:18px}
+    .book{grid-template-columns:1fr} .book::before{display:none}
+    .page{padding:1.6rem 1.2rem 3.2rem; min-height:0}
+    .page.left{border-bottom:1px dashed var(--rule)}
+    h1{font-size:2.4rem}
+    .cell{width:34px; height:34px} .cell input{font-size:1.2rem}
+    .clues{grid-template-columns:1fr}
+  }
+</style>
 </head>
-<body class="h-screen flex flex-col">
 
-<div id="app" class="flex-1 flex flex-col p-4 max-w-6xl mx-auto w-full gap-4">
-    <!-- Header & Controls -->
-    <div class="bg-white p-4 rounded-lg shadow flex flex-wrap justify-between items-center gap-4">
-        <h1 class="text-2xl font-bold text-indigo-600">SyncPlay Video Chat</h1>
-        <div class="flex items-center gap-2">
-            <button id="createRoomBtn" class="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700">Create Room</button>
-            <span class="text-gray-500 font-bold">OR</span>
-            <input type="text" id="roomIdInput" placeholder="Enter Room ID" class="border rounded px-3 py-2 outline-none focus:border-indigo-500">
-            <button id="joinRoomBtn" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">Join Room</button>
-        </div>
+<body>
+<div class="book">
+
+  <!-- ================= LEFT PAGE : the call ================= -->
+  <section class="page left">
+    <div class="kicker">a book for two</div>
+    <h1>our little room</h1>
+    <div class="orn">❦</div>
+
+    <h2><span class="chap">i.</span>the call</h2>
+    <p class="lede">Open a room, send the code to your favourite person, and the book opens to the same page for both of you — with the call running beside it.</p>
+
+    <div id="note"></div>
+
+    <!-- before a room exists -->
+    <div id="lobby" class="roombox">
+      <div class="row">
+        <div class="field"><label for="nameInput">your name</label><input type="text" id="nameInput" maxlength="16" placeholder="e.g. mia" autocomplete="off"></div>
+        <button class="btn" id="createBtn">open a room</button>
+      </div>
+      <div class="orn" style="margin:.6rem 0;letter-spacing:.3em">— or —</div>
+      <div class="row">
+        <div class="field"><label for="roomInput">room code</label><input type="text" id="roomInput" maxlength="6" placeholder="ABC123" autocomplete="off"></div>
+        <button class="btn" id="joinBtn">join</button>
+      </div>
     </div>
 
-    <!-- Status Messages -->
-    <div id="statusMsg" class="hidden bg-blue-100 text-blue-800 p-3 rounded text-center font-medium"></div>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
-        <!-- Video Section -->
-        <div class="bg-white p-4 rounded-lg shadow flex flex-col gap-2">
-            <h2 class="text-xl font-bold">Video Call</h2>
-            <div class="video-container">
-                <video id="remoteVideo" autoplay playsinline></video>
-                <video id="localVideo" autoplay playsinline muted></video>
-            </div>
-            <div class="text-sm text-gray-500 text-center mt-2" id="connectionStatus">Waiting to connect...</div>
-        </div>
-
-        <!-- Game Section -->
-        <div class="bg-white p-4 rounded-lg shadow flex flex-col gap-4 relative">
-            <div id="gameOverlay" class="absolute inset-0 bg-white/80 z-20 flex items-center justify-center rounded-lg backdrop-blur-sm">
-                <p class="text-xl font-bold text-gray-700">Join a room to play!</p>
-            </div>
-            
-            <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Collaborative Word Guess</h2>
-                <div class="text-lg font-bold text-red-500">Mistakes: <span id="mistakeCount">0</span>/6</div>
-            </div>
-
-            <div id="wordDisplay" class="flex justify-center my-8 flex-wrap">
-                <!-- Letters injected here -->
-            </div>
-
-            <div id="gameMessage" class="text-center font-bold text-xl h-8"></div>
-
-            <div id="keyboard" class="grid grid-cols-7 gap-2 mt-auto">
-                <!-- Keyboard injected here -->
-            </div>
-            
-            <button id="newGameBtn" class="mt-4 bg-indigo-100 text-indigo-700 font-bold py-2 rounded hover:bg-indigo-200 hidden">Start New Game</button>
-        </div>
+    <!-- once inside a room -->
+    <div id="inroom" class="roombox" style="display:none">
+      <div class="small">your room code</div>
+      <div class="code" id="codeShow">------</div>
+      <div class="row" style="margin-top:.4rem">
+        <button class="linkbtn" id="copyCode">copy code</button>
+        <button class="linkbtn" id="copyLink">copy invite link</button>
+      </div>
     </div>
+
+    <figure class="stage">
+      <div class="screen">
+        <video id="remoteVideo" autoplay playsinline></video>
+        <video id="localVideo" autoplay playsinline muted></video>
+      </div>
+      <figcaption id="connectionStatus">fig. 1 — waiting for two</figcaption>
+    </figure>
+
+    <div class="controls" id="callControls" style="display:none">
+      <button class="btn" id="muteBtn">mute</button>
+      <button class="btn" id="camBtn">camera off</button>
+      <button class="btn red" id="leaveBtn">leave</button>
+    </div>
+
+    <div class="folio">— 1 —</div>
+  </section>
+
+  <!-- ================= RIGHT PAGE : the games ================= -->
+  <section class="page right">
+    <div id="closed" class="closed"><p>the book is closed — open a room to begin ❦</p></div>
+
+    <div class="kicker">contents</div>
+    <ul class="toc" id="toc">
+      <li><button data-ch="crossword"><span class="chap">ii.</span><span class="t">the crossword</span><span class="dots"></span><span class="pg">3</span></button></li>
+      <li><button data-ch="hundred"><span class="chap">iii.</span><span class="t">the hundred words</span><span class="dots"></span><span class="pg">9</span></button></li>
+      <li><button data-ch="hangman"><span class="chap">iv.</span><span class="t">guess the word</span><span class="dots"></span><span class="pg">17</span></button></li>
+    </ul>
+    <div class="orn" style="margin:.4rem 0 1rem">❦</div>
+
+    <!-- ---- crossword ---- -->
+    <div class="chapter" id="ch-crossword">
+      <h2 id="cwTitle">a romantic evening</h2>
+      <p class="small" style="margin-top:0">Type together. Your letters are <span style="color:var(--red)">red ink</span>, hers/his are <span style="color:var(--blue)">blue ink</span>. Click a square twice to switch between across and down.</p>
+      <div class="cwwrap"><div id="cwGrid"></div></div>
+      <div class="msg" id="cwMsg"></div>
+      <div class="tools">
+        <button class="btn" id="cwCheck">check</button>
+        <button class="btn" id="cwNext">next puzzle</button>
+        <button class="linkbtn" id="cwClear">clear all</button>
+      </div>
+      <div class="clues">
+        <div><h3>across</h3><ol id="cwAcross"></ol></div>
+        <div><h3>down</h3><ol id="cwDown"></ol></div>
+      </div>
+    </div>
+
+    <!-- ---- hundred words ---- -->
+    <div class="chapter" id="ch-hundred">
+      <h2>the hundred words</h2>
+      <p class="small" style="margin-top:0">One word is called. It is hiding nine times among a hundred. Tap them before the other does — the first tap keeps the word.</p>
+      <div class="target">find: <b id="hwTarget">—</b></div>
+      <div class="score"><span class="a" id="hwScoreA"></span><span class="b" id="hwScoreB"></span></div>
+      <div id="cloud"></div>
+      <div class="msg" id="hwMsg"></div>
+      <div class="tools">
+        <button class="btn" id="hwNew">new round</button>
+        <button class="linkbtn" id="hwReset">reset score</button>
+      </div>
+    </div>
+
+    <!-- ---- guess the word ---- -->
+    <div class="chapter" id="ch-hangman">
+      <h2>guess the word</h2>
+      <p class="small" style="margin-top:0">One secret word, one shared set of six mistakes. Take turns however you like.</p>
+      <div id="hmWord"></div>
+      <div class="mist" id="hmMist"></div>
+      <div class="msg" id="hmMsg"></div>
+      <div id="hmKeys"></div>
+      <div class="tools" style="justify-content:center"><button class="btn" id="hmNew">new word</button></div>
+    </div>
+
+    <div class="folio">— 2 —</div>
+  </section>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, runTransaction }
+    from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // Global variables
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'demo-video-game';
-    const firebaseConfig = {
-  apiKey: "AIzaSyAkbJgkuJxPX9_GjALpIFMMEAGRru_ity8",
-  authDomain: "tu-ne-hu.firebaseapp.com",
-  projectId: "tu-ne-hu",
-  storageBucket: "tu-ne-hu.firebasestorage.app",
-  messagingSenderId: "579692726493",
-  appId: "1:579692726493:web:a550cfa59d3d2e5c137334",
-  measurementId: "G-J4MQ3DE333"
-};
-    let initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-    
-    let app, db, auth, user;
-    let peerConnection = null;
-    let localStream = null;
-    let remoteStream = null;
-    let currentRoomId = null;
-    let isCaller = false;
-    let roomUnsubscribe = null;
+  /* =====================================================================
+     SETTINGS
+     ===================================================================== */
+  // FIX: the old file used __app_id / __initial_auth_token, which only exist inside
+  // Claude's preview window. On a real website they don't exist, so we use a fixed name.
+  const APP_ID = "our-little-room";
 
-    const servers = {
-        iceServers: [
-            { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }
-        ]
+  const firebaseConfig = {
+    apiKey: "AIzaSyAkbJgkuJxPX9_GjALpIFMMEAGRru_ity8",
+    authDomain: "tu-ne-hu.firebaseapp.com",
+    projectId: "tu-ne-hu",
+    storageBucket: "tu-ne-hu.firebasestorage.app",
+    messagingSenderId: "579692726493",
+    appId: "1:579692726493:web:a550cfa59d3d2e5c137334",
+    measurementId: "G-J4MQ3DE333"
+  };
+
+  // STUN servers help two computers find each other. Most home networks work with this.
+  // If the video never connects on mobile data / strict networks, add a TURN server here
+  // (e.g. a free account at metered.ca) like:
+  // { urls: "turn:YOUR_TURN_HOST:443", username: "USER", credential: "PASS" }
+  const ICE_SERVERS = {
+    iceServers: [
+      { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"] }
+    ]
+  };
+
+  /* =====================================================================
+     CONTENT  (edit freely: add your own words, clues, inside jokes)
+     ===================================================================== */
+  // Crossword words: w = answer, r/c = starting row/column (0-based), d = A(cross) or D(own)
+  const PUZZLES = [
+    { title: "a romantic evening", words: [
+      { w:"ROMANCE", r:5, c:0, d:"A", clue:"Candlelight, flowers and love letters" },
+      { w:"SWEET",   r:7, c:2, d:"A", clue:"Sugary — or a kind person" },
+      { w:"HEART",   r:2, c:0, d:"D", clue:"Shape on every valentine" },
+      { w:"GAMES",   r:3, c:2, d:"D", clue:"What we are about to play" },
+      { w:"DINNER",  r:3, c:4, d:"D", clue:"Evening meal, ideally for two" },
+      { w:"CANDLE",  r:0, c:6, d:"D", clue:"Flickering light on a date table" }
+    ]},
+    { title: "a quiet night in", words: [
+      { w:"SUNSET", r:4, c:0, d:"A", clue:"The sky's evening show" },
+      { w:"ALERT",  r:6, c:0, d:"A", clue:"Watchful and awake" },
+      { w:"PASTA",  r:2, c:0, d:"D", clue:"Spaghetti, penne or fusilli" },
+      { w:"DANCE",  r:2, c:2, d:"D", clue:"Move to the music, kitchen-style" },
+      { w:"MOVIE",  r:0, c:4, d:"D", clue:"Something to watch on the sofa" },
+      { w:"TEA",    r:6, c:4, d:"D", clue:"Hot drink, steeped" }
+    ]}
+  ];
+
+  const WORD_POOL = ["moon","star","rose","kiss","tea","sun","wine","song","rain","snow","gold","lake","hug","pie","cake","bird","ring","wave","sky","fire","love","home","road","hill","leaf","dove","bell","pearl","dance","smile","tree","sand","wind","book","gift","card","rice","bread","jazz","lamp","coat","boat","rock","seed","fish","wolf","bear","nest","pond","mist","dawn","dusk","glow","ivy","oak","plum","pear","lime","mint","sage","snack","cozy","calm","warm","kind"];
+
+  const HANG_WORDS = ["MOONLIGHT","BUTTERFLY","SUNFLOWER","CHOCOLATE","ADVENTURE","LANTERN","BLANKET","LIBRARY","VOYAGE","PINEAPPLE","STARGAZER","MIDNIGHT","COFFEE","BICYCLE","ELEPHANT","GIRAFFE","UNIVERSE","SEASHELL","POSTCARD","FIREFLY"];
+
+  /* =====================================================================
+     SMALL HELPERS
+     ===================================================================== */
+  const $ = id => document.getElementById(id);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const clean = obj => JSON.parse(JSON.stringify(obj));   // Firestore refuses "undefined" values
+  const note = msg => { const n = $("note"); n.textContent = msg; n.style.display = msg ? "block" : "none"; };
+  const myName = () => ($("nameInput").value.trim() || "").slice(0, 16);
+
+  function makeCode() {
+    const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+    const bytes = crypto.getRandomValues(new Uint8Array(6));
+    return Array.from(bytes, b => chars[b % chars.length]).join("");
+  }
+
+  try { $("nameInput").value = localStorage.getItem("olr-name") || ""; } catch (e) {}
+  $("nameInput").addEventListener("input", () => { try { localStorage.setItem("olr-name", $("nameInput").value); } catch (e) {} });
+  const urlRoom = new URLSearchParams(location.search).get("room");
+  if (urlRoom) $("roomInput").value = urlRoom.toUpperCase().slice(0, 6);
+
+  /* =====================================================================
+     FIREBASE + STATE
+     ===================================================================== */
+  let db, auth, authReady;
+  let pc = null, localStream = null;
+  let roomRef = null, roomId = null, roomData = null, unsub = null;
+  let isCaller = false, remoteSetting = false, seenCaller = 0, seenCallee = 0;
+  const myRole = () => (isCaller ? "a" : "b");
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+    authReady = signInAnonymously(auth).catch(err => {
+      console.error("Sign-in error:", err);
+      note("Sign-in failed. In the Firebase console switch on Authentication → Anonymous, and add this website's address under Authentication → Settings → Authorized domains.");
+      throw err;
+    });
+    authReady.catch(() => {});
+  } catch (err) {
+    console.error(err);
+    note("Could not start Firebase. Check your internet connection and the settings at the top of the file.");
+    authReady = Promise.reject(err);
+    authReady.catch(() => {});
+  }
+
+  const roomDoc = id => doc(db, "artifacts", APP_ID, "public", "data", "rooms", id);
+
+  /* =====================================================================
+     VIDEO CALL
+     ===================================================================== */
+  async function getLocalMedia() {
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      $("localVideo").srcObject = localStream;
+    } catch (err) {
+      console.error(err);
+      note("Camera or microphone is blocked. Click the little camera icon in the address bar, choose Allow, then try again. (The page must be on https:// or localhost for the camera to work.)");
+      throw err;
+    }
+  }
+
+  function buildPeer() {
+    pc = new RTCPeerConnection(ICE_SERVERS);
+    seenCaller = 0; seenCallee = 0; remoteSetting = false;
+    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+    pc.ontrack = e => { $("remoteVideo").srcObject = e.streams[0]; };
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+      const words = { new:"getting ready", connecting:"connecting…", connected:"together", disconnected:"connection lost", failed:"connection failed", closed:"closed" };
+      $("connectionStatus").textContent = "fig. 1 — " + (words[s] || s);
+      if (s === "failed") note("The video could not connect. Try opening a fresh room. If it keeps failing on mobile data, a TURN server is needed (see the settings at the top of the file).");
     };
+  }
 
-    // Words for the game
-    const WORDS = ["JAVASCRIPT", "FIREBASE", "WEBRTC", "DEVELOPER", "GIRAFFE", "ELEPHANT", "BICYCLE", "UNIVERSE", "SUNFLOWER", "CHOCOLATE"];
+  function enterRoom() {
+    $("lobby").style.display = "none";
+    $("inroom").style.display = "block";
+    $("callControls").style.display = "flex";
+    $("codeShow").textContent = roomId;
+    $("closed").style.display = "none";
+    $("connectionStatus").textContent = "fig. 1 — waiting for two";
+  }
 
-    // DOM Elements
-    const createRoomBtn = document.getElementById('createRoomBtn');
-    const joinRoomBtn = document.getElementById('joinRoomBtn');
-    const roomIdInput = document.getElementById('roomIdInput');
-    const statusMsg = document.getElementById('statusMsg');
-    const localVideo = document.getElementById('localVideo');
-    const remoteVideo = document.getElementById('remoteVideo');
-    const connectionStatus = document.getElementById('connectionStatus');
-    const gameOverlay = document.getElementById('gameOverlay');
-    const wordDisplay = document.getElementById('wordDisplay');
-    const keyboard = document.getElementById('keyboard');
-    const mistakeCount = document.getElementById('mistakeCount');
-    const gameMessage = document.getElementById('gameMessage');
-    const newGameBtn = document.getElementById('newGameBtn');
+  async function createRoom() {
+    try {
+      note("");
+      await authReady;
+      await leaveRoom(true);
+      await getLocalMedia();
+      buildPeer();
+      isCaller = true;
+      roomId = makeCode();
+      roomRef = roomDoc(roomId);
 
-    // Initialize Firebase
-    if (Object.keys(firebaseConfig).length > 0) {
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-        initAuth();
-    } else {
-        showStatus("Firebase configuration missing. Running in local-only mode (calls won't work).");
+      pc.onicecandidate = e => {
+        if (e.candidate) updateDoc(roomRef, { callerCandidates: arrayUnion(clean(e.candidate.toJSON())) }).catch(console.error);
+      };
+
+      const offer = await pc.createOffer();
+      // The room is written BEFORE setLocalDescription so no ICE candidate can arrive early.
+      await setDoc(roomRef, {
+        offer: { type: offer.type, sdp: offer.sdp },
+        callerCandidates: [], calleeCandidates: [],
+        names: { a: myName() },
+        chapter: "crossword",
+        crossword: { puzzle: 0, cells: {} },
+        hundred: makeHundred(null),
+        hangman: { word: pick(HANG_WORDS), guesses: [] },
+        created: Date.now()
+      });
+      await pc.setLocalDescription(offer);
+
+      enterRoom();
+      listen();
+      note("Room open. Send the code (or the invite link) to your partner.");
+    } catch (err) {
+      console.error(err);
+      if (!$("note").textContent) note("Something went wrong opening the room: " + err.message);
+      await leaveRoom(true);
     }
+  }
 
-    async function initAuth() {
-        try {
-            if (initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken);
-            } else {
-                await signInAnonymously(auth);
-            }
-            user = auth.currentUser;
-            console.log("Authenticated as:", user.uid);
-            setupEventListeners();
-            initKeyboard();
-        } catch (error) {
-            console.error("Auth error:", error);
-            showStatus("Authentication failed.");
+  async function joinRoom() {
+    try {
+      note("");
+      await authReady;
+      const code = $("roomInput").value.trim().toUpperCase();
+      if (code.length < 4) { note("Type the room code first."); return; }
+      await leaveRoom(true);
+      roomId = code;
+      roomRef = roomDoc(code);
+      const snap = await getDoc(roomRef);
+      if (!snap.exists()) { note("No room with that code. Check it and try again."); roomId = null; return; }
+      const data = snap.data();
+      if (data.answer) { note("That room already has two people. Ask your partner to open a fresh room."); roomId = null; return; }
+
+      await getLocalMedia();
+      buildPeer();
+      isCaller = false;
+
+      pc.onicecandidate = e => {
+        if (e.candidate) updateDoc(roomRef, { calleeCandidates: arrayUnion(clean(e.candidate.toJSON())) }).catch(console.error);
+      };
+
+      await pc.setRemoteDescription(data.offer);
+      const answer = await pc.createAnswer();
+      await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp }, "names.b": myName() });
+      await pc.setLocalDescription(answer);
+
+      enterRoom();
+      listen();
+      note("");
+    } catch (err) {
+      console.error(err);
+      if (!$("note").textContent) note("Could not join: " + err.message);
+      await leaveRoom(true);
+    }
+  }
+
+  function listen() {
+    if (unsub) unsub();
+    unsub = onSnapshot(roomRef, async snap => {
+      const d = snap.data();
+      if (!d) return;
+      roomData = d;
+      try {
+        if (isCaller && d.answer && !pc.currentRemoteDescription && !remoteSetting) {
+          remoteSetting = true;
+          await pc.setRemoteDescription(d.answer);
         }
-    }
-
-    function showStatus(msg) {
-        statusMsg.textContent = msg;
-        statusMsg.classList.remove('hidden');
-    }
-
-    async function getLocalMedia() {
-        try {
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            localVideo.srcObject = localStream;
-        } catch (error) {
-            console.error("Error accessing media devices.", error);
-            showStatus("Camera/Microphone access denied.");
-            throw error;
+        if (pc.remoteDescription) {
+          const list = (isCaller ? d.calleeCandidates : d.callerCandidates) || [];
+          let seen = isCaller ? seenCallee : seenCaller;
+          while (seen < list.length) {
+            const c = list[seen++];
+            if (isCaller) seenCallee = seen; else seenCaller = seen;
+            try { await pc.addIceCandidate(c); } catch (e) { /* harmless duplicates */ }
+          }
         }
-    }
+      } catch (err) { console.error(err); }
+      renderAll();
+    }, err => { console.error(err); note("Lost contact with the room: " + err.message); });
+  }
 
-    function createPeerConnection() {
-        peerConnection = new RTCPeerConnection(servers);
-        remoteStream = new MediaStream();
-        remoteVideo.srcObject = remoteStream;
+  async function leaveRoom(quiet) {
+    if (unsub) { unsub(); unsub = null; }
+    if (pc) { pc.onconnectionstatechange = null; pc.close(); pc = null; }
+    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+    $("localVideo").srcObject = null; $("remoteVideo").srcObject = null;
+    roomRef = null; roomId = null; roomData = null;
+    $("lobby").style.display = "block";
+    $("inroom").style.display = "none";
+    $("callControls").style.display = "none";
+    $("closed").style.display = "flex";
+    $("muteBtn").textContent = "mute"; $("camBtn").textContent = "camera off";
+    $("connectionStatus").textContent = "fig. 1 — waiting for two";
+    if (!quiet) note("You left the room. Open a new one whenever you like.");
+  }
 
-        if (localStream) {
-            localStream.getTracks().forEach(track => {
-                peerConnection.addTrack(track, localStream);
-            });
-        }
+  $("createBtn").onclick = createRoom;
+  $("joinBtn").onclick = joinRoom;
+  $("leaveBtn").onclick = () => leaveRoom(false);
+  $("roomInput").addEventListener("keydown", e => { if (e.key === "Enter") joinRoom(); });
+  $("muteBtn").onclick = () => {
+    if (!localStream) return;
+    const t = localStream.getAudioTracks()[0]; if (!t) return;
+    t.enabled = !t.enabled; $("muteBtn").textContent = t.enabled ? "mute" : "unmute";
+  };
+  $("camBtn").onclick = () => {
+    if (!localStream) return;
+    const t = localStream.getVideoTracks()[0]; if (!t) return;
+    t.enabled = !t.enabled; $("camBtn").textContent = t.enabled ? "camera off" : "camera on";
+  };
+  const copy = async (text, ok) => { try { await navigator.clipboard.writeText(text); note(ok); } catch (e) { note("Copy failed — select it by hand: " + text); } };
+  $("copyCode").onclick = () => roomId && copy(roomId, "Code copied.");
+  $("copyLink").onclick = () => roomId && copy(location.origin + location.pathname + "?room=" + roomId, "Invite link copied.");
 
-        peerConnection.ontrack = (event) => {
-            event.streams[0].getTracks().forEach(track => {
-                remoteStream.addTrack(track);
-            });
-        };
+  /* =====================================================================
+     NAMES / CHAPTERS
+     ===================================================================== */
+  const labelFor = r => {
+    const n = roomData && roomData.names && roomData.names[r];
+    if (n) return n;
+    return r === myRole() ? "you" : "partner";
+  };
 
-        peerConnection.onconnectionstatechange = () => {
-            connectionStatus.textContent = "Status: " + peerConnection.connectionState;
-            if(peerConnection.connectionState === 'connected') {
-                gameOverlay.classList.add('hidden');
-            }
-        };
-    }
+  document.querySelectorAll("#toc button").forEach(b => {
+    b.onclick = () => { if (roomRef) updateDoc(roomRef, { chapter: b.dataset.ch }).catch(console.error); };
+  });
 
-    async function createRoom() {
-        if (!user) return;
-        await getLocalMedia();
-        createPeerConnection();
-        isCaller = true;
-        
-        currentRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-        
-        showStatus(`Room Created: ${currentRoomId}. Waiting for partner...`);
-        roomIdInput.value = currentRoomId;
+  function renderAll() {
+    if (!roomData) return;
+    const ch = roomData.chapter || "crossword";
+    document.querySelectorAll("#toc button").forEach(b => b.classList.toggle("on", b.dataset.ch === ch));
+    document.querySelectorAll(".chapter").forEach(s => s.classList.toggle("on", s.id === "ch-" + ch));
+    if (ch === "crossword") renderCrossword();
+    if (ch === "hundred") renderHundred();
+    if (ch === "hangman") renderHangman();
+  }
 
-        // Initialize game state
-        const initialWord = WORDS[Math.floor(Math.random() * WORDS.length)];
-        await setDoc(roomRef, {
-            callerCandidates: [],
-            calleeCandidates: [],
-            gameState: {
-                word: initialWord,
-                guesses: [],
-                status: 'playing' // playing, won, lost
-            }
+  /* =====================================================================
+     CROSSWORD
+     ===================================================================== */
+  let cwBuilt = null;            // { index, rows, cols, cells, words, numberAt }
+  let cwSel = { r: 0, c: 0 }, cwDir = "A", cwShowCheck = false, cwTimer = null;
+  const k = (r, c) => r + "_" + c;
+
+  function buildPuzzle(index) {
+    const p = PUZZLES[index];
+    const cells = {}; let rows = 0, cols = 0;
+    p.words.forEach(w => {
+      for (let i = 0; i < w.w.length; i++) {
+        const r = w.r + (w.d === "D" ? i : 0), c = w.c + (w.d === "A" ? i : 0);
+        cells[k(r, c)] = { r, c, ch: w.w[i] };
+        rows = Math.max(rows, r + 1); cols = Math.max(cols, c + 1);
+      }
+    });
+    const starts = new Set(p.words.map(w => k(w.r, w.c)));
+    const numberAt = {}; let n = 0;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (starts.has(k(r, c))) numberAt[k(r, c)] = ++n;
+    const words = p.words.map(w => ({ ...w, n: numberAt[k(w.r, w.c)] }));
+    return { index, rows, cols, cells, words, numberAt, title: p.title };
+  }
+
+  function wordAt(r, c, dir) {
+    const has = d => cwBuilt.words.find(w => w.d === d &&
+      (d === "A" ? (r === w.r && c >= w.c && c < w.c + w.w.length) : (c === w.c && r >= w.r && r < w.r + w.w.length)));
+    return has(dir) || has(dir === "A" ? "D" : "A");
+  }
+  function wordCells(w) {
+    return Array.from({ length: w.w.length }, (_, i) => ({ r: w.r + (w.d === "D" ? i : 0), c: w.c + (w.d === "A" ? i : 0) }));
+  }
+
+  function buildCrosswordDom() {
+    const g = $("cwGrid");
+    g.innerHTML = "";
+    g.style.gridTemplateColumns = `repeat(${cwBuilt.cols}, auto)`;
+    for (let r = 0; r < cwBuilt.rows; r++) {
+      for (let c = 0; c < cwBuilt.cols; c++) {
+        const div = document.createElement("div");
+        const info = cwBuilt.cells[k(r, c)];
+        if (!info) { div.className = "cell block"; g.appendChild(div); continue; }
+        div.className = "cell";
+        const inp = document.createElement("input");
+        inp.type = "text"; inp.maxLength = 2; inp.autocomplete = "off"; inp.setAttribute("autocapitalize", "characters");
+        inp.id = "cw-" + k(r, c);
+        inp.addEventListener("focus", () => selectCell(r, c, false));
+        inp.addEventListener("mousedown", () => { if (cwSel.r === r && cwSel.c === c) { cwDir = cwDir === "A" ? "D" : "A"; paintSelection(); } });
+        inp.addEventListener("input", () => {
+          const v = (inp.value.match(/[a-zA-Z]/g) || []).pop();
+          inp.value = (roomData?.crossword?.cells?.[k(r, c)]?.l) || "";
+          if (v) { writeLetter(r, c, v.toUpperCase()); step(r, c, 1); }
         });
-
-        // Collect ICE candidates
-        peerConnection.onicecandidate = async (event) => {
-            if (event.candidate) {
-                await updateDoc(roomRef, {
-                    callerCandidates: arrayUnion(event.candidate.toJSON())
-                });
-            }
-        };
-
-        // Create offer
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        await updateDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp } });
-
-        listenToRoom(roomRef);
-    }
-
-    async function joinRoom() {
-        if (!user) return;
-        currentRoomId = roomIdInput.value.trim().toUpperCase();
-        if (!currentRoomId) return;
-
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-        const roomSnap = await getDoc(roomRef);
-
-        if (!roomSnap.exists()) {
-            showStatus("Room not found!");
-            return;
-        }
-
-        await getLocalMedia();
-        createPeerConnection();
-        isCaller = false;
-        showStatus(`Joined Room: ${currentRoomId}`);
-        gameOverlay.classList.add('hidden');
-
-        // Collect ICE candidates
-        peerConnection.onicecandidate = async (event) => {
-            if (event.candidate) {
-                await updateDoc(roomRef, {
-                    calleeCandidates: arrayUnion(event.candidate.toJSON())
-                });
-            }
-        };
-
-        const roomData = roomSnap.data();
-        const offer = roomData.offer;
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-        
-        const answer = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(answer);
-
-        await updateDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } });
-
-        // Add already existing caller candidates
-        if (roomData.callerCandidates) {
-            roomData.callerCandidates.forEach(c => {
-                peerConnection.addIceCandidate(new RTCIceCandidate(c));
-            });
-        }
-
-        listenToRoom(roomRef);
-    }
-
-    function listenToRoom(roomRef) {
-        if (roomUnsubscribe) roomUnsubscribe();
-
-        roomUnsubscribe = onSnapshot(roomRef, async (snapshot) => {
-            const data = snapshot.data();
-            if (!data) return;
-
-            // Handle Answer for Caller
-            if (isCaller && !peerConnection.currentRemoteDescription && data.answer) {
-                const rtcSessionDescription = new RTCSessionDescription(data.answer);
-                await peerConnection.setRemoteDescription(rtcSessionDescription);
-            }
-
-            // Handle new ICE candidates
-            if (isCaller && data.calleeCandidates) {
-                data.calleeCandidates.forEach(c => {
-                    try { peerConnection.addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
-                });
-            } else if (!isCaller && data.callerCandidates) {
-                data.callerCandidates.forEach(c => {
-                    try { peerConnection.addIceCandidate(new RTCIceCandidate(c)); } catch(e){}
-                });
-            }
-
-            // Handle Game State updates
-            if (data.gameState) {
-                updateGameUI(data.gameState);
-            }
-        }, (err) => console.error("Listen Error", err));
-    }
-
-    function initKeyboard() {
-        keyboard.innerHTML = '';
-        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-        letters.forEach(letter => {
-            const btn = document.createElement('button');
-            btn.className = "keyboard-btn";
-            btn.textContent = letter;
-            btn.onclick = () => guessLetter(letter);
-            btn.id = `btn-${letter}`;
-            keyboard.appendChild(btn);
+        inp.addEventListener("keydown", e => {
+          if (e.key === "Backspace") {
+            e.preventDefault();
+            const cur = roomData?.crossword?.cells?.[k(r, c)]?.l;
+            if (cur) writeLetter(r, c, ""); else step(r, c, -1, true);
+          } else if (e.key === "ArrowRight") { e.preventDefault(); jump(r, c + 1, 0, 1); }
+          else if (e.key === "ArrowLeft")  { e.preventDefault(); jump(r, c - 1, 0, -1); }
+          else if (e.key === "ArrowDown")  { e.preventDefault(); jump(r + 1, c, 1, 0); }
+          else if (e.key === "ArrowUp")    { e.preventDefault(); jump(r - 1, c, -1, 0); }
         });
+        div.appendChild(inp);
+        const n = cwBuilt.numberAt[k(r, c)];
+        if (n) { const s = document.createElement("span"); s.className = "num"; s.textContent = n; div.appendChild(s); }
+        g.appendChild(div);
+      }
     }
+    // clue lists
+    ["A", "D"].forEach(d => {
+      const ol = $(d === "A" ? "cwAcross" : "cwDown"); ol.innerHTML = "";
+      cwBuilt.words.filter(w => w.d === d).sort((a, b) => a.n - b.n).forEach(w => {
+        const li = document.createElement("li");
+        li.dataset.n = w.n; li.dataset.d = w.d;
+        li.innerHTML = `<b>${w.n}</b>${w.clue} <span class="small">(${w.w.length})</span>`;
+        li.onclick = () => { cwDir = w.d; selectCell(w.r, w.c, true); };
+        ol.appendChild(li);
+      });
+    });
+    $("cwTitle").textContent = cwBuilt.title;
+    cwSel = { r: cwBuilt.words[0].r, c: cwBuilt.words[0].c }; cwDir = cwBuilt.words[0].d;
+  }
 
-    async function guessLetter(letter) {
-        if (!user || !currentRoomId) return;
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-        
-        // Optimistically disable
-        document.getElementById(`btn-${letter}`).disabled = true;
-        
-        await updateDoc(roomRef, {
-            "gameState.guesses": arrayUnion(letter)
-        });
+  function selectCell(r, c, focus) {
+    cwSel = { r, c };
+    const w = wordAt(r, c, cwDir); if (w) cwDir = w.d;
+    paintSelection();
+    if (focus) { const el = $("cw-" + k(r, c)); if (el) el.focus(); }
+  }
+
+  function paintSelection() {
+    if (!cwBuilt) return;
+    const w = wordAt(cwSel.r, cwSel.c, cwDir);
+    const inWord = new Set(w ? wordCells(w).map(x => k(x.r, x.c)) : []);
+    Object.keys(cwBuilt.cells).forEach(key => {
+      const el = $("cw-" + key); if (!el) return;
+      el.classList.toggle("inword", inWord.has(key));
+      el.classList.toggle("sel", key === k(cwSel.r, cwSel.c));
+    });
+    document.querySelectorAll(".clues li").forEach(li => li.classList.toggle("on", !!w && +li.dataset.n === w.n && li.dataset.d === w.d));
+  }
+
+  function step(r, c, dir, clearAfter) {
+    const w = wordAt(r, c, cwDir); if (!w) return;
+    const cells = wordCells(w);
+    const i = cells.findIndex(x => x.r === r && x.c === c);
+    const nx = cells[i + dir];
+    if (nx) { selectCell(nx.r, nx.c, true); if (clearAfter) writeLetter(nx.r, nx.c, ""); }
+  }
+  function jump(r, c, dr, dc) {
+    while (r >= 0 && c >= 0 && r < cwBuilt.rows && c < cwBuilt.cols) {
+      if (cwBuilt.cells[k(r, c)]) { cwDir = dc !== 0 ? "A" : "D"; selectCell(r, c, true); return; }
+      r += dr; c += dc;
     }
+  }
 
-    function updateGameUI(gameState) {
-        if (!gameState) return;
-        
-        const { word, guesses, status } = gameState;
-        
-        // Render word
-        wordDisplay.innerHTML = '';
-        let mistakes = 0;
-        let isWon = true;
+  function writeLetter(r, c, letter) {
+    if (!roomRef) return;
+    updateDoc(roomRef, { ["crossword.cells." + k(r, c)]: { l: letter, by: myRole() } }).catch(console.error);
+  }
 
-        word.split('').forEach(char => {
-            const box = document.createElement('div');
-            box.className = 'letter-box';
-            if (guesses.includes(char)) {
-                box.textContent = char;
-            } else {
-                box.textContent = '';
-                isWon = false;
-            }
-            wordDisplay.appendChild(box);
-        });
+  function renderCrossword() {
+    const cw = roomData.crossword || { puzzle: 0, cells: {} };
+    if (!cwBuilt || cwBuilt.index !== cw.puzzle) { cwBuilt = buildPuzzle(cw.puzzle); buildCrosswordDom(); paintSelection(); }
+    let solved = true;
+    Object.entries(cwBuilt.cells).forEach(([key, info]) => {
+      const el = $("cw-" + key); if (!el) return;
+      const st = cw.cells[key] || { l: "", by: "" };
+      if (el.value !== st.l && document.activeElement !== el) el.value = st.l;
+      else if (document.activeElement === el) el.value = st.l;
+      el.classList.toggle("by-a", st.by === "a");
+      el.classList.toggle("by-b", st.by === "b");
+      el.classList.toggle("wrong", cwShowCheck && !!st.l && st.l !== info.ch);
+      if (st.l !== info.ch) solved = false;
+    });
+    $("cwMsg").textContent = solved ? "solved, together ❦" : "";
+  }
 
-        // Calculate mistakes
-        guesses.forEach(g => {
-            if (!word.includes(g)) mistakes++;
-        });
+  $("cwCheck").onclick = () => {
+    cwShowCheck = true; renderCrossword();
+    clearTimeout(cwTimer); cwTimer = setTimeout(() => { cwShowCheck = false; if (roomData) renderCrossword(); }, 4000);
+  };
+  $("cwNext").onclick = () => {
+    if (!roomRef) return;
+    const next = ((roomData.crossword?.puzzle || 0) + 1) % PUZZLES.length;
+    updateDoc(roomRef, { crossword: { puzzle: next, cells: {} } }).catch(console.error);
+  };
+  $("cwClear").onclick = () => {
+    if (!roomRef || !confirm("Clear every letter on this puzzle for both of you?")) return;
+    updateDoc(roomRef, { crossword: { puzzle: roomData.crossword?.puzzle || 0, cells: {} } }).catch(console.error);
+  };
 
-        mistakeCount.textContent = mistakes;
+  /* =====================================================================
+     THE HUNDRED WORDS
+     ===================================================================== */
+  const HITS = 9;
+  function makeHundred(prev) {
+    const target = pick(WORD_POOL);
+    const others = WORD_POOL.filter(w => w !== target);
+    const spots = new Set();
+    while (spots.size < HITS) spots.add(Math.floor(Math.random() * 100));
+    const cells = Array.from({ length: 100 }, (_, i) => (spots.has(i) ? target : pick(others)));
+    return { target, cells, claims: {}, hits: HITS, round: (prev?.round || 0) + 1, totals: prev?.totals || { a: 0, b: 0 } };
+  }
 
-        // Update keyboard UI
-        const buttons = document.querySelectorAll('.keyboard-btn');
-        buttons.forEach(btn => {
-            btn.disabled = false;
-            btn.classList.remove('bg-green-500', 'bg-red-500', 'text-white');
-            
-            if (guesses.includes(btn.textContent)) {
-                btn.disabled = true;
-                if (word.includes(btn.textContent)) {
-                    btn.classList.add('bg-green-500', 'text-white');
-                } else {
-                    btn.classList.add('bg-red-500', 'text-white');
-                }
-            }
-        });
+  function renderHundred() {
+    const h = roomData.hundred; if (!h) return;
+    $("hwTarget").textContent = h.target;
+    const t = h.totals || { a: 0, b: 0 };
+    $("hwScoreA").textContent = `${labelFor("a")} ${t.a || 0}`;
+    $("hwScoreB").textContent = `${labelFor("b")} ${t.b || 0}`;
 
-        // Check end condition logic and update db if status changed locally
-        let newStatus = status;
-        if (mistakes >= 6 && status === 'playing') newStatus = 'lost';
-        else if (isWon && status === 'playing') newStatus = 'won';
-
-        if (newStatus !== status && isCaller) {
-             const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-             updateDoc(roomRef, { "gameState.status": newStatus });
-        }
-
-        // Apply visual end state
-        if (newStatus === 'won') {
-            gameMessage.textContent = "You Won!";
-            gameMessage.className = "text-center font-bold text-xl h-8 text-green-600";
-            disableKeyboard();
-            newGameBtn.classList.remove('hidden');
-        } else if (newStatus === 'lost') {
-            gameMessage.textContent = `Game Over! The word was ${word}`;
-            gameMessage.className = "text-center font-bold text-xl h-8 text-red-600";
-            disableKeyboard();
-            newGameBtn.classList.remove('hidden');
-        } else {
-            gameMessage.textContent = "";
-            newGameBtn.classList.add('hidden');
-        }
+    const cloud = $("cloud");
+    if (cloud.dataset.round !== String(h.round)) {
+      cloud.dataset.round = h.round; cloud.innerHTML = "";
+      h.cells.forEach((w, i) => {
+        const b = document.createElement("button");
+        b.textContent = w; b.id = "hw-" + i;
+        b.onclick = () => claimWord(i, b);
+        cloud.appendChild(b);
+      });
     }
+    const claims = h.claims || {};
+    let mine = 0, theirs = 0;
+    h.cells.forEach((_, i) => {
+      const b = $("hw-" + i); if (!b) return;
+      const who = claims[i];
+      b.className = who || ""; b.disabled = !!who;
+      if (who === myRole()) mine++; else if (who) theirs++;
+    });
+    const done = Object.keys(claims).length >= h.hits;
+    $("hwMsg").textContent = done
+      ? (mine === theirs ? "a tie — all nine found ❦" : (mine > theirs ? "that round is yours ❦" : `${labelFor(myRole() === "a" ? "b" : "a")} took that round`))
+      : `${Object.keys(claims).length} of ${h.hits} found`;
+  }
 
-    function disableKeyboard() {
-        document.querySelectorAll('.keyboard-btn').forEach(b => b.disabled = true);
-    }
+  async function claimWord(i, btn) {
+    const h = roomData.hundred;
+    if (!h || (h.claims || {})[i]) return;
+    if (h.cells[i] !== h.target) { btn.classList.add("nope"); setTimeout(() => btn.classList.remove("nope"), 320); return; }
+    const role = myRole(), round = h.round;
+    try {
+      // A transaction makes sure only the FIRST tap on a word counts, even if you both tap together.
+      await runTransaction(db, async tx => {
+        const s = await tx.get(roomRef);
+        const hh = s.data().hundred;
+        if (hh.round !== round || (hh.claims || {})[i] || hh.cells[i] !== hh.target) return;
+        tx.update(roomRef, { ["hundred.claims." + i]: role, ["hundred.totals." + role]: ((hh.totals || {})[role] || 0) + 1 });
+      });
+    } catch (err) { console.error(err); }
+  }
 
-    async function startNewGame() {
-        if (!user || !currentRoomId) return;
-        const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
-        const newWord = WORDS[Math.floor(Math.random() * WORDS.length)];
-        
-        await updateDoc(roomRef, {
-            gameState: {
-                word: newWord,
-                guesses: [],
-                status: 'playing'
-            }
-        });
-    }
+  $("hwNew").onclick = () => { if (roomRef) updateDoc(roomRef, { hundred: makeHundred(roomData.hundred) }).catch(console.error); };
+  $("hwReset").onclick = () => { if (roomRef) updateDoc(roomRef, { "hundred.totals": { a: 0, b: 0 } }).catch(console.error); };
 
-    function setupEventListeners() {
-        createRoomBtn.addEventListener('click', createRoom);
-        joinRoomBtn.addEventListener('click', joinRoom);
-        newGameBtn.addEventListener('click', startNewGame);
-    }
+  /* =====================================================================
+     GUESS THE WORD
+     ===================================================================== */
+  const hmKeys = $("hmKeys");
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(L => {
+    const b = document.createElement("button");
+    b.textContent = L; b.id = "hm-" + L; b.onclick = () => guessLetter(L);
+    hmKeys.appendChild(b);
+  });
 
+  function hmState() {
+    const g = roomData.hangman || { word: "LANTERN", guesses: [] };
+    const guesses = g.guesses || [];
+    const mistakes = guesses.filter(x => !g.word.includes(x)).length;
+    const won = g.word.split("").every(ch => guesses.includes(ch));
+    const lost = mistakes >= 6;
+    return { word: g.word, guesses, mistakes, won, lost };
+  }
+
+  function renderHangman() {
+    const s = hmState();
+    const showAll = s.lost;
+    $("hmWord").innerHTML = "";
+    s.word.split("").forEach(ch => {
+      const d = document.createElement("div"); d.className = "lb";
+      d.textContent = (s.guesses.includes(ch) || showAll) ? ch : "";
+      if (showAll && !s.guesses.includes(ch)) d.style.color = "var(--red)";
+      $("hmWord").appendChild(d);
+    });
+    $("hmMist").textContent = "mistakes " + "✕ ".repeat(s.mistakes) + "· ".repeat(6 - s.mistakes);
+    const over = s.won || s.lost;
+    $("hmMsg").textContent = s.won ? "you found it, together ❦" : (s.lost ? "out of mistakes — the word is shown above" : "");
+    document.querySelectorAll("#hmKeys button").forEach(b => {
+      const L = b.textContent, used = s.guesses.includes(L);
+      b.className = used ? (s.word.includes(L) ? "hit" : "miss") : "";
+      b.disabled = used || over;
+    });
+  }
+
+  function guessLetter(L) {
+    if (!roomRef) return;
+    const s = hmState(); if (s.won || s.lost || s.guesses.includes(L)) return;
+    updateDoc(roomRef, { "hangman.guesses": arrayUnion(L) }).catch(console.error);
+  }
+  document.addEventListener("keydown", e => {
+    if (!roomData || roomData.chapter !== "hangman") return;
+    if (e.target.tagName === "INPUT" || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (/^[a-zA-Z]$/.test(e.key)) guessLetter(e.key.toUpperCase());
+  });
+  $("hmNew").onclick = () => { if (roomRef) updateDoc(roomRef, { hangman: { word: pick(HANG_WORDS), guesses: [] } }).catch(console.error); };
+
+  // Leaving the page politely
+  window.addEventListener("beforeunload", () => { if (pc) pc.close(); });
 </script>
 </body>
 </html>
