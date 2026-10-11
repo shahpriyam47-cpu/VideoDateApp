@@ -49,9 +49,39 @@ service cloud.firestore {
           );
       }
 
+      function photoBoothPairReady() {
+        let room = get(/databases/$(database)/documents/artifacts/our-little-room/public/data/rooms/$(roomId));
+        let selfies = room.data.get('photoBooth', {'selfies': {'a': '', 'b': ''}}).get(
+          'selfies',
+          {'a': '', 'b': ''}
+        );
+        return selfies.a is string && selfies.a != ''
+          && selfies.b is string && selfies.b != ''
+          && exists(/databases/$(database)/documents/artifacts/our-little-room/public/data/rooms/$(roomId)/photoBooth/$(selfies.a))
+          && exists(/databases/$(database)/documents/artifacts/our-little-room/public/data/rooms/$(roomId)/photoBooth/$(selfies.b));
+      }
+
+      function photoBoothFileIsActive(fileName) {
+        let room = get(/databases/$(database)/documents/artifacts/our-little-room/public/data/rooms/$(roomId));
+        let selfies = room.data.get('photoBooth', {'selfies': {'a': '', 'b': ''}}).get(
+          'selfies',
+          {'a': '', 'b': ''}
+        );
+        return selfies.a == fileName || selfies.b == fileName;
+      }
+
+      function photoBoothFileBelongsToCurrentUser(fileName) {
+        return (
+          fileName.matches('a-[a-zA-Z0-9-]+[.]jpg') && roomRole(roomId) == 'a'
+        ) || (
+          fileName.matches('b-[a-zA-Z0-9-]+[.]jpg') && roomRole(roomId) == 'b'
+        );
+      }
+
       allow create: if signedIn()
         && request.resource.data.members.a == request.auth.uid
-        && request.resource.data.members.b == null;
+        && request.resource.data.members.b == null
+        && !request.resource.data.keys().hasAny(['photoBooth']);
 
       // The invite code opens an unclaimed room; after it is claimed, members alone can read it.
       allow get: if signedIn()
@@ -73,6 +103,24 @@ service cloud.firestore {
       );
 
       allow delete: if false;
+
+      match /photoBooth/{fileName} {
+        allow read: if roomParticipant(roomId)
+          && photoBoothPairReady()
+          && photoBoothFileIsActive(fileName);
+        allow create: if roomParticipant(roomId)
+          && photoBoothFileBelongsToCurrentUser(fileName)
+          && request.resource.data.keys().hasOnly(['image', 'createdAt'])
+          && request.resource.data.keys().hasAll(['image', 'createdAt'])
+          && request.resource.data.image is string
+          && request.resource.data.image.size() <= 400000
+          && request.resource.data.image.matches('data:image/jpeg;base64,[A-Za-z0-9+/]+={0,2}')
+          && request.resource.data.createdAt is int;
+        allow update: if false;
+        allow delete: if roomParticipant(roomId)
+          && photoBoothFileBelongsToCurrentUser(fileName)
+          && !photoBoothFileIsActive(fileName);
+      }
 
       match /memories/{memoryId} {
         allow read: if roomParticipant(roomId);

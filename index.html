@@ -547,10 +547,8 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-  import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, runTransaction }
+  import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, deleteDoc, onSnapshot, runTransaction }
     from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-  import { getStorage, ref as storageRef, uploadBytes, getBytes, deleteObject }
-    from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
   /* =====================================================================
      SETTINGS
@@ -563,7 +561,6 @@
    apiKey: "AIzaSyAkbJgkuJxPX9_GjALpIFMMEAGRru_ity8",
   authDomain: "tu-ne-hu.firebaseapp.com",
   projectId: "tu-ne-hu",
-  storageBucket: "tu-ne-hu.firebasestorage.app",
   messagingSenderId: "579692726493",
   appId: "1:579692726493:web:a550cfa59d3d2e5c137334",
   measurementId: "G-J4MQ3DE333"
@@ -626,7 +623,7 @@
   /* =====================================================================
      FIREBASE + STATE
      ===================================================================== */
-  let db, auth, authReady, storage;
+  let db, auth, authReady;
   let roomRef = null, roomId = null, roomData = null, unsub = null, memoriesUnsub = null;
   let roomMemories = [];
   let isCreator = false;
@@ -635,7 +632,6 @@
   try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-    storage = getStorage(app);
     auth = getAuth(app);
     authReady = signInAnonymously(auth).catch(err => {
       console.error("Sign-in error:", err);
@@ -2017,9 +2013,9 @@
     }, "image/png");
   }
 
-  async function createSelfieBlob(video) {
+  async function createSelfieDataUrl(video) {
     if (!video.videoWidth || !video.videoHeight) throw new Error("Wait for your camera preview to appear, then try again.");
-    const scale = Math.min(1, 960 / video.videoWidth, 1280 / video.videoHeight);
+    const scale = Math.min(1, 720 / video.videoWidth, 960 / video.videoHeight);
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(video.videoWidth * scale);
     canvas.height = Math.round(video.videoHeight * scale);
@@ -2027,11 +2023,18 @@
     if (!context) throw new Error("This browser could not capture your photo.");
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    for (let quality = 0.84; quality >= 0.48; quality -= 0.08) {
+    for (let quality = 0.8; quality >= 0.32; quality -= 0.08) {
       const blob = await new Promise((resolve, reject) => {
         canvas.toBlob(result => result ? resolve(result) : reject(new Error("Your photo could not be prepared.")), "image/jpeg", quality);
       });
-      if (blob.size <= 1.8 * 1024 * 1024) return blob;
+      if (blob.size <= 280 * 1024) {
+        return await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error("Your photo could not be prepared for sharing."));
+          reader.readAsDataURL(blob);
+        });
+      }
     }
     throw new Error("This photo is too large to share. Please try again in better light.");
   }
@@ -2060,20 +2063,20 @@
   });
 
   $("boothCapture").addEventListener("click", async () => {
-    if (!roomRef || !roomId || !auth.currentUser || !storage || photoBoothState.busy) return;
+    if (!roomRef || !roomId || !auth.currentUser || photoBoothState.busy) return;
     photoBoothState.busy = true;
     $("boothCapture").disabled = true;
     $("boothStatus").textContent = "Capturing and sharing your selfie…";
+    const currentRoomId = roomId;
+    const currentRoomRef = roomRef;
     try {
-      const blob = await createSelfieBlob($("boothVideo"));
-      const currentRoomId = roomId;
-      const currentRoomRef = roomRef;
+      const image = await createSelfieDataUrl($("boothVideo"));
       const role = myRole();
       const randomId = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, "0")).join("");
       const fileName = `${role}-${randomId}.jpg`;
-      const destination = storageRef(storage, `rooms/${currentRoomId}/photo-booth/${fileName}`);
+      const selfieRef = doc(collection(currentRoomRef, "photoBooth"), fileName);
 
-      await uploadBytes(destination, blob, { contentType: "image/jpeg" });
+      await setDoc(selfieRef, { image, createdAt: Date.now() });
       try {
         if (roomId !== currentRoomId || roomRef !== currentRoomRef) {
           throw new Error("You left this room before the selfie could be shared.");
@@ -2097,7 +2100,7 @@
         roomData = { ...roomData, photoBooth: updateResult.photoBooth };
         if (updateResult.previous && updateResult.previous !== fileName) {
           try {
-            await deleteObject(storageRef(storage, `rooms/${currentRoomId}/photo-booth/${updateResult.previous}`));
+            await deleteDoc(doc(collection(currentRoomRef, "photoBooth"), updateResult.previous));
           } catch (err) {
             console.error(err);
             photoBoothState.message = "Your new selfie was captured, but the previous copy could not be cleared.";
@@ -2105,9 +2108,9 @@
         }
       } catch (err) {
         try {
-          await deleteObject(destination);
+          await deleteDoc(selfieRef);
         } catch (cleanupError) {
-          console.error("Could not remove an unrecorded photo booth upload:", cleanupError);
+          console.error("Could not remove an unrecorded photo booth photo:", cleanupError);
         }
         throw err;
       }
@@ -2157,7 +2160,7 @@
       }
       if (updateResult.previous) {
         try {
-          await deleteObject(storageRef(storage, `rooms/${currentRoomId}/photo-booth/${updateResult.previous}`));
+          await deleteDoc(doc(collection(currentRoomRef, "photoBooth"), updateResult.previous));
         } catch (err) {
           console.error(err);
           photoBoothState.message = "Your previous selfie was removed from the booth, but its stored copy could not be deleted.";
@@ -2314,12 +2317,17 @@
     const version = ++photoBoothState.renderVersion;
     $("boothCardStatus").textContent = "Putting your two selfies together…";
 
-    Promise.all(["a", "b"].map(role => getBytes(
-      storageRef(storage, `rooms/${roomId}/photo-booth/${selfies[role]}`),
-      2 * 1024 * 1024
-    ))).then(bytes => {
+    Promise.all(["a", "b"].map(async role => {
+      const selfieSnapshot = await getDoc(doc(collection(roomDoc(roomId), "photoBooth"), selfies[role]));
+      if (!selfieSnapshot.exists() || typeof selfieSnapshot.data().image !== "string") {
+        throw new Error("A shared selfie is missing.");
+      }
+      const response = await fetch(selfieSnapshot.data().image);
+      if (!response.ok) throw new Error("A shared selfie could not be decoded.");
+      return response.blob();
+    })).then(blobs => {
       if (version !== photoBoothState.renderVersion || !card.isConnected) return;
-      photoBoothState.pairUrls = bytes.map(data => URL.createObjectURL(new Blob([data], { type: "image/jpeg" })));
+      photoBoothState.pairUrls = blobs.map(blob => URL.createObjectURL(blob));
       photoBoothState.pairKey = pairKey;
       photoBoothState.loadingPairKey = "";
       renderPhotoBooth();
@@ -2327,7 +2335,7 @@
       console.error(err);
       if (version !== photoBoothState.renderVersion) return;
       photoBoothState.loadingPairKey = "";
-      $("boothCardStatus").textContent = "The paired photo card could not be loaded. Check Firebase Storage rules and try again.";
+      $("boothCardStatus").textContent = "The paired photo card could not be loaded. Check the Firestore rules and try again.";
     });
   }
 
