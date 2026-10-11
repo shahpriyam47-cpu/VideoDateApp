@@ -154,6 +154,11 @@
   .code-game-form[hidden],#codeGameNext[hidden]{display:none}
   .code-game-form label{flex-basis:100%; text-align:center; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
   .code-game-form input{width:min(100%,13rem); padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit; letter-spacing:.2em; text-align:center}
+  .code-pair{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; max-width:34rem; margin:.8rem auto 1rem}
+  .code-pair section{min-width:0; padding:.55rem; border:1px solid var(--rule); background:#fffdf680; text-align:center}
+  .code-pair h3{margin:0 0 .2rem; color:var(--sepia); font-size:.9rem; font-weight:400; font-variant:small-caps; letter-spacing:.1em}
+  .code-pair-number{font-family:var(--fell); font-size:1.55rem; letter-spacing:.2em}
+  .code-pair-number.pending{font-family:var(--serif); font-size:.95rem; letter-spacing:normal; font-style:italic; color:var(--sepia)}
   .code-guess-card{max-width:34rem; margin:.7rem auto; padding:.7rem; border:1px solid var(--rule); background:#fbf6ea; text-align:center}
   .code-guess-digits{font-family:var(--fell); font-size:1.8rem; letter-spacing:.35em}
   .code-feedback-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.35rem; margin:.6rem 0}
@@ -418,7 +423,17 @@
     <!-- ---- guess the code ---- -->
     <div class="chapter" id="ch-code-game">
       <h2>guess the code</h2>
-      <p class="small" style="margin-top:0">Both choose a secret six-digit code. Take turns guessing your partner’s code. They will mark each digit as an exact match, the right digit in the wrong place, or not in the code.</p>
+      <p class="small" style="margin-top:0">Both choose a six-digit code. Your codes are shown to both of you below. Take turns guessing your partner’s code. They will mark each digit as an exact match, the right digit in the wrong place, or not in the code.</p>
+      <section class="code-pair" aria-label="Both chosen codes">
+        <section aria-labelledby="codePairLabelA">
+          <h3 id="codePairLabelA"></h3>
+          <div class="code-pair-number pending" id="codePairNumberA">not set yet</div>
+        </section>
+        <section aria-labelledby="codePairLabelB">
+          <h3 id="codePairLabelB"></h3>
+          <div class="code-pair-number pending" id="codePairNumberB">not set yet</div>
+        </section>
+      </section>
       <form class="code-game-form" id="codeSecretForm">
         <label for="codeSecretInput">your secret 6-digit code</label>
         <input type="text" id="codeSecretInput" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="000000" required>
@@ -1228,6 +1243,13 @@
     const myGuesses = Array.isArray(guesses[role]) ? guesses[role] : [];
     const theirGuesses = Array.isArray(guesses[otherRole]) ? guesses[otherRole] : [];
     const myPending = myGuesses.some(entry => !Array.isArray(entry.feedback));
+    ["a", "b"].forEach(codeRole => {
+      $(`codePairLabel${codeRole.toUpperCase()}`).textContent = `${labelFor(codeRole)}’s code`;
+      const display = $(`codePairNumber${codeRole.toUpperCase()}`);
+      const isSet = isSixDigitCode(codes[codeRole] || "");
+      display.textContent = isSet ? codes[codeRole] : "not set yet";
+      display.classList.toggle("pending", !isSet);
+    });
     $("codeSecretForm").hidden = !roomRef || !!codes[role] || bothCodesSet || bothSolved;
     $("codeGuessForm").hidden = !roomRef || !bothCodesSet || !!solved[role] || myPending || bothSolved;
     $("codeSecretSubmit").disabled = !roomRef;
