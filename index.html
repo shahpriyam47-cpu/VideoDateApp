@@ -60,7 +60,7 @@
 
   /* ---------- buttons & inputs ---------- */
   .btn{
-    background:transparent; border:1px solid var(--ink); padding:.35rem 1rem; cursor:pointer;
+    display:inline-block; color:inherit; text-decoration:none; background:transparent; border:1px solid var(--ink); padding:.35rem 1rem; cursor:pointer;
     font-variant:small-caps; letter-spacing:.14em; font-size:1rem; transition:background-color .15s, color .15s, border-color .15s;
   }
   .btn:hover:not(:disabled){background:var(--ink); color:var(--paper)}
@@ -154,6 +154,31 @@
   #hmKeys button.hit{background:var(--green); color:var(--paper); border-color:var(--green)}
   #hmKeys button.miss{background:var(--red); color:var(--paper); border-color:var(--red); opacity:.75}
 
+  /* ---------- new little games ---------- */
+  .ttt-board{display:grid; grid-template-columns:repeat(3,minmax(64px,92px)); justify-content:center; gap:.35rem; margin:1rem auto .6rem}
+  .ttt-board button{aspect-ratio:1; border:1px solid var(--rule); background:#fbf6ea; font-family:var(--fell); font-size:2.5rem; cursor:pointer}
+  .ttt-board button.x{color:var(--red)} .ttt-board button.o{color:var(--blue)}
+  .ttt-board button:hover:not(:disabled){background:#efe0b8}
+  .choice-card{border:1px solid var(--rule); background:#fbf6ea; padding:1rem; margin:.55rem 0; text-align:center}
+  .choice-card p{font-family:var(--fell); font-size:1.3rem; margin:0 0 .6rem}
+  .choice-card.chosen{border-color:var(--red); background:#efe0b866}
+  .choice-card button{width:100%}
+  .vote-result{text-align:center; color:var(--sepia); font-style:italic; min-height:1.5rem}
+
+  /* ---------- photo booth ---------- */
+  .booth-options{display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin:.8rem 0}
+  .booth-options label{display:grid; gap:.15rem; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
+  .booth-options select,.booth-options input{width:100%; min-width:0; padding:.35rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font-family:var(--serif); font-size:1rem}
+  .booth-preview{max-width:390px; margin:.8rem auto; padding:.65rem .65rem 1rem; background:#fffdf6; border:1px solid var(--rule); box-shadow:0 8px 24px #3a2c1a22; transform:rotate(-1deg)}
+  #photoCanvas{display:block; width:100%; height:auto; background:var(--paper-2)}
+  #photoCanvas[hidden]{display:none}
+  #photoDownload[hidden]{display:none}
+  .booth-placeholder{display:grid; place-content:center; aspect-ratio:4/5; text-align:center; color:var(--sepia); font-family:var(--fell); font-style:italic; padding:1rem}
+  .booth-placeholder[hidden]{display:none}
+  .booth-actions{justify-content:center}
+  .booth-flash{animation:boothflash .5s ease-out}
+  @keyframes boothflash{0%{filter:brightness(2.2)}100%{filter:brightness(1)}}
+
   /* ---------- small screens ---------- */
   @media (max-width:880px){
     body{padding:.6rem .4rem 2rem; font-size:18px}
@@ -174,6 +199,7 @@
     #cloud button{font-size:.95rem}
     .cell{width:30px; height:30px}
     .cell input{font-size:1.05rem}
+    .booth-options{grid-template-columns:1fr}
   }
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
@@ -249,6 +275,9 @@
       <li><button data-ch="crossword"><span class="chap">ii.</span><span class="t">the crossword</span><span class="dots"></span><span class="pg">3</span></button></li>
       <li><button data-ch="hundred"><span class="chap">iii.</span><span class="t">the hundred words</span><span class="dots"></span><span class="pg">9</span></button></li>
       <li><button data-ch="hangman"><span class="chap">iv.</span><span class="t">guess the word</span><span class="dots"></span><span class="pg">17</span></button></li>
+      <li><button data-ch="tic-tac-toe"><span class="chap">v.</span><span class="t">noughts &amp; crosses</span><span class="dots"></span><span class="pg">21</span></button></li>
+      <li><button data-ch="would-you-rather"><span class="chap">vi.</span><span class="t">a little choice</span><span class="dots"></span><span class="pg">25</span></button></li>
+      <li><button data-ch="photo-booth"><span class="chap">vii.</span><span class="t">the photo booth</span><span class="dots"></span><span class="pg">31</span></button></li>
     </ul>
     <div class="orn" style="margin:.4rem 0 1rem">❦</div>
 
@@ -292,6 +321,55 @@
       <div class="msg" id="hmMsg"></div>
       <div id="hmKeys"></div>
       <div class="tools" style="justify-content:center"><button class="btn" id="hmNew">new word</button></div>
+    </div>
+
+    <!-- ---- noughts and crosses ---- -->
+    <div class="chapter" id="ch-tic-tac-toe">
+      <h2>noughts &amp; crosses</h2>
+      <p class="small" style="margin-top:0">Take turns placing a mark. First to make a line wins.</p>
+      <div class="msg" id="tttMsg" aria-live="polite"></div>
+      <div class="ttt-board" id="tttBoard" role="group" aria-label="Noughts and crosses board"></div>
+      <div class="tools" style="justify-content:center"><button class="btn" id="tttNew">new game</button></div>
+    </div>
+
+    <!-- ---- would you rather ---- -->
+    <div class="chapter" id="ch-would-you-rather">
+      <h2>a little choice</h2>
+      <p class="small" style="margin-top:0">Pick one without peeking. Your answers meet when you have both chosen.</p>
+      <div class="msg" id="wyrQuestion"></div>
+      <div class="choice-card" id="wyrCardA"><p id="wyrOptionA"></p><button class="btn" id="wyrVoteA">i choose this</button></div>
+      <div class="choice-card" id="wyrCardB"><p id="wyrOptionB"></p><button class="btn" id="wyrVoteB">i choose this</button></div>
+      <div class="vote-result" id="wyrResult" aria-live="polite"></div>
+      <div class="tools" style="justify-content:center"><button class="btn" id="wyrNext">next choice</button></div>
+    </div>
+
+    <!-- ---- photo booth ---- -->
+    <div class="chapter" id="ch-photo-booth">
+      <h2>the photo booth</h2>
+      <p class="small" style="margin-top:0">Make a little keepsake from your call. Your photo is made on this device and is never uploaded.</p>
+      <div class="booth-options">
+        <label for="photoLook">finish
+          <select id="photoLook">
+            <option value="warm">soft &amp; golden</option>
+            <option value="classic">old film</option>
+            <option value="rose">rose-tinted</option>
+            <option value="mono">black &amp; white</option>
+          </select>
+        </label>
+        <label for="photoCaption">little caption
+          <input type="text" id="photoCaption" maxlength="42" value="our little moment">
+        </label>
+      </div>
+      <div class="booth-preview">
+        <div class="booth-placeholder" id="photoPlaceholder">your finished portrait will appear here ❦</div>
+        <canvas id="photoCanvas" width="1080" height="1350" hidden aria-label="Finished photo booth portrait"></canvas>
+      </div>
+      <div class="msg" id="photoMsg" role="status" aria-live="polite"></div>
+      <div class="tools booth-actions">
+        <button class="btn red" id="photoTake">take our portrait</button>
+        <a class="btn" id="photoDownload" hidden download="our-little-moment.png">save photo</a>
+      </div>
+      <p class="small" style="text-align:center">Together portraits need both cameras on. You can also take a solo portrait.</p>
     </div>
 
     <div class="folio">— 2 —</div>
@@ -370,6 +448,16 @@
   const WORD_POOL = ["moon","star","rose","kiss","tea","sun","wine","song","rain","snow","gold","lake","hug","pie","cake","bird","ring","wave","sky","fire","love","home","road","hill","leaf","dove","bell","pearl","dance","smile","tree","sand","wind","book","gift","card","rice","bread","jazz","lamp","coat","boat","rock","seed","fish","wolf","bear","nest","pond","mist","dawn","dusk","glow","ivy","oak","plum","pear","lime","mint","sage","snack","cozy","calm","warm","kind"];
 
   const HANG_WORDS = ["MOONLIGHT","BUTTERFLY","SUNFLOWER","CHOCOLATE","ADVENTURE","LANTERN","BLANKET","LIBRARY","VOYAGE","PINEAPPLE","STARGAZER","MIDNIGHT","COFFEE","BICYCLE","ELEPHANT","GIRAFFE","UNIVERSE","SEASHELL","POSTCARD","FIREFLY"];
+  const CHOICES = [
+    { a:"a sunrise by the sea", b:"a sunset in the mountains" },
+    { a:"a tiny cottage in the woods", b:"a little flat in a new city" },
+    { a:"slow dancing in the kitchen", b:"singing together on a road trip" },
+    { a:"a handwritten love note", b:"a surprise little adventure" },
+    { a:"breakfast in bed", b:"midnight snacks under a blanket" },
+    { a:"a quiet evening with books", b:"a silly night playing games" },
+    { a:"a beach picnic with bare feet", b:"a rainy-day café date" },
+    { a:"revisit your first date", b:"skip ahead to a favourite future day" }
+  ];
 
   /* =====================================================================
      SMALL HELPERS
@@ -483,6 +571,8 @@
         crossword: { puzzle: 0, cells: {} },
         hundred: makeHundred(null),
         hangman: { word: pick(HANG_WORDS), guesses: [] },
+        ticTacToe: { board: Array(9).fill(""), first: "a", turn: "a", winner: "", round: 0 },
+        wouldYouRather: { index: 0, votes: {} },
         created: Date.now()
       });
       await pc.setLocalDescription(offer);
@@ -623,6 +713,8 @@
     if (ch === "crossword") renderCrossword();
     if (ch === "hundred") renderHundred();
     if (ch === "hangman") renderHangman();
+    if (ch === "tic-tac-toe") renderTicTacToe();
+    if (ch === "would-you-rather") renderWouldYouRather();
   }
 
   /* =====================================================================
@@ -892,8 +984,279 @@
   });
   $("hmNew").onclick = () => { if (roomRef) updateDoc(roomRef, { hangman: { word: pick(HANG_WORDS), guesses: [] } }).catch(console.error); };
 
-  // Leaving the page politely
-  window.addEventListener("beforeunload", () => { if (pc) pc.close(); });
+  /* =====================================================================
+     NOUGHTS AND CROSSES
+     ===================================================================== */
+  const WIN_LINES = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
+  ];
+  const emptyTicGame = () => ({ board: Array(9).fill(""), first: "a", turn: "a", winner: "", round: 0 });
+  const tttBoard = $("tttBoard");
+  Array.from({ length: 9 }, (_, i) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.addEventListener("click", () => playTicSquare(i));
+    tttBoard.appendChild(button);
+  });
+
+  function ticWinner(board) {
+    const line = WIN_LINES.find(([a, b, c]) => board[a] && board[a] === board[b] && board[a] === board[c]);
+    return line ? board[line[0]] : (board.every(Boolean) ? "tie" : "");
+  }
+
+  function renderTicTacToe() {
+    const game = roomData.ticTacToe || emptyTicGame();
+    const board = Array.isArray(game.board) && game.board.length === 9 ? game.board : emptyTicGame().board;
+    const winner = game.winner || ticWinner(board);
+    Array.from(tttBoard.children).forEach((button, i) => {
+      const mark = board[i] || "";
+      button.textContent = mark === "a" ? "×" : (mark === "b" ? "○" : "");
+      button.className = mark;
+      button.disabled = !roomRef || !!winner || !!mark || game.turn !== myRole();
+      button.setAttribute("aria-label", `Square ${i + 1}${mark ? `, ${mark === "a" ? "cross" : "nought"}` : ", empty"}`);
+    });
+    $("tttMsg").textContent = winner === "tie"
+      ? "a draw — another little game? ❦"
+      : winner
+        ? `${labelFor(winner)} wins this round ❦`
+        : game.turn === myRole()
+          ? `your turn — you are ${myRole() === "a" ? "×" : "○"}`
+          : `${labelFor(game.turn)} is choosing…`;
+  }
+
+  async function playTicSquare(index) {
+    if (!roomRef) return;
+    const role = myRole();
+    try {
+      await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return;
+        const data = snapshot.data();
+        const game = data.ticTacToe || emptyTicGame();
+        const board = Array.isArray(game.board) && game.board.length === 9 ? [...game.board] : emptyTicGame().board;
+        if (game.winner || game.turn !== role || board[index]) return;
+        board[index] = role;
+        const winner = ticWinner(board);
+        tx.update(roomRef, {
+          ticTacToe: { ...game, board, winner, turn: winner ? game.turn : (role === "a" ? "b" : "a") }
+        });
+      });
+    } catch (err) {
+      console.error(err);
+      note("That move could not be saved. Please try again.");
+    }
+  }
+
+  $("tttNew").onclick = async () => {
+    if (!roomRef) return;
+    try {
+      await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return;
+        const game = snapshot.data().ticTacToe || emptyTicGame();
+        const first = game.first === "a" ? "b" : "a";
+        tx.update(roomRef, {
+          ticTacToe: { board: Array(9).fill(""), first, turn: first, winner: "", round: (game.round || 0) + 1 }
+        });
+      });
+    } catch (err) {
+      console.error(err);
+      note("A new game could not be started. Please try again.");
+    }
+  };
+
+  /* =====================================================================
+     A LITTLE CHOICE
+     ===================================================================== */
+  function renderWouldYouRather() {
+    const game = roomData.wouldYouRather || { index: 0, votes: {} };
+    const index = ((game.index || 0) % CHOICES.length + CHOICES.length) % CHOICES.length;
+    const question = CHOICES[index];
+    const votes = game.votes || {};
+    const revealed = !!votes.a && !!votes.b;
+    $("wyrQuestion").textContent = `choice ${index + 1} of ${CHOICES.length} ❦`;
+    $("wyrOptionA").textContent = question.a;
+    $("wyrOptionB").textContent = question.b;
+    $("wyrCardA").classList.toggle("chosen", votes[myRole()] === "a");
+    $("wyrCardB").classList.toggle("chosen", votes[myRole()] === "b");
+    $("wyrVoteA").disabled = !roomRef || revealed;
+    $("wyrVoteB").disabled = !roomRef || revealed;
+    $("wyrNext").disabled = !roomRef || !revealed;
+    $("wyrResult").textContent = revealed
+      ? (votes.a === votes.b
+        ? "you chose the same thing — in sync ❦"
+        : `you picked differently: ${labelFor("a")} chose ${votes.a === "a" ? "the first" : "the second"}; ${labelFor("b")} chose ${votes.b === "a" ? "the first" : "the second"}`)
+      : (votes[myRole()] ? "your choice is tucked away — waiting for your person" : "your answers stay hidden until you both choose");
+  }
+
+  async function voteWouldYouRather(option) {
+    if (!roomRef) return;
+    const role = myRole();
+    try {
+      await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return;
+        const game = snapshot.data().wouldYouRather || { index: 0, votes: {} };
+        const votes = game.votes || {};
+        if (votes.a && votes.b) return;
+        tx.update(roomRef, {
+          wouldYouRather: { index: game.index || 0, votes: { ...votes, [role]: option } }
+        });
+      });
+    } catch (err) {
+      console.error(err);
+      note("Your choice could not be saved. Please try again.");
+    }
+  }
+  $("wyrVoteA").onclick = () => voteWouldYouRather("a");
+  $("wyrVoteB").onclick = () => voteWouldYouRather("b");
+  $("wyrNext").onclick = async () => {
+    if (!roomRef) return;
+    const currentIndex = roomData.wouldYouRather?.index || 0;
+    try {
+      await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return;
+        const current = snapshot.data().wouldYouRather || { index: 0, votes: {} };
+        if (current.index !== currentIndex || !(current.votes?.a && current.votes?.b)) return;
+        tx.update(roomRef, {
+          wouldYouRather: { index: (current.index + 1) % CHOICES.length, votes: {} }
+        });
+      });
+    } catch (err) {
+      console.error(err);
+      note("The next choice could not be loaded. Please try again.");
+    }
+  };
+
+  /* =====================================================================
+     PHOTO BOOTH
+     ===================================================================== */
+  const photoCanvas = $("photoCanvas");
+  const photoContext = photoCanvas.getContext("2d");
+  let photoUrl = "";
+  const photoLooks = {
+    warm: "sepia(.18) saturate(1.18) contrast(1.04)",
+    classic: "sepia(.68) saturate(.78) contrast(1.08)",
+    rose: "sepia(.12) saturate(1.25) hue-rotate(-8deg) brightness(1.04)",
+    mono: "grayscale(1) contrast(1.08)"
+  };
+
+  function drawCameraCrop(context, video, x, y, width, height, filter, mirrored) {
+    const sourceWidth = video.videoWidth, sourceHeight = video.videoHeight;
+    const sourceRatio = sourceWidth / sourceHeight, targetRatio = width / height;
+    let sx = 0, sy = 0, sw = sourceWidth, sh = sourceHeight;
+    if (sourceRatio > targetRatio) {
+      sw = sourceHeight * targetRatio;
+      sx = (sourceWidth - sw) / 2;
+    } else {
+      sh = sourceWidth / targetRatio;
+      sy = (sourceHeight - sh) / 2;
+    }
+    context.save();
+    context.beginPath();
+    context.rect(x, y, width, height);
+    context.clip();
+    context.filter = filter;
+    if (mirrored) {
+      context.translate(x + width, y);
+      context.scale(-1, 1);
+      context.drawImage(video, sx, sy, sw, sh, 0, 0, width, height);
+    } else {
+      context.drawImage(video, sx, sy, sw, sh, x, y, width, height);
+    }
+    context.restore();
+  }
+
+  function drawPhotoPortrait() {
+    const context = photoContext;
+    const width = photoCanvas.width, height = photoCanvas.height;
+    const local = $("localVideo"), remote = $("remoteVideo");
+    const hasLocal = localStream?.getVideoTracks().some(track => track.enabled && track.readyState === "live")
+      && local.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && local.videoWidth > 0;
+    const hasRemote = remote.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && remote.videoWidth > 0;
+    if (!hasLocal) {
+      throw new Error("Turn your camera on before taking a portrait.");
+    }
+
+    const filter = photoLooks[$("photoLook").value] || photoLooks.warm;
+    const paper = context.createLinearGradient(0, 0, width, height);
+    paper.addColorStop(0, "#fffaf0");
+    paper.addColorStop(1, "#eee2c9");
+    context.fillStyle = paper;
+    context.fillRect(0, 0, width, height);
+    context.fillStyle = "#82715b";
+    context.font = '26px "Cormorant Garamond", Georgia, serif';
+    context.textAlign = "center";
+    context.fillText("A KEEPSAKE FOR TWO", width / 2, 62);
+
+    const imageX = 74, imageY = 96, imageW = width - 148, imageH = 860;
+    context.fillStyle = "#30261d";
+    context.fillRect(imageX - 7, imageY - 7, imageW + 14, imageH + 14);
+    if (hasRemote) {
+      const gap = 8, panelWidth = (imageW - gap) / 2;
+      drawCameraCrop(context, local, imageX, imageY, panelWidth, imageH, filter, true);
+      context.fillStyle = "#30261d";
+      context.fillRect(imageX + panelWidth, imageY, gap, imageH);
+      drawCameraCrop(context, remote, imageX + panelWidth + gap, imageY, panelWidth, imageH, filter, false);
+    } else {
+      drawCameraCrop(context, local, imageX, imageY, imageW, imageH, filter, true);
+    }
+
+    context.textAlign = "center";
+    context.fillStyle = "#873b32";
+    context.font = 'italic 56px "IM Fell English", Georgia, serif';
+    const caption = $("photoCaption").value.trim() || "our little moment";
+    context.fillText(caption, width / 2, 1050, width - 100);
+    context.fillStyle = "#82715b";
+    context.font = '28px "Cormorant Garamond", Georgia, serif';
+    const date = new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(new Date());
+    context.fillText(`${date}  ·  our little room`, width / 2, 1105);
+    context.fillStyle = "#cdbf9f";
+    context.fillRect(width / 2 - 92, 1145, 184, 2);
+    context.fillStyle = "#873b32";
+    context.font = '32px Georgia, serif';
+    context.fillText("❦", width / 2, 1202);
+    $("photoMsg").textContent = hasRemote
+      ? "a little moment, kept just for you two ❦"
+      : "solo portrait ready — take another together when both cameras are on";
+    return hasRemote;
+  }
+
+  $("photoTake").onclick = async () => {
+    const button = $("photoTake");
+    button.disabled = true;
+    $("photoMsg").textContent = "smile…";
+    try {
+      await new Promise(resolve => setTimeout(resolve, 450));
+      drawPhotoPortrait();
+      const blob = await new Promise((resolve, reject) => {
+        photoCanvas.toBlob(image => image ? resolve(image) : reject(new Error("The portrait could not be prepared for saving.")), "image/png");
+      });
+      if (photoUrl) URL.revokeObjectURL(photoUrl);
+      photoUrl = URL.createObjectURL(blob);
+      $("photoDownload").href = photoUrl;
+      $("photoDownload").hidden = false;
+      photoCanvas.hidden = false;
+      $("photoPlaceholder").hidden = true;
+      photoCanvas.classList.remove("booth-flash");
+      void photoCanvas.offsetWidth;
+      photoCanvas.classList.add("booth-flash");
+    } catch (err) {
+      console.error(err);
+      $("photoMsg").textContent = err.message || "The photo could not be taken. Please try again.";
+    } finally {
+      button.disabled = false;
+    }
+  };
+
+  // Leaving the page politely and releasing the last local photo URL.
+  window.addEventListener("beforeunload", () => {
+    if (pc) pc.close();
+    if (photoUrl) URL.revokeObjectURL(photoUrl);
+  });
 </script>
 </body>
 </html>
