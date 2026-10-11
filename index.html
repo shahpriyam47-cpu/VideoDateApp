@@ -173,6 +173,7 @@
   /* ---------- photo booth ---------- */
   .booth-options{display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin:.8rem 0}
   .booth-options label{display:grid; gap:.15rem; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
+  .booth-options label:last-child{grid-column:1/-1}
   .booth-options select,.booth-options input{width:100%; min-width:0; padding:.35rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font-family:var(--serif); font-size:1rem}
   .booth-preview{max-width:390px; margin:.8rem auto; padding:.65rem .65rem 1rem; background:#fffdf6; border:1px solid var(--rule); box-shadow:0 8px 24px #3a2c1a22; transform:rotate(-1deg)}
   #photoCanvas{display:block; width:100%; height:auto; background:var(--paper-2)}
@@ -379,6 +380,19 @@
             <option value="classic">old film</option>
             <option value="rose">rose-tinted</option>
             <option value="mono">black &amp; white</option>
+            <option value="soft">soft focus</option>
+            <option value="faded">faded postcard</option>
+            <option value="cool">cool evening</option>
+            <option value="copper">copper print</option>
+            <option value="dramatic">rich contrast</option>
+          </select>
+        </label>
+        <label for="photoLayout">collage
+          <select id="photoLayout">
+            <option value="together">together portrait</option>
+            <option value="polaroids">polaroid pair</option>
+            <option value="filmstrip">little film strip</option>
+            <option value="scrapbook">scrapbook page</option>
           </select>
         </label>
         <label for="photoCaption">little caption
@@ -1288,7 +1302,12 @@
     warm: "sepia(.18) saturate(1.18) contrast(1.04)",
     classic: "sepia(.68) saturate(.78) contrast(1.08)",
     rose: "sepia(.12) saturate(1.25) hue-rotate(-8deg) brightness(1.04)",
-    mono: "grayscale(1) contrast(1.08)"
+    mono: "grayscale(1) contrast(1.08)",
+    soft: "sepia(.08) saturate(1.04) brightness(1.09) contrast(.94)",
+    faded: "sepia(.2) saturate(.72) brightness(1.1) contrast(.86)",
+    cool: "hue-rotate(12deg) saturate(.86) contrast(1.05)",
+    copper: "sepia(.42) hue-rotate(-12deg) saturate(1.2) contrast(1.08)",
+    dramatic: "saturate(1.25) contrast(1.16)"
   };
 
   function drawCameraCrop(context, video, x, y, width, height, filter, mirrored) {
@@ -1317,6 +1336,100 @@
     context.restore();
   }
 
+  function drawPolaroid(context, centerX, centerY, video, filter, mirrored, label, angle, cardWidth) {
+    const cardHeight = 740;
+    const imageWidth = cardWidth - 48;
+    const imageHeight = 510;
+    context.save();
+    context.translate(centerX, centerY);
+    context.rotate(angle);
+    context.fillStyle = "#fffdf6";
+    context.fillRect(-cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight);
+    context.fillStyle = "#30261d";
+    context.fillRect(-imageWidth / 2 - 3, -cardHeight / 2 + 27, imageWidth + 6, imageHeight + 6);
+    drawCameraCrop(context, video, -imageWidth / 2, -cardHeight / 2 + 30, imageWidth, imageHeight, filter, mirrored);
+    context.fillStyle = "#873b32";
+    context.font = 'italic 34px "IM Fell English", Georgia, serif';
+    context.textAlign = "center";
+    context.fillText(label, 0, cardHeight / 2 - 62, cardWidth - 32);
+    context.restore();
+  }
+
+  function drawPhotoCollage(context, layout, local, remote, hasRemote, filter) {
+    const x = 74, y = 96, width = 932, height = 860;
+    const partner = hasRemote ? remote : local;
+    const partnerMirrored = false;
+
+    if (layout === "polaroids") {
+      if (hasRemote) {
+        drawPolaroid(context, 304, y + height / 2, local, filter, true, "you", -.035, 420);
+        drawPolaroid(context, 776, y + height / 2, remote, filter, false, "your person", .035, 420);
+      } else {
+        drawPolaroid(context, 540, y + height / 2, local, filter, true, "a little portrait of you", -.025, 540);
+      }
+      return;
+    }
+
+    if (layout === "filmstrip") {
+      context.fillStyle = "#30261d";
+      context.fillRect(x, y, width, height);
+      const rowHeight = 264, gap = 16, inset = 38;
+      for (let row = 0; row < 3; row++) {
+        const rowY = y + 14 + row * (rowHeight + gap);
+        context.fillStyle = "#e9d9b8";
+        for (let hole = 0; hole < 9; hole++) {
+          const holeX = x + 12 + hole * (width - 32) / 8;
+          context.fillRect(holeX, rowY + 4, 12, 13);
+          context.fillRect(holeX, rowY + rowHeight - 17, 12, 13);
+        }
+        const imageX = x + inset, imageY = rowY + 24;
+        const imageWidth = width - inset * 2, imageHeight = rowHeight - 48;
+        context.fillStyle = "#fffdf6";
+        context.fillRect(imageX - 3, imageY - 3, imageWidth + 6, imageHeight + 6);
+        const firstVideo = row % 2 === 0 ? local : partner;
+        const secondVideo = row % 2 === 0 ? partner : local;
+        const gapBetween = 6, halfWidth = (imageWidth - gapBetween) / 2;
+        drawCameraCrop(context, firstVideo, imageX, imageY, halfWidth, imageHeight, filter, firstVideo === local);
+        drawCameraCrop(context, secondVideo, imageX + halfWidth + gapBetween, imageY, halfWidth, imageHeight, filter, secondVideo === local);
+      }
+      return;
+    }
+
+    if (layout === "scrapbook") {
+      context.fillStyle = "#e8dcc2";
+      context.fillRect(x, y, width, height);
+      context.fillStyle = "#fffdf6";
+      context.fillRect(x + 18, y + 18, width - 36, 522);
+      const gap = 6, mainWidth = width - 48, halfWidth = (mainWidth - gap) / 2;
+      drawCameraCrop(context, local, x + 24, y + 24, halfWidth, 510, filter, true);
+      drawCameraCrop(context, partner, x + 24 + halfWidth + gap, y + 24, halfWidth, 510, filter, partnerMirrored);
+      const insetY = y + 570, insetWidth = 410, insetHeight = 250;
+      [[local, true, "little detail"], [partner, partnerMirrored, hasRemote ? "together" : "another moment"]].forEach(([video, mirrored, label], index) => {
+        const insetX = x + 24 + index * (insetWidth + 40);
+        context.fillStyle = "#fffdf6";
+        context.fillRect(insetX - 8, insetY - 8, insetWidth + 16, insetHeight + 58);
+        drawCameraCrop(context, video, insetX, insetY, insetWidth, insetHeight, filter, mirrored);
+        context.fillStyle = "#873b32";
+        context.font = 'italic 26px "IM Fell English", Georgia, serif';
+        context.textAlign = "center";
+        context.fillText(label, insetX + insetWidth / 2, insetY + insetHeight + 34);
+      });
+      return;
+    }
+
+    context.fillStyle = "#30261d";
+    context.fillRect(x - 7, y - 7, width + 14, height + 14);
+    if (hasRemote) {
+      const gap = 8, panelWidth = (width - gap) / 2;
+      drawCameraCrop(context, local, x, y, panelWidth, height, filter, true);
+      context.fillStyle = "#30261d";
+      context.fillRect(x + panelWidth, y, gap, height);
+      drawCameraCrop(context, remote, x + panelWidth + gap, y, panelWidth, height, filter, false);
+    } else {
+      drawCameraCrop(context, local, x, y, width, height, filter, true);
+    }
+  }
+
   function drawPhotoPortrait() {
     const context = photoContext;
     const width = photoCanvas.width, height = photoCanvas.height;
@@ -1329,6 +1442,7 @@
     }
 
     const filter = photoLooks[$("photoLook").value] || photoLooks.warm;
+    const layout = $("photoLayout").value;
     const paper = context.createLinearGradient(0, 0, width, height);
     paper.addColorStop(0, "#fffaf0");
     paper.addColorStop(1, "#eee2c9");
@@ -1339,18 +1453,7 @@
     context.textAlign = "center";
     context.fillText("A KEEPSAKE FOR TWO", width / 2, 62);
 
-    const imageX = 74, imageY = 96, imageW = width - 148, imageH = 860;
-    context.fillStyle = "#30261d";
-    context.fillRect(imageX - 7, imageY - 7, imageW + 14, imageH + 14);
-    if (hasRemote) {
-      const gap = 8, panelWidth = (imageW - gap) / 2;
-      drawCameraCrop(context, local, imageX, imageY, panelWidth, imageH, filter, true);
-      context.fillStyle = "#30261d";
-      context.fillRect(imageX + panelWidth, imageY, gap, imageH);
-      drawCameraCrop(context, remote, imageX + panelWidth + gap, imageY, panelWidth, imageH, filter, false);
-    } else {
-      drawCameraCrop(context, local, imageX, imageY, imageW, imageH, filter, true);
-    }
+    drawPhotoCollage(context, layout, local, remote, hasRemote, filter);
 
     context.textAlign = "center";
     context.fillStyle = "#873b32";
