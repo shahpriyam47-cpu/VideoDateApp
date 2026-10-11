@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tu ne Hu</title>
-<meta name="description" content="Tu ne Hu: a quiet little book for two to share a video call, play word games, and save memories together.">
+<meta name="description" content="Tu ne Hu: a private little book for two to play games and save shared memories.">
 <meta name="theme-color" content="#d8cdb4">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❦</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,18 +84,6 @@
   /* ---------- note line ---------- */
   #note{display:none; margin:.8rem 0; padding:.5rem .8rem; border-left:3px solid var(--red); background:#8a2f2f10; font-style:italic}
 
-  /* ---------- video "plate" ---------- */
-  figure.stage{margin:1rem 0 .4rem; background:var(--paper-2); padding:.55rem .55rem .3rem; border:1px solid var(--rule); box-shadow:0 2px 0 #fff8 inset, 0 8px 18px -10px #3a2c1a88}
-  .screen{position:relative; width:100%; padding-top:70%; background:#1b1510; overflow:hidden}
-  .screen video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:sepia(.28) contrast(1.05) saturate(.9)}
-  .screen #localVideo{inset:auto; right:8px; bottom:8px; width:28%; height:auto; aspect-ratio:4/3; border:2px solid var(--paper); transform:scaleX(-1); z-index:3; background:#000}
-  .screen-empty{position:absolute; inset:0; display:grid; place-content:center; gap:.2rem; text-align:center; color:#f5efdf; padding:1rem; background:radial-gradient(ellipse at center, #655744 0%, #30261d 72%)}
-  .screen-empty[hidden]{display:none}
-  .screen-empty span{font-family:var(--fell); font-size:2.5rem; line-height:1}
-  .screen-empty small{font-style:italic; color:#d5c8ad}
-  figcaption{text-align:center; font-style:italic; color:var(--sepia); font-size:.92rem; padding:.3rem 0}
-  .controls{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; margin:.6rem 0}
-
   .roombox{border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); padding:.9rem 0; margin:.8rem 0}
   .code{font-family:var(--fell); font-size:2.2rem; letter-spacing:.35em; color:var(--red)}
 
@@ -130,11 +118,7 @@
   .home-view .roombox .btn{padding:.2rem .7rem}
   .home-view .inroom{padding:.35rem 0}
   .home-view .code{font-size:1.5rem}
-  .home-view figure.stage{display:flex; flex:1 1 auto; flex-direction:column; min-height:0; margin:.15rem 0}
-  .home-view .screen{flex:1; min-height:80px; padding-top:0}
-  .home-view figcaption{padding:.1rem 0; font-size:.8rem}
-  .home-view .controls{margin:.1rem 0; gap:.35rem}
-  .home-view .controls .btn{padding:.15rem .65rem; font-size:.88rem}
+  .home-view .room-intro{margin:.4rem 0; color:var(--sepia); font-style:italic}
   .home-view .chapter-nav{margin-bottom:.15rem}
   .home-view .right .kicker{font-size:.85rem}
   .home-view .page.right{display:flex; flex-direction:column}
@@ -240,21 +224,6 @@
   @media(max-width:420px){.memory-thoughts{grid-template-columns:1fr}}
   .memory-empty{padding:1.2rem; border:1px dashed var(--rule); color:var(--sepia); text-align:center; font-family:var(--fell); font-style:italic}
 
-  /* ---------- photo booth ---------- */
-  .booth-options{display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin:.8rem 0}
-  .booth-options label{display:grid; gap:.15rem; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
-  .booth-options label:last-child{grid-column:1/-1}
-  .booth-options select,.booth-options input{width:100%; min-width:0; padding:.35rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font-family:var(--serif); font-size:1rem}
-  .booth-preview{max-width:390px; margin:.8rem auto; padding:.65rem .65rem 1rem; background:#fffdf6; border:1px solid var(--rule); box-shadow:0 8px 24px #3a2c1a22; transform:rotate(-1deg)}
-  #photoCanvas{display:block; width:100%; height:auto; background:var(--paper-2)}
-  #photoCanvas[hidden]{display:none}
-  #photoDownload[hidden]{display:none}
-  .booth-placeholder{display:grid; place-content:center; aspect-ratio:4/5; text-align:center; color:var(--sepia); font-family:var(--fell); font-style:italic; padding:1rem}
-  .booth-placeholder[hidden]{display:none}
-  .booth-actions{justify-content:center}
-  .booth-flash{animation:boothflash .5s ease-out}
-  @keyframes boothflash{0%{filter:brightness(2.2)}100%{filter:brightness(1)}}
-
   /* ---------- small screens ---------- */
   @media (max-width:880px){
     body{padding:.6rem .4rem 2rem; font-size:18px}
@@ -275,7 +244,6 @@
     #cloud button{font-size:.95rem}
     .cell{width:30px; height:30px}
     .cell input{font-size:1.05rem}
-    .booth-options{grid-template-columns:1fr}
   }
   @media(max-width:700px){
     body{height:100dvh; min-height:0; overflow:hidden; padding:.35rem}
@@ -295,10 +263,6 @@
     .home-view #inroom .code{font-size:1.25rem}
     .home-view #inroom .row{justify-content:flex-end; flex-wrap:wrap}
     .home-view #inroom .linkbtn{font-size:.78rem}
-    .home-view figure.stage{margin:0; padding:.3rem .3rem .15rem}
-    .home-view .screen{min-height:0; flex:1}
-    .home-view figcaption{font-size:.72rem}
-    .home-view .controls .btn{font-size:.78rem; padding:.1rem .45rem}
     .home-view .chapter-nav{min-height:1.2rem}
     .home-view .toc{gap:.25rem; grid-template-columns:repeat(3,minmax(0,1fr)); flex:1; align-content:stretch}
     .home-view .toc button{min-height:0; height:100%; padding:.2rem; font-size:clamp(.73rem,3.2vw,.9rem)}
@@ -325,14 +289,11 @@
 <body>
 <div class="book home-view" id="book">
 
-  <!-- ================= LEFT PAGE : the call ================= -->
-  <section class="page left" aria-label="Video call and room">
+  <!-- ================= LEFT PAGE : shared room ================= -->
+  <section class="page left" aria-label="Shared game room">
     <div class="kicker">a book for two</div>
     <h1>Tu ne Hu</h1>
-    <div class="orn">❦</div>
-
-    <h2><span class="chap">i.</span>the call</h2>
-    <p class="lede">A quiet corner for two. Open a room, share its code, and turn the page together — with your call beside the games.</p>
+    <p class="room-intro">A private little book for your games and shared memories. Open a room, invite your person, and play together.</p>
 
     <div id="note" role="status" aria-live="polite"></div>
 
@@ -359,24 +320,6 @@
       </div>
     </div>
 
-    <figure class="stage">
-      <div class="screen">
-        <video id="remoteVideo" autoplay playsinline aria-label="Your partner's video"></video>
-        <video id="localVideo" autoplay playsinline muted hidden aria-label="Your camera preview"></video>
-        <div class="screen-empty" id="screenEmpty">
-          <span>❦</span>
-          <small>your window to each other</small>
-        </div>
-      </div>
-      <figcaption id="connectionStatus">fig. 1 — waiting for two</figcaption>
-    </figure>
-
-    <div class="controls" id="callControls" style="display:none">
-      <button class="btn" id="muteBtn">mute</button>
-      <button class="btn" id="camBtn">camera off</button>
-      <button class="btn red" id="leaveBtn">leave</button>
-    </div>
-
     <div class="folio">— 1 —</div>
   </section>
 
@@ -393,10 +336,9 @@
       <li><button data-ch="hangman"><span class="chap">iv.</span><span class="t">guess the word</span><span class="dots"></span><span class="pg">17</span></button></li>
       <li><button data-ch="tic-tac-toe"><span class="chap">v.</span><span class="t">noughts &amp; crosses</span><span class="dots"></span><span class="pg">21</span></button></li>
       <li><button data-ch="would-you-rather"><span class="chap">vi.</span><span class="t">a little choice</span><span class="dots"></span><span class="pg">25</span></button></li>
-      <li><button data-ch="photo-booth"><span class="chap">vii.</span><span class="t">the photo booth</span><span class="dots"></span><span class="pg">31</span></button></li>
-      <li><button data-ch="secret-word"><span class="chap">viii.</span><span class="t">your secret word</span><span class="dots"></span><span class="pg">35</span></button></li>
-      <li><button data-ch="after-hours"><span class="chap">ix.</span><span class="t">after hours</span><span class="dots"></span><span class="pg">39</span></button></li>
-      <li><button data-ch="memories"><span class="chap">x.</span><span class="t">our memory book</span><span class="dots"></span><span class="pg">43</span></button></li>
+      <li><button data-ch="secret-word"><span class="chap">vii.</span><span class="t">your secret word</span><span class="dots"></span><span class="pg">31</span></button></li>
+      <li><button data-ch="after-hours"><span class="chap">viii.</span><span class="t">after hours</span><span class="dots"></span><span class="pg">35</span></button></li>
+      <li><button data-ch="memories"><span class="chap">ix.</span><span class="t">our memory book</span><span class="dots"></span><span class="pg">39</span></button></li>
     </ul>
     <div class="orn" style="margin:.4rem 0 1rem">❦</div>
 
@@ -524,48 +466,6 @@
       <div class="memory-list" id="memoryList" aria-live="polite"></div>
     </div>
 
-    <!-- ---- photo booth ---- -->
-    <div class="chapter" id="ch-photo-booth">
-      <h2>the photo booth</h2>
-      <p class="small" style="margin-top:0">Make a little keepsake from your call. Your photo is made on this device and is never uploaded.</p>
-      <div class="booth-options">
-        <label for="photoLook">finish
-          <select id="photoLook">
-            <option value="warm">soft &amp; golden</option>
-            <option value="classic">old film</option>
-            <option value="rose">rose-tinted</option>
-            <option value="mono">black &amp; white</option>
-            <option value="soft">soft focus</option>
-            <option value="faded">faded postcard</option>
-            <option value="cool">cool evening</option>
-            <option value="copper">copper print</option>
-            <option value="dramatic">rich contrast</option>
-          </select>
-        </label>
-        <label for="photoLayout">collage
-          <select id="photoLayout">
-            <option value="together">together portrait</option>
-            <option value="polaroids">polaroid pair</option>
-            <option value="filmstrip">little film strip</option>
-            <option value="scrapbook">scrapbook page</option>
-          </select>
-        </label>
-        <label for="photoCaption">little caption
-          <input type="text" id="photoCaption" maxlength="42" value="our little moment">
-        </label>
-      </div>
-      <div class="booth-preview">
-        <div class="booth-placeholder" id="photoPlaceholder">your finished portrait will appear here ❦</div>
-        <canvas id="photoCanvas" width="1080" height="1350" hidden aria-label="Finished photo booth portrait"></canvas>
-      </div>
-      <div class="msg" id="photoMsg" role="status" aria-live="polite"></div>
-      <div class="tools booth-actions">
-        <button class="btn red" id="photoTake">take our portrait</button>
-        <a class="btn" id="photoDownload" hidden download="our-little-moment.png">save photo</a>
-      </div>
-      <p class="small" style="text-align:center">Together portraits need both cameras on. You can also take a solo portrait.</p>
-    </div>
-
     <div class="folio">— 2 —</div>
   </section>
 </div>
@@ -591,29 +491,6 @@
   appId: "1:579692726493:web:a550cfa59d3d2e5c137334",
   measurementId: "G-J4MQ3DE333"
   };
-
-  // Add a TURN server here if a strict network blocks a direct video connection.
-  const ICE_SERVERS = {
-    iceServers: [
-      { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"] }
-    ]
-  };
-  const TURN_CREDENTIALS_URL = "https://bitter-star-199f.shahpriyam47.workers.dev";
-
-  async function peerConfiguration() {
-    if (!TURN_CREDENTIALS_URL) return ICE_SERVERS;
-
-    const response = await fetch(TURN_CREDENTIALS_URL, { cache: "no-store" });
-    if (!response.ok) throw new Error("Could not get video relay credentials. Check the Cloudflare Worker setup.");
-    const relayServers = await response.json();
-    if (!Array.isArray(relayServers) || !relayServers.some(server => {
-      const urls = Array.isArray(server.urls) ? server.urls : [server.urls];
-      return urls.some(url => typeof url === "string" && /^turns?:/i.test(url));
-    })) {
-      throw new Error("The relay service did not return a TURN server. Check your Metered account settings.");
-    }
-    return { iceServers: [...ICE_SERVERS.iceServers, ...relayServers] };
-  }
 
   /* =====================================================================
      CONTENT  (edit freely: add your own words, clues, inside jokes)
@@ -677,7 +554,6 @@
      ===================================================================== */
   const $ = id => document.getElementById(id);
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-  const clean = obj => JSON.parse(JSON.stringify(obj));   // Firestore refuses "undefined" values
   const note = msg => { const n = $("note"); n.textContent = msg; n.style.display = msg ? "block" : "none"; };
   const myName = () => ($("nameInput").value.trim() || "").slice(0, 16);
 
@@ -696,11 +572,10 @@
      FIREBASE + STATE
      ===================================================================== */
   let db, auth, authReady;
-  let pc = null, localStream = null;
   let roomRef = null, roomId = null, roomData = null, unsub = null, memoriesUnsub = null;
   let roomMemories = [];
-  let isCaller = false, remoteSetting = false, seenCaller = 0, seenCallee = 0;
-  const myRole = () => (isCaller ? "a" : "b");
+  let isCreator = false;
+  const myRole = () => (isCreator ? "a" : "b");
 
   try {
     const app = initializeApp(firebaseConfig);
@@ -721,41 +596,11 @@
 
   const roomDoc = id => doc(db, "artifacts", APP_ID, "public", "data", "rooms", id);
 
-  /* =====================================================================
-     VIDEO CALL
-     ===================================================================== */
-  async function getLocalMedia() {
-    try {
-      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      $("localVideo").srcObject = localStream;
-      $("localVideo").hidden = false;
-    } catch (err) {
-      console.error(err);
-      note("Camera or microphone is blocked. Click the little camera icon in the address bar, choose Allow, then try again. (The page must be on https:// or localhost for the camera to work.)");
-      throw err;
-    }
-  }
-
-  function buildPeer(configuration) {
-    pc = new RTCPeerConnection(configuration);
-    seenCaller = 0; seenCallee = 0; remoteSetting = false;
-    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-    pc.ontrack = e => { $("remoteVideo").srcObject = e.streams[0]; };
-    pc.onconnectionstatechange = () => {
-      const s = pc.connectionState;
-      const words = { new:"getting ready", connecting:"connecting…", connected:"together", disconnected:"connection lost", failed:"connection failed", closed:"closed" };
-      $("connectionStatus").textContent = "fig. 1 — " + (words[s] || s);
-      if (s === "failed") note("The video could not connect. Try opening a fresh room. If it keeps failing on mobile data, a TURN server is needed (see the settings at the top of the file).");
-    };
-  }
-
   function enterRoom() {
     $("lobby").style.display = "none";
     $("inroom").style.display = "block";
-    $("callControls").style.display = "flex";
     $("codeShow").textContent = roomId;
     $("closed").style.display = "none";
-    $("connectionStatus").textContent = "fig. 1 — waiting for two";
   }
 
   async function createRoom() {
@@ -763,22 +608,10 @@
       note("");
       await authReady;
       await leaveRoom(true);
-      const configuration = await peerConfiguration();
-      await getLocalMedia();
-      buildPeer(configuration);
-      isCaller = true;
+      isCreator = true;
       roomId = makeCode();
       roomRef = roomDoc(roomId);
-
-      pc.onicecandidate = e => {
-        if (e.candidate) updateDoc(roomRef, { callerCandidates: arrayUnion(clean(e.candidate.toJSON())) }).catch(console.error);
-      };
-
-      const offer = await pc.createOffer();
-      // The room is written BEFORE setLocalDescription so no ICE candidate can arrive early.
       await setDoc(roomRef, {
-        offer: { type: offer.type, sdp: offer.sdp },
-        callerCandidates: [], calleeCandidates: [],
         names: { a: myName() },
         members: { a: auth.currentUser.uid, b: null },
         chapter: "home",
@@ -791,11 +624,10 @@
         afterHours: { ready: { a: false, b: false }, turn: "a", promptIndex: 0, activePrompt: null },
         created: Date.now()
       });
-      await pc.setLocalDescription(offer);
 
       enterRoom();
       listen();
-      note("Room open. Send the code (or the invite link) to your partner.");
+      note("Game room open. Share the room code or invite link with your person.");
     } catch (err) {
       console.error(err);
       if (!$("note").textContent) note("Something went wrong opening the room: " + err.message);
@@ -815,25 +647,17 @@
       const snap = await getDoc(roomRef);
       if (!snap.exists()) { note("No room with that code. Check it and try again."); roomId = null; return; }
       const data = snap.data();
-      if (data.answer) { note("That room already has two people. Ask your partner to open a fresh room."); roomId = null; return; }
-
-      const configuration = await peerConfiguration();
-      await getLocalMedia();
-      buildPeer(configuration);
-      isCaller = false;
-
-      pc.onicecandidate = e => {
-        if (e.candidate) updateDoc(roomRef, { calleeCandidates: arrayUnion(clean(e.candidate.toJSON())) }).catch(console.error);
-      };
-
-      await pc.setRemoteDescription(data.offer);
-      const answer = await pc.createAnswer();
+      if (data.members?.b) {
+        note("That room already has two people. Ask your partner to open a fresh room.");
+        roomId = null;
+        roomRef = null;
+        return;
+      }
+      isCreator = false;
       await updateDoc(roomRef, {
-        answer: { type: answer.type, sdp: answer.sdp },
         "names.b": myName(),
         "members.b": auth.currentUser.uid
       });
-      await pc.setLocalDescription(answer);
 
       enterRoom();
       listen();
@@ -847,26 +671,10 @@
 
   function listen() {
     if (unsub) unsub();
-    unsub = onSnapshot(roomRef, async snap => {
+    unsub = onSnapshot(roomRef, snap => {
       const d = snap.data();
       if (!d) return;
       roomData = d;
-      try {
-        if (isCaller && d.answer && !pc.currentRemoteDescription && !remoteSetting) {
-          remoteSetting = true;
-          await pc.setRemoteDescription(d.answer);
-        }
-        if (pc.remoteDescription) {
-          const latest = roomData || d;
-          const list = (isCaller ? latest.calleeCandidates : latest.callerCandidates) || [];
-          let seen = isCaller ? seenCallee : seenCaller;
-          while (seen < list.length) {
-            const c = list[seen++];
-            if (isCaller) seenCallee = seen; else seenCaller = seen;
-            try { await pc.addIceCandidate(c); } catch (e) { /* harmless duplicates */ }
-          }
-        }
-      } catch (err) { console.error(err); }
       renderAll();
     }, err => { console.error(err); note("Lost contact with the room: " + err.message); });
     if (memoriesUnsub) memoriesUnsub();
@@ -884,11 +692,6 @@
   async function leaveRoom(quiet) {
     if (unsub) { unsub(); unsub = null; }
     if (memoriesUnsub) { memoriesUnsub(); memoriesUnsub = null; }
-    if (pc) { pc.onconnectionstatechange = null; pc.close(); pc = null; }
-    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-    $("localVideo").srcObject = null; $("remoteVideo").srcObject = null;
-    $("localVideo").hidden = true;
-    $("screenEmpty").hidden = false;
     roomRef = null; roomId = null; roomData = null; roomMemories = [];
     memoryRenderVersion++;
     memoryLocalPhotos.clear();
@@ -898,32 +701,16 @@
     document.querySelectorAll("#toc button").forEach(button => button.classList.remove("on"));
     $("lobby").style.display = "block";
     $("inroom").style.display = "none";
-    $("callControls").style.display = "none";
     $("closed").style.display = "block";
-    $("muteBtn").textContent = "mute"; $("camBtn").textContent = "camera off";
-    $("connectionStatus").textContent = "fig. 1 — waiting for two";
-    if (!quiet) note("You left the room. Open a new one whenever you like.");
+    if (!quiet) note("You left the room. Open a new game room whenever you like.");
   }
 
   $("createBtn").onclick = createRoom;
   $("joinBtn").onclick = joinRoom;
-  $("leaveBtn").onclick = () => leaveRoom(false);
   $("roomInput").addEventListener("keydown", e => { if (e.key === "Enter") joinRoom(); });
-  $("muteBtn").onclick = () => {
-    if (!localStream) return;
-    const t = localStream.getAudioTracks()[0]; if (!t) return;
-    t.enabled = !t.enabled; $("muteBtn").textContent = t.enabled ? "mute" : "unmute";
-  };
-  $("camBtn").onclick = () => {
-    if (!localStream) return;
-    const t = localStream.getVideoTracks()[0]; if (!t) return;
-    t.enabled = !t.enabled; $("camBtn").textContent = t.enabled ? "camera off" : "camera on";
-  };
   const copy = async (text, ok) => { try { await navigator.clipboard.writeText(text); note(ok); } catch (e) { note("Copy failed — select it by hand: " + text); } };
   $("copyCode").onclick = () => roomId && copy(roomId, "Code copied.");
   $("copyLink").onclick = () => roomId && copy(location.origin + location.pathname + "?room=" + roomId, "Invite link copied.");
-  $("remoteVideo").addEventListener("playing", () => { $("screenEmpty").hidden = true; });
-  $("remoteVideo").addEventListener("emptied", () => { $("screenEmpty").hidden = false; });
 
   /* =====================================================================
      NAMES / CHAPTERS
@@ -955,7 +742,13 @@
 
   function renderAll() {
     if (!roomData) return;
-    const ch = roomData.chapter || "home";
+    if (roomData.chapter === "photo-booth" && roomRef) {
+      updateDoc(roomRef, { chapter: "home" }).catch(err => {
+        console.error(err);
+        note("Could not update this room to the games-only layout.");
+      });
+    }
+    const ch = roomData.chapter === "photo-booth" ? "home" : roomData.chapter || "home";
     const isHome = ch === "home";
     $("book").classList.toggle("home-view", isHome);
     $("book").classList.toggle("game-view", !isHome);
@@ -2003,221 +1796,6 @@
     }
   });
 
-  /* =====================================================================
-     PHOTO BOOTH
-     ===================================================================== */
-  const photoCanvas = $("photoCanvas");
-  const photoContext = photoCanvas.getContext("2d");
-  let photoUrl = "";
-  const photoLooks = {
-    warm: "sepia(.18) saturate(1.18) contrast(1.04)",
-    classic: "sepia(.68) saturate(.78) contrast(1.08)",
-    rose: "sepia(.12) saturate(1.25) hue-rotate(-8deg) brightness(1.04)",
-    mono: "grayscale(1) contrast(1.08)",
-    soft: "sepia(.08) saturate(1.04) brightness(1.09) contrast(.94)",
-    faded: "sepia(.2) saturate(.72) brightness(1.1) contrast(.86)",
-    cool: "hue-rotate(12deg) saturate(.86) contrast(1.05)",
-    copper: "sepia(.42) hue-rotate(-12deg) saturate(1.2) contrast(1.08)",
-    dramatic: "saturate(1.25) contrast(1.16)"
-  };
-
-  function drawCameraCrop(context, video, x, y, width, height, filter, mirrored) {
-    const sourceWidth = video.videoWidth, sourceHeight = video.videoHeight;
-    const sourceRatio = sourceWidth / sourceHeight, targetRatio = width / height;
-    let sx = 0, sy = 0, sw = sourceWidth, sh = sourceHeight;
-    if (sourceRatio > targetRatio) {
-      sw = sourceHeight * targetRatio;
-      sx = (sourceWidth - sw) / 2;
-    } else {
-      sh = sourceWidth / targetRatio;
-      sy = (sourceHeight - sh) / 2;
-    }
-    context.save();
-    context.beginPath();
-    context.rect(x, y, width, height);
-    context.clip();
-    context.filter = filter;
-    if (mirrored) {
-      context.translate(x + width, y);
-      context.scale(-1, 1);
-      context.drawImage(video, sx, sy, sw, sh, 0, 0, width, height);
-    } else {
-      context.drawImage(video, sx, sy, sw, sh, x, y, width, height);
-    }
-    context.restore();
-  }
-
-  function drawPolaroid(context, centerX, centerY, video, filter, mirrored, label, angle, cardWidth) {
-    const cardHeight = 740;
-    const imageWidth = cardWidth - 48;
-    const imageHeight = 510;
-    context.save();
-    context.translate(centerX, centerY);
-    context.rotate(angle);
-    context.fillStyle = "#fffdf6";
-    context.fillRect(-cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight);
-    context.fillStyle = "#30261d";
-    context.fillRect(-imageWidth / 2 - 3, -cardHeight / 2 + 27, imageWidth + 6, imageHeight + 6);
-    drawCameraCrop(context, video, -imageWidth / 2, -cardHeight / 2 + 30, imageWidth, imageHeight, filter, mirrored);
-    context.fillStyle = "#873b32";
-    context.font = 'italic 34px "IM Fell English", Georgia, serif';
-    context.textAlign = "center";
-    context.fillText(label, 0, cardHeight / 2 - 62, cardWidth - 32);
-    context.restore();
-  }
-
-  function drawPhotoCollage(context, layout, local, remote, hasRemote, filter) {
-    const x = 74, y = 96, width = 932, height = 860;
-    const partner = hasRemote ? remote : local;
-    const partnerMirrored = false;
-
-    if (layout === "polaroids") {
-      if (hasRemote) {
-        drawPolaroid(context, 304, y + height / 2, local, filter, true, "you", -.035, 420);
-        drawPolaroid(context, 776, y + height / 2, remote, filter, false, "your person", .035, 420);
-      } else {
-        drawPolaroid(context, 540, y + height / 2, local, filter, true, "a little portrait of you", -.025, 540);
-      }
-      return;
-    }
-
-    if (layout === "filmstrip") {
-      context.fillStyle = "#30261d";
-      context.fillRect(x, y, width, height);
-      const rowHeight = 264, gap = 16, inset = 38;
-      for (let row = 0; row < 3; row++) {
-        const rowY = y + 14 + row * (rowHeight + gap);
-        context.fillStyle = "#e9d9b8";
-        for (let hole = 0; hole < 9; hole++) {
-          const holeX = x + 12 + hole * (width - 32) / 8;
-          context.fillRect(holeX, rowY + 4, 12, 13);
-          context.fillRect(holeX, rowY + rowHeight - 17, 12, 13);
-        }
-        const imageX = x + inset, imageY = rowY + 24;
-        const imageWidth = width - inset * 2, imageHeight = rowHeight - 48;
-        context.fillStyle = "#fffdf6";
-        context.fillRect(imageX - 3, imageY - 3, imageWidth + 6, imageHeight + 6);
-        const firstVideo = row % 2 === 0 ? local : partner;
-        const secondVideo = row % 2 === 0 ? partner : local;
-        const gapBetween = 6, halfWidth = (imageWidth - gapBetween) / 2;
-        drawCameraCrop(context, firstVideo, imageX, imageY, halfWidth, imageHeight, filter, firstVideo === local);
-        drawCameraCrop(context, secondVideo, imageX + halfWidth + gapBetween, imageY, halfWidth, imageHeight, filter, secondVideo === local);
-      }
-      return;
-    }
-
-    if (layout === "scrapbook") {
-      context.fillStyle = "#e8dcc2";
-      context.fillRect(x, y, width, height);
-      context.fillStyle = "#fffdf6";
-      context.fillRect(x + 18, y + 18, width - 36, 522);
-      const gap = 6, mainWidth = width - 48, halfWidth = (mainWidth - gap) / 2;
-      drawCameraCrop(context, local, x + 24, y + 24, halfWidth, 510, filter, true);
-      drawCameraCrop(context, partner, x + 24 + halfWidth + gap, y + 24, halfWidth, 510, filter, partnerMirrored);
-      const insetY = y + 570, insetWidth = 410, insetHeight = 250;
-      [[local, true, "little detail"], [partner, partnerMirrored, hasRemote ? "together" : "another moment"]].forEach(([video, mirrored, label], index) => {
-        const insetX = x + 24 + index * (insetWidth + 40);
-        context.fillStyle = "#fffdf6";
-        context.fillRect(insetX - 8, insetY - 8, insetWidth + 16, insetHeight + 58);
-        drawCameraCrop(context, video, insetX, insetY, insetWidth, insetHeight, filter, mirrored);
-        context.fillStyle = "#873b32";
-        context.font = 'italic 26px "IM Fell English", Georgia, serif';
-        context.textAlign = "center";
-        context.fillText(label, insetX + insetWidth / 2, insetY + insetHeight + 34);
-      });
-      return;
-    }
-
-    context.fillStyle = "#30261d";
-    context.fillRect(x - 7, y - 7, width + 14, height + 14);
-    if (hasRemote) {
-      const gap = 8, panelWidth = (width - gap) / 2;
-      drawCameraCrop(context, local, x, y, panelWidth, height, filter, true);
-      context.fillStyle = "#30261d";
-      context.fillRect(x + panelWidth, y, gap, height);
-      drawCameraCrop(context, remote, x + panelWidth + gap, y, panelWidth, height, filter, false);
-    } else {
-      drawCameraCrop(context, local, x, y, width, height, filter, true);
-    }
-  }
-
-  function drawPhotoPortrait() {
-    const context = photoContext;
-    const width = photoCanvas.width, height = photoCanvas.height;
-    const local = $("localVideo"), remote = $("remoteVideo");
-    const hasLocal = localStream?.getVideoTracks().some(track => track.enabled && track.readyState === "live")
-      && local.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && local.videoWidth > 0;
-    const hasRemote = remote.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && remote.videoWidth > 0;
-    if (!hasLocal) {
-      throw new Error("Turn your camera on before taking a portrait.");
-    }
-
-    const filter = photoLooks[$("photoLook").value] || photoLooks.warm;
-    const layout = $("photoLayout").value;
-    const paper = context.createLinearGradient(0, 0, width, height);
-    paper.addColorStop(0, "#fffaf0");
-    paper.addColorStop(1, "#eee2c9");
-    context.fillStyle = paper;
-    context.fillRect(0, 0, width, height);
-    context.fillStyle = "#82715b";
-    context.font = '26px "Cormorant Garamond", Georgia, serif';
-    context.textAlign = "center";
-    context.fillText("A KEEPSAKE FOR TWO", width / 2, 62);
-
-    drawPhotoCollage(context, layout, local, remote, hasRemote, filter);
-
-    context.textAlign = "center";
-    context.fillStyle = "#873b32";
-    context.font = 'italic 56px "IM Fell English", Georgia, serif';
-    const caption = $("photoCaption").value.trim() || "our little moment";
-    context.fillText(caption, width / 2, 1050, width - 100);
-    context.fillStyle = "#82715b";
-    context.font = '28px "Cormorant Garamond", Georgia, serif';
-    const date = new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(new Date());
-    context.fillText(`${date}  ·  Tu ne Hu`, width / 2, 1105);
-    context.fillStyle = "#cdbf9f";
-    context.fillRect(width / 2 - 92, 1145, 184, 2);
-    context.fillStyle = "#873b32";
-    context.font = '32px Georgia, serif';
-    context.fillText("❦", width / 2, 1202);
-    $("photoMsg").textContent = hasRemote
-      ? "a little moment, kept just for you two ❦"
-      : "solo portrait ready — take another together when both cameras are on";
-    return hasRemote;
-  }
-
-  $("photoTake").onclick = async () => {
-    const button = $("photoTake");
-    button.disabled = true;
-    $("photoMsg").textContent = "smile…";
-    try {
-      await new Promise(resolve => setTimeout(resolve, 450));
-      drawPhotoPortrait();
-      const blob = await new Promise((resolve, reject) => {
-        photoCanvas.toBlob(image => image ? resolve(image) : reject(new Error("The portrait could not be prepared for saving.")), "image/png");
-      });
-      if (photoUrl) URL.revokeObjectURL(photoUrl);
-      photoUrl = URL.createObjectURL(blob);
-      $("photoDownload").href = photoUrl;
-      $("photoDownload").hidden = false;
-      photoCanvas.hidden = false;
-      $("photoPlaceholder").hidden = true;
-      photoCanvas.classList.remove("booth-flash");
-      void photoCanvas.offsetWidth;
-      photoCanvas.classList.add("booth-flash");
-    } catch (err) {
-      console.error(err);
-      $("photoMsg").textContent = err.message || "The photo could not be taken. Please try again.";
-    } finally {
-      button.disabled = false;
-    }
-  };
-
-  // Leaving the page politely and releasing the last local photo URL.
-  window.addEventListener("beforeunload", () => {
-    if (pc) pc.close();
-    if (photoUrl) URL.revokeObjectURL(photoUrl);
-  });
 </script>
 </body>
 </html>

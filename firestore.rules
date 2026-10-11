@@ -42,7 +42,7 @@ service cloud.firestore {
         && request.resource.data.members.a == resource.data.members.a
         && request.resource.data.members.b == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['members', 'answer', 'names'])
+          .hasOnly(['members', 'names'])
       );
 
       allow delete: if false;
