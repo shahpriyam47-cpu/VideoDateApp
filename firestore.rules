@@ -2,13 +2,19 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /artifacts/our-little-room/public/data/rooms/{roomId} {
-      function signedIn() {
-        return request.auth != null;
-      }
+    function signedIn() {
+      return request.auth != null;
+    }
 
+    function roomParticipant(roomId) {
+      let room = get(/databases/$(database)/documents/artifacts/our-little-room/public/data/rooms/$(roomId));
+      return signedIn()
+        && (room.data.members.a == request.auth.uid || room.data.members.b == request.auth.uid);
+    }
+
+    match /artifacts/our-little-room/public/data/rooms/{roomId} {
       function isMember(data) {
-        return signedIn()
+        return request.auth != null
           && (data.members.a == request.auth.uid || data.members.b == request.auth.uid);
       }
 
@@ -35,6 +41,25 @@ service cloud.firestore {
       );
 
       allow delete: if false;
+
+      match /memories/{memoryId} {
+        allow read: if roomParticipant(roomId);
+        allow create: if roomParticipant(roomId)
+          && request.resource.data.keys().hasOnly(['place', 'date', 'note', 'photos', 'createdAt', 'createdBy'])
+          && request.resource.data.keys().hasAll(['place', 'date', 'note', 'photos', 'createdAt', 'createdBy'])
+          && request.resource.data.place is string
+          && request.resource.data.place.size() > 0
+          && request.resource.data.place.size() <= 60
+          && request.resource.data.date is string
+          && request.resource.data.note is string
+          && request.resource.data.note.size() <= 500
+          && request.resource.data.photos is list
+          && request.resource.data.photos.size() > 0
+          && request.resource.data.photos.size() <= 4
+          && request.resource.data.createdAt is int
+          && request.resource.data.createdBy == request.auth.uid;
+        allow update, delete: if false;
+      }
     }
   }
 }

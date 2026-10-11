@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedInRoomMember(roomId) {
+      let room = firestore.get(
+        /databases/(default)/documents/artifacts/our-little-room/public/data/rooms/$(roomId)
+      );
+      return request.auth != null
+        && (room.data.members.a == request.auth.uid || room.data.members.b == request.auth.uid);
+    }
+
+    match /rooms/{roomId}/memories/{memoryId}/{fileName} {
+      allow read: if signedInRoomMember(roomId);
+      allow create: if signedInRoomMember(roomId)
+        && request.resource.size <= 2 * 1024 * 1024
+        && request.resource.contentType == 'image/jpeg';
+      allow delete: if signedInRoomMember(roomId);
+      allow update: if false;
+    }
+  }
+}
