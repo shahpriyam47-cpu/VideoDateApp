@@ -171,21 +171,7 @@
   #cloud button.nope{animation:nope .3s}
   @keyframes nope{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 
-  /* ---------- guess the word ---------- */
-  #hmWord{display:flex; justify-content:center; flex-wrap:wrap; gap:.4rem; margin:1.4rem 0 .6rem}
-  .lb{width:34px; height:42px; border-bottom:2px solid var(--ink); text-align:center; font-family:var(--fell); font-size:1.8rem; text-transform:uppercase; line-height:1.3}
-  .mist{text-align:center; letter-spacing:.2em; font-variant:small-caps; color:var(--red)}
-  #hmKeys{display:flex; flex-wrap:wrap; gap:.35rem; justify-content:center; margin-top:1rem}
-  #hmKeys button{width:38px; height:38px; background:none; border:1px solid var(--rule); cursor:pointer; font-size:1.1rem; text-transform:uppercase}
-  #hmKeys button:hover:not(:disabled){border-color:var(--ink)}
-  #hmKeys button.hit{background:var(--green); color:var(--paper); border-color:var(--green)}
-  #hmKeys button.miss{background:var(--red); color:var(--paper); border-color:var(--red); opacity:.75}
-
-  /* ---------- new little games ---------- */
-  .ttt-board{display:grid; grid-template-columns:repeat(3,minmax(64px,92px)); justify-content:center; gap:.35rem; margin:1rem auto .6rem}
-  .ttt-board button{aspect-ratio:1; border:1px solid var(--rule); background:#fbf6ea; font-family:var(--fell); font-size:2.5rem; cursor:pointer}
-  .ttt-board button.x{color:var(--red)} .ttt-board button.o{color:var(--blue)}
-  .ttt-board button:hover:not(:disabled){background:#efe0b8}
+  /* ---------- little games ---------- */
   .choice-card{border:1px solid var(--rule); background:#fbf6ea; padding:1rem; margin:.55rem 0; text-align:center}
   .choice-card p{font-family:var(--fell); font-size:1.3rem; margin:0 0 .6rem}
   .choice-card.chosen{border-color:var(--red); background:#efe0b866}
@@ -196,11 +182,31 @@
   .secret-word-form[hidden],#secretWordNext[hidden]{display:none}
   .secret-word-guesses{display:flex; flex-wrap:wrap; justify-content:center; gap:.4rem; margin:.7rem 0}
   .secret-word-guesses span{padding:.15rem .55rem; border:1px solid var(--rule); color:var(--sepia); font-style:italic}
-  .after-hours-card{border:1px solid var(--rule); background:#fbf6ea; margin:1rem 0; padding:1.25rem; text-align:center; color:var(--red); font-family:var(--fell); font-size:1.45rem; font-style:italic}
-  .after-hours-card[hidden]{display:none}
-  .after-hours-actions{display:flex; justify-content:center; flex-wrap:wrap; gap:.5rem}
-  .after-hours-actions[hidden],#afterHoursReady[hidden],#afterHoursPlay[hidden]{display:none}
-
+  .number-game-form{display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-end; gap:.5rem; margin:1rem 0}
+  .number-game-form label{flex-basis:100%; text-align:center; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
+  .number-game-form input{width:min(100%,12rem); padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit}
+  .number-game-form[hidden],#numberGameAgain[hidden]{display:none}
+  .number-game-guesses{display:grid; gap:.3rem; max-width:32rem; margin:.7rem auto}
+  .number-game-guesses p{margin:0; padding:.3rem .55rem; border-bottom:1px solid var(--rule); text-align:center; color:var(--sepia); font-style:italic}
+  .colour-letter{margin:.7rem auto; text-align:center; font-family:var(--fell); font-size:2.6rem; color:var(--red)}
+  .colour-game-form{display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem; margin:1rem 0}
+  .colour-game-form[hidden],#colourGameNext[hidden]{display:none}
+  .colour-game-form label{flex-basis:100%; text-align:center; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
+  .colour-game-form input{width:min(100%,15rem); padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit}
+  .code-game-form{display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem; margin:1rem 0}
+  .code-game-form[hidden],#codeGameNext[hidden]{display:none}
+  .code-game-form label{flex-basis:100%; text-align:center; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
+  .code-game-form input{width:min(100%,13rem); padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit; letter-spacing:.2em; text-align:center}
+  .code-guess-card{max-width:34rem; margin:.7rem auto; padding:.7rem; border:1px solid var(--rule); background:#fbf6ea; text-align:center}
+  .code-guess-digits{font-family:var(--fell); font-size:1.8rem; letter-spacing:.35em}
+  .code-feedback-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.35rem; margin:.6rem 0}
+  .code-feedback-grid label{display:grid; gap:.2rem; color:var(--sepia); font-size:.75rem; text-align:center}
+  .code-feedback-grid select{width:100%; min-width:0; padding:.25rem 0; border:1px solid var(--rule); background:#fffdf6; color:var(--ink); font:inherit; font-size:.8rem}
+  .code-feedback-result{color:var(--sepia); font-style:italic}
+  .colour-timer{text-align:center; color:var(--red); font-variant:small-caps; letter-spacing:.1em}
+  .colour-lifelines{margin:.35rem 0; text-align:center; color:var(--red); font-size:1.5rem; letter-spacing:.25em}
+  .colour-lifelines[hidden]{display:none}
+  .colour-lifelines .spent{color:var(--rule)}
   /* ---------- shared memory book ---------- */
   .memory-form{display:grid; gap:.65rem; margin:1rem 0 1.4rem; padding:1rem; border:1px solid var(--rule); background:#fbf6ea}
   .memory-form[hidden]{display:none}
@@ -334,12 +340,12 @@
     <ul class="toc" id="toc">
       <li><button data-ch="crossword"><span class="chap">ii.</span><span class="t">the crossword</span><span class="dots"></span><span class="pg">3</span></button></li>
       <li><button data-ch="hundred"><span class="chap">iii.</span><span class="t">the hundred words</span><span class="dots"></span><span class="pg">9</span></button></li>
-      <li><button data-ch="hangman"><span class="chap">iv.</span><span class="t">guess the word</span><span class="dots"></span><span class="pg">17</span></button></li>
-      <li><button data-ch="tic-tac-toe"><span class="chap">v.</span><span class="t">noughts &amp; crosses</span><span class="dots"></span><span class="pg">21</span></button></li>
-      <li><button data-ch="would-you-rather"><span class="chap">vi.</span><span class="t">a little choice</span><span class="dots"></span><span class="pg">25</span></button></li>
-      <li><button data-ch="secret-word"><span class="chap">vii.</span><span class="t">your secret word</span><span class="dots"></span><span class="pg">31</span></button></li>
-      <li><button data-ch="after-hours"><span class="chap">viii.</span><span class="t">after hours</span><span class="dots"></span><span class="pg">35</span></button></li>
-      <li><button data-ch="memories"><span class="chap">ix.</span><span class="t">our memory book</span><span class="dots"></span><span class="pg">39</span></button></li>
+      <li><button data-ch="would-you-rather"><span class="chap">iv.</span><span class="t">a little choice</span><span class="dots"></span><span class="pg">25</span></button></li>
+      <li><button data-ch="secret-word"><span class="chap">v.</span><span class="t">your secret word</span><span class="dots"></span><span class="pg">31</span></button></li>
+      <li><button data-ch="memories"><span class="chap">vi.</span><span class="t">our memory book</span><span class="dots"></span><span class="pg">39</span></button></li>
+      <li><button data-ch="number-game"><span class="chap">vii.</span><span class="t">guess my number</span><span class="dots"></span><span class="pg">43</span></button></li>
+      <li><button data-ch="colour-game"><span class="chap">viii.</span><span class="t">guess the colour</span><span class="dots"></span><span class="pg">47</span></button></li>
+      <li><button data-ch="code-game"><span class="chap">ix.</span><span class="t">guess the code</span><span class="dots"></span><span class="pg">51</span></button></li>
     </ul>
     <div class="orn" style="margin:.4rem 0 1rem">❦</div>
 
@@ -374,26 +380,6 @@
       </div>
     </div>
 
-    <!-- ---- guess the word ---- -->
-    <div class="chapter" id="ch-hangman">
-      <h2>guess the word</h2>
-      <p class="small" style="margin-top:0">One secret word, one shared set of six mistakes. Take turns however you like.</p>
-      <div id="hmWord"></div>
-      <div class="mist" id="hmMist"></div>
-      <div class="msg" id="hmMsg"></div>
-      <div id="hmKeys"></div>
-      <div class="tools" style="justify-content:center"><button class="btn" id="hmNew">new word</button></div>
-    </div>
-
-    <!-- ---- noughts and crosses ---- -->
-    <div class="chapter" id="ch-tic-tac-toe">
-      <h2>noughts &amp; crosses</h2>
-      <p class="small" style="margin-top:0">Take turns placing a mark. First to make a line wins.</p>
-      <div class="msg" id="tttMsg" aria-live="polite"></div>
-      <div class="ttt-board" id="tttBoard" role="group" aria-label="Noughts and crosses board"></div>
-      <div class="tools" style="justify-content:center"><button class="btn" id="tttNew">new game</button></div>
-    </div>
-
     <!-- ---- would you rather ---- -->
     <div class="chapter" id="ch-would-you-rather">
       <h2>a little choice</h2>
@@ -424,27 +410,6 @@
       <div class="tools" style="justify-content:center"><button class="btn" id="secretWordNext" type="button">swap turns &amp; play again</button></div>
     </div>
 
-    <!-- ---- after hours ---- -->
-    <div class="chapter" id="ch-after-hours">
-      <h2>after hours</h2>
-      <p class="small" style="margin-top:0">A playful, grown-up game for two. Only continue if you are both 18+ and happy to play. Prompts stay flirty, not explicit; either of you can pass or pause at any time, no explanation needed.</p>
-      <div class="msg" id="afterHoursStatus" aria-live="polite"></div>
-      <div class="tools after-hours-actions" id="afterHoursReady">
-        <button class="btn red" id="afterHoursJoin">i'm 18+ and happy to play</button>
-      </div>
-      <div class="after-hours-card" id="afterHoursPrompt" hidden></div>
-      <div class="tools after-hours-actions" id="afterHoursDraw" hidden>
-        <button class="btn red" id="afterHoursDrawButton">draw a prompt</button>
-      </div>
-      <div class="tools after-hours-actions" id="afterHoursRespond" hidden>
-        <button class="btn" id="afterHoursDone">i answered</button>
-        <button class="btn" id="afterHoursPass">pass</button>
-      </div>
-      <div class="tools after-hours-actions" id="afterHoursPause" hidden>
-        <button class="linkbtn" id="afterHoursStop">pause game for both of us</button>
-      </div>
-    </div>
-
     <!-- ---- shared memories ---- -->
     <div class="chapter" id="ch-memories">
       <h2>our memory book</h2>
@@ -467,6 +432,72 @@
       <div class="memory-list" id="memoryList" aria-live="polite"></div>
     </div>
 
+    <!-- ---- guess my number ---- -->
+    <div class="chapter" id="ch-number-game">
+      <h2>guess my number</h2>
+      <p class="small" style="margin-top:0">Each choose a secret whole number from 1 to 100. Once both numbers are set, guess your person's number. They will tell you to go higher or lower — first to guess correctly wins.</p>
+      <form class="number-game-form" id="numberSecretForm">
+        <label for="numberSecretInput">your secret number (1–100)</label>
+        <input type="number" id="numberSecretInput" min="1" max="100" step="1" inputmode="numeric" required>
+        <button class="btn" id="numberSecretSubmit" type="submit">set my number</button>
+      </form>
+      <div class="msg" id="numberGameStatus" aria-live="polite"></div>
+      <form class="number-game-form" id="numberGuessForm" hidden>
+        <label for="numberGuessInput">guess your person's number</label>
+        <input type="number" id="numberGuessInput" min="1" max="100" step="1" inputmode="numeric" required>
+        <button class="btn" id="numberGuessSubmit" type="submit">make a guess</button>
+      </form>
+      <div class="number-game-guesses" id="numberGameGuesses" aria-live="polite"></div>
+      <div class="tools" style="justify-content:center">
+        <button class="btn" id="numberGameAgain" type="button" hidden>play another round</button>
+      </div>
+    </div>
+
+    <!-- ---- guess the colour ---- -->
+    <div class="chapter" id="ch-colour-game">
+      <h2>guess the colour</h2>
+      <p class="small" style="margin-top:0">One partner secretly chooses a colour. The other gets its first letter and keeps guessing until they find it. Swap turns after each colour is found.</p>
+      <form class="colour-game-form" id="colourSecretForm">
+        <label for="colourSecretInput">choose a secret colour</label>
+        <input type="text" id="colourSecretInput" maxlength="24" autocomplete="off" autocapitalize="none" placeholder="e.g. lavender" required>
+        <button class="btn" id="colourSecretSubmit" type="submit">give a letter</button>
+      </form>
+      <div class="colour-letter" id="colourLetter" aria-label="The letter to guess" hidden></div>
+      <div class="colour-timer" id="colourTimer" role="timer" aria-live="off" hidden></div>
+      <div class="colour-lifelines" id="colourLifelines" role="img" aria-label="5 lifelines remaining" hidden></div>
+      <div class="msg" id="colourGameStatus" aria-live="polite"></div>
+      <form class="colour-game-form" id="colourGuessForm" hidden>
+        <label for="colourGuessInput">guess the colour</label>
+        <input type="text" id="colourGuessInput" maxlength="24" autocomplete="off" autocapitalize="none" placeholder="a colour beginning with the letter" required>
+        <button class="btn" id="colourGuessSubmit" type="submit">guess</button>
+      </form>
+      <div class="secret-word-guesses" id="colourGameGuesses" aria-label="Previous colour guesses"></div>
+      <div class="tools" style="justify-content:center">
+        <button class="btn" id="colourGameNext" type="button" hidden>swap turns &amp; play again</button>
+      </div>
+    </div>
+
+    <!-- ---- guess the code ---- -->
+    <div class="chapter" id="ch-code-game">
+      <h2>guess the code</h2>
+      <p class="small" style="margin-top:0">Both choose a secret six-digit code. Take turns guessing your partner’s code. They will mark each digit as an exact match, the right digit in the wrong place, or not in the code.</p>
+      <form class="code-game-form" id="codeSecretForm">
+        <label for="codeSecretInput">your secret 6-digit code</label>
+        <input type="text" id="codeSecretInput" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="000000" required>
+        <button class="btn" id="codeSecretSubmit" type="submit">set my code</button>
+      </form>
+      <div class="msg" id="codeGameStatus" aria-live="polite"></div>
+      <form class="code-game-form" id="codeGuessForm" hidden>
+        <label for="codeGuessInput">guess your partner’s code</label>
+        <input type="text" id="codeGuessInput" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="six digits" required>
+        <button class="btn" id="codeGuessSubmit" type="submit">submit guess</button>
+      </form>
+      <div id="codeGameHistory" aria-live="polite"></div>
+      <div class="tools" style="justify-content:center">
+        <button class="btn" id="codeGameNext" type="button" hidden>play another round</button>
+      </div>
+    </div>
+
     <div class="folio">— 2 —</div>
   </section>
 </div>
@@ -474,7 +505,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-  import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, runTransaction }
+  import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, runTransaction }
     from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
   /* =====================================================================
@@ -518,7 +549,6 @@
 
   const WORD_POOL = ["moon","star","rose","kiss","tea","sun","wine","song","rain","snow","gold","lake","hug","pie","cake","bird","ring","wave","sky","fire","love","home","road","hill","leaf","dove","bell","pearl","dance","smile","tree","sand","wind","book","gift","card","rice","bread","jazz","lamp","coat","boat","rock","seed","fish","wolf","bear","nest","pond","mist","dawn","dusk","glow","ivy","oak","plum","pear","lime","mint","sage","snack","cozy","calm","warm","kind"];
 
-  const HANG_WORDS = ["MOONLIGHT","BUTTERFLY","SUNFLOWER","CHOCOLATE","ADVENTURE","LANTERN","BLANKET","LIBRARY","VOYAGE","PINEAPPLE","STARGAZER","MIDNIGHT","COFFEE","BICYCLE","ELEPHANT","GIRAFFE","UNIVERSE","SEASHELL","POSTCARD","FIREFLY"];
   const CHOICES = [
     { a:"a sunrise by the sea", b:"a sunset in the mountains" },
     { a:"a tiny cottage in the woods", b:"a little flat in a new city" },
@@ -529,27 +559,6 @@
     { a:"a beach picnic with bare feet", b:"a rainy-day café date" },
     { a:"revisit your first date", b:"skip ahead to a favourite future day" }
   ];
-  const AFTER_HOURS_PROMPTS = [
-    "Tell your person one little thing they do that makes you feel especially wanted.",
-    "Describe your idea of a perfect private date night together.",
-    "Offer a sincere compliment about something you find irresistible in your partner.",
-    "Choose a song you would love to slow-dance to together.",
-    "Share a romantic memory with your partner that you would happily relive.",
-    "Ask what kind of affectionate gesture makes your partner feel most cherished, and listen.",
-    "Plan a dreamy evening together using only three little details.",
-    "Tell your partner a sweet, flirty thought you have had about them recently.",
-    "Offer a kiss or cuddle, only if your partner says yes.",
-    "Take turns naming one thing that makes you feel close and cared for.",
-    "Invent a playful date-night nickname and ask if your partner likes it.",
-    "Describe a place where you would love to sneak away for a romantic weekend.",
-    "Say what you find most captivating about your partner, in one sentence.",
-    "Ask your person to choose: a lingering hug, a slow dance, or a whispered compliment.",
-    "Tell your partner one way you would make an ordinary evening feel special.",
-    "Share a small romantic gesture you would love to receive sometime.",
-    "Look into each other's eyes for ten seconds, if you both feel comfortable.",
-    "Take turns saying one thing you appreciate about the way you connect."
-  ];
-
   /* =====================================================================
      SMALL HELPERS
      ===================================================================== */
@@ -618,11 +627,11 @@
         chapter: "home",
         crossword: { puzzle: 0, cells: {} },
         hundred: makeHundred(null),
-        hangman: { word: pick(HANG_WORDS), guesses: [] },
-        ticTacToe: { board: Array(9).fill(""), first: "a", turn: "a", winner: "", round: 0 },
         wouldYouRather: { index: 0, votes: {} },
         secretWord: { setter: "a", word: "", guesses: [], solved: false, round: 0 },
-        afterHours: { ready: { a: false, b: false }, turn: "a", promptIndex: 0, activePrompt: null },
+        numberGame: { numbers: { a: null, b: null }, guesses: { a: [], b: [] }, winner: "", round: 0 },
+        colourGame: { setter: "a", colour: "", guesses: [], solved: false, timedOut: false, outOfGuesses: false, startedAt: null, round: 0 },
+        codeGame: { codes: { a: "", b: "" }, guesses: { a: [], b: [] }, solved: { a: false, b: false }, round: 0 },
         created: Date.now()
       });
 
@@ -693,6 +702,9 @@
   async function leaveRoom(quiet) {
     if (unsub) { unsub(); unsub = null; }
     if (memoriesUnsub) { memoriesUnsub(); memoriesUnsub = null; }
+    clearInterval(colourTimer);
+    colourTimer = null;
+    colourExpiryInProgress = null;
     roomRef = null; roomId = null; roomData = null; roomMemories = [];
     memoryRenderVersion++;
     memoryLocalPhotos.clear();
@@ -743,13 +755,14 @@
 
   function renderAll() {
     if (!roomData) return;
-    if (roomData.chapter === "photo-booth" && roomRef) {
+    const removedChapter = ["photo-booth", "hangman", "tic-tac-toe", "after-hours"].includes(roomData.chapter);
+    if (removedChapter && roomRef) {
       updateDoc(roomRef, { chapter: "home" }).catch(err => {
         console.error(err);
-        note("Could not update this room to the games-only layout.");
+        note("Could not return this room to the game contents.");
       });
     }
-    const ch = roomData.chapter === "photo-booth" ? "home" : roomData.chapter || "home";
+    const ch = removedChapter ? "home" : roomData.chapter || "home";
     const isHome = ch === "home";
     $("book").classList.toggle("home-view", isHome);
     $("book").classList.toggle("game-view", !isHome);
@@ -759,12 +772,12 @@
     document.querySelectorAll(".chapter").forEach(s => s.classList.toggle("on", s.id === "ch-" + ch));
     if (ch === "crossword") renderCrossword();
     if (ch === "hundred") renderHundred();
-    if (ch === "hangman") renderHangman();
-    if (ch === "tic-tac-toe") renderTicTacToe();
     if (ch === "would-you-rather") renderWouldYouRather();
     if (ch === "secret-word") renderSecretWord();
-    if (ch === "after-hours") renderAfterHours();
     if (ch === "memories") renderMemories();
+    if (ch === "number-game") renderNumberGame();
+    if (roomData.colourGame) renderColourGame();
+    if (ch === "code-game") renderCodeGame();
   }
 
   /* =====================================================================
@@ -984,140 +997,6 @@
   $("hwReset").onclick = () => { if (roomRef) updateDoc(roomRef, { "hundred.totals": { a: 0, b: 0 } }).catch(console.error); };
 
   /* =====================================================================
-     GUESS THE WORD
-     ===================================================================== */
-  const hmKeys = $("hmKeys");
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(L => {
-    const b = document.createElement("button");
-    b.textContent = L; b.id = "hm-" + L; b.onclick = () => guessLetter(L);
-    hmKeys.appendChild(b);
-  });
-
-  function hmState() {
-    const g = roomData.hangman || { word: "LANTERN", guesses: [] };
-    const guesses = g.guesses || [];
-    const mistakes = guesses.filter(x => !g.word.includes(x)).length;
-    const won = g.word.split("").every(ch => guesses.includes(ch));
-    const lost = mistakes >= 6;
-    return { word: g.word, guesses, mistakes, won, lost };
-  }
-
-  function renderHangman() {
-    const s = hmState();
-    const showAll = s.lost;
-    $("hmWord").innerHTML = "";
-    s.word.split("").forEach(ch => {
-      const d = document.createElement("div"); d.className = "lb";
-      d.textContent = (s.guesses.includes(ch) || showAll) ? ch : "";
-      if (showAll && !s.guesses.includes(ch)) d.style.color = "var(--red)";
-      $("hmWord").appendChild(d);
-    });
-    $("hmMist").textContent = "mistakes " + "✕ ".repeat(s.mistakes) + "· ".repeat(6 - s.mistakes);
-    const over = s.won || s.lost;
-    $("hmMsg").textContent = s.won ? "you found it, together ❦" : (s.lost ? "out of mistakes — the word is shown above" : "");
-    document.querySelectorAll("#hmKeys button").forEach(b => {
-      const L = b.textContent, used = s.guesses.includes(L);
-      b.className = used ? (s.word.includes(L) ? "hit" : "miss") : "";
-      b.disabled = used || over;
-    });
-  }
-
-  function guessLetter(L) {
-    if (!roomRef) return;
-    const s = hmState(); if (s.won || s.lost || s.guesses.includes(L)) return;
-    updateDoc(roomRef, { "hangman.guesses": arrayUnion(L) }).catch(console.error);
-  }
-  document.addEventListener("keydown", e => {
-    if (!roomData || roomData.chapter !== "hangman") return;
-    if (e.target.tagName === "INPUT" || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (/^[a-zA-Z]$/.test(e.key)) guessLetter(e.key.toUpperCase());
-  });
-  $("hmNew").onclick = () => { if (roomRef) updateDoc(roomRef, { hangman: { word: pick(HANG_WORDS), guesses: [] } }).catch(console.error); };
-
-  /* =====================================================================
-     NOUGHTS AND CROSSES
-     ===================================================================== */
-  const WIN_LINES = [
-    [0,1,2], [3,4,5], [6,7,8],
-    [0,3,6], [1,4,7], [2,5,8],
-    [0,4,8], [2,4,6]
-  ];
-  const emptyTicGame = () => ({ board: Array(9).fill(""), first: "a", turn: "a", winner: "", round: 0 });
-  const tttBoard = $("tttBoard");
-  Array.from({ length: 9 }, (_, i) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.addEventListener("click", () => playTicSquare(i));
-    tttBoard.appendChild(button);
-  });
-
-  function ticWinner(board) {
-    const line = WIN_LINES.find(([a, b, c]) => board[a] && board[a] === board[b] && board[a] === board[c]);
-    return line ? board[line[0]] : (board.every(Boolean) ? "tie" : "");
-  }
-
-  function renderTicTacToe() {
-    const game = roomData.ticTacToe || emptyTicGame();
-    const board = Array.isArray(game.board) && game.board.length === 9 ? game.board : emptyTicGame().board;
-    const winner = game.winner || ticWinner(board);
-    Array.from(tttBoard.children).forEach((button, i) => {
-      const mark = board[i] || "";
-      button.textContent = mark === "a" ? "×" : (mark === "b" ? "○" : "");
-      button.className = mark;
-      button.disabled = !roomRef || !!winner || !!mark || game.turn !== myRole();
-      button.setAttribute("aria-label", `Square ${i + 1}${mark ? `, ${mark === "a" ? "cross" : "nought"}` : ", empty"}`);
-    });
-    $("tttMsg").textContent = winner === "tie"
-      ? "a draw — another little game? ❦"
-      : winner
-        ? `${labelFor(winner)} wins this round ❦`
-        : game.turn === myRole()
-          ? `your turn — you are ${myRole() === "a" ? "×" : "○"}`
-          : `${labelFor(game.turn)} is choosing…`;
-  }
-
-  async function playTicSquare(index) {
-    if (!roomRef) return;
-    const role = myRole();
-    try {
-      await runTransaction(db, async tx => {
-        const snapshot = await tx.get(roomRef);
-        if (!snapshot.exists()) return;
-        const data = snapshot.data();
-        const game = data.ticTacToe || emptyTicGame();
-        const board = Array.isArray(game.board) && game.board.length === 9 ? [...game.board] : emptyTicGame().board;
-        if (game.winner || game.turn !== role || board[index]) return;
-        board[index] = role;
-        const winner = ticWinner(board);
-        tx.update(roomRef, {
-          ticTacToe: { ...game, board, winner, turn: winner ? game.turn : (role === "a" ? "b" : "a") }
-        });
-      });
-    } catch (err) {
-      console.error(err);
-      note("That move could not be saved. Please try again.");
-    }
-  }
-
-  $("tttNew").onclick = async () => {
-    if (!roomRef) return;
-    try {
-      await runTransaction(db, async tx => {
-        const snapshot = await tx.get(roomRef);
-        if (!snapshot.exists()) return;
-        const game = snapshot.data().ticTacToe || emptyTicGame();
-        const first = game.first === "a" ? "b" : "a";
-        tx.update(roomRef, {
-          ticTacToe: { board: Array(9).fill(""), first, turn: first, winner: "", round: (game.round || 0) + 1 }
-        });
-      });
-    } catch (err) {
-      console.error(err);
-      note("A new game could not be started. Please try again.");
-    }
-  };
-
-  /* =====================================================================
      A LITTLE CHOICE
      ===================================================================== */
   function renderWouldYouRather() {
@@ -1302,121 +1181,590 @@
   };
 
   /* =====================================================================
-     AFTER HOURS
+     GUESS THE COLOUR
      ===================================================================== */
-  const emptyAfterHours = () => ({
-    ready: { a: false, b: false },
-    turn: "a",
-    promptIndex: 0,
-    activePrompt: null
+  const COLOUR_ROUND_SECONDS = 30;
+  const COLOUR_MAX_GUESSES = 5;
+  let colourTimer = null;
+  let colourExpiryInProgress = null;
+  const emptyColourGame = () => ({
+    setter: "a",
+    colour: "",
+    guesses: [],
+    solved: false,
+    timedOut: false,
+    outOfGuesses: false,
+    startedAt: null,
+    round: 0
   });
+  const normalizeColour = colour => colour.normalize("NFC").trim().toLowerCase();
 
-  function renderAfterHours() {
-    const game = roomData.afterHours || emptyAfterHours();
-    const ready = game.ready || {};
-    const bothReady = !!ready.a && !!ready.b;
-    const activePrompt = Number.isInteger(game.activePrompt) ? game.activePrompt : null;
-    const myTurn = game.turn === myRole();
-    $("afterHoursReady").hidden = !!ready[myRole()] || bothReady;
-    $("afterHoursJoin").disabled = !roomRef;
-    $("afterHoursPrompt").hidden = !bothReady || activePrompt === null;
-    $("afterHoursDraw").hidden = !bothReady || activePrompt !== null || !myTurn;
-    $("afterHoursRespond").hidden = !bothReady || activePrompt === null || !myTurn;
-    $("afterHoursPause").hidden = !ready.a && !ready.b;
-    $("afterHoursPrompt").textContent = activePrompt === null
-      ? ""
-      : (AFTER_HOURS_PROMPTS[activePrompt] || "Take a moment to make each other smile.");
-    $("afterHoursStatus").textContent = !bothReady
-      ? ready[myRole()]
-        ? `you are in — waiting for ${labelFor(myRole() === "a" ? "b" : "a")} to confirm`
-        : `${labelFor(myRole())}, confirm only if you are 18+ and comfortable`
-      : activePrompt !== null
-        ? myTurn
-          ? "your turn — answer together, or pass whenever you like"
-          : `${labelFor(game.turn)} is taking this turn — you can both pause any time`
-        : myTurn
-          ? "your turn — draw a prompt"
-          : `waiting for ${labelFor(game.turn)} to draw a prompt`;
+  function renderColourGame() {
+    const game = roomData.colourGame || emptyColourGame();
+    const guesses = Array.isArray(game.guesses) ? game.guesses : [];
+    const setting = myRole() === game.setter;
+    const hasColour = typeof game.colour === "string" && !!game.colour;
+    const finished = game.solved || game.timedOut || game.outOfGuesses;
+    $("colourSecretForm").hidden = !roomRef || !setting || hasColour || finished;
+    $("colourGuessForm").hidden = !roomRef || setting || !hasColour || finished;
+    $("colourGameNext").hidden = !roomRef || !finished;
+    $("colourLetter").hidden = !hasColour || finished;
+    $("colourLetter").textContent = hasColour && !finished ? game.colour.trim().charAt(0).toLocaleUpperCase() : "";
+    $("colourGuessSubmit").disabled = !roomRef || finished;
+    const remainingGuesses = Math.max(0, COLOUR_MAX_GUESSES - guesses.length);
+    const lifelines = $("colourLifelines");
+    lifelines.hidden = !hasColour;
+    lifelines.setAttribute("aria-label", `${remainingGuesses} of ${COLOUR_MAX_GUESSES} lifelines remaining`);
+    lifelines.replaceChildren();
+    for (let i = 0; i < COLOUR_MAX_GUESSES; i++) {
+      const heart = document.createElement("span");
+      heart.textContent = i < remainingGuesses ? "♥" : "♡";
+      if (i >= remainingGuesses) heart.className = "spent";
+      heart.setAttribute("aria-hidden", "true");
+      lifelines.appendChild(heart);
+    }
+
+    if (game.startedAt && !finished) {
+      const updateCountdown = () => {
+        const secondsLeft = Math.max(0, Math.ceil((game.startedAt + COLOUR_ROUND_SECONDS * 1000 - Date.now()) / 1000));
+        $("colourTimer").hidden = false;
+        $("colourTimer").textContent = `time left: ${secondsLeft} seconds`;
+        if (secondsLeft === 0) expireColourRound(game.startedAt);
+      };
+      clearInterval(colourTimer);
+      updateCountdown();
+      colourTimer = setInterval(updateCountdown, 1000);
+    } else {
+      clearInterval(colourTimer);
+      colourTimer = null;
+      $("colourTimer").hidden = true;
+      $("colourTimer").textContent = "";
+    }
+
+    $("colourGameStatus").textContent = game.solved
+      ? `${labelFor(game.setter === "a" ? "b" : "a")} guessed “${game.colour}” — swap turns for another round ❦`
+      : game.timedOut
+        ? `Time is up — the colour was “${game.colour}”. Swap turns for another round.`
+        : game.outOfGuesses
+          ? `No guesses left — the colour was “${game.colour}”. Swap turns for another round.`
+      : !hasColour
+        ? setting
+          ? "Choose a colour and give your person its first letter."
+          : `${labelFor(game.setter)} is choosing a colour for your letter.`
+        : setting
+          ? `You gave the letter ${game.colour.trim().charAt(0).toLocaleUpperCase()} — waiting for ${labelFor(game.setter === "a" ? "b" : "a")} to guess. ${remainingGuesses} guesses available.`
+          : `Guess a colour beginning with ${game.colour.trim().charAt(0).toLocaleUpperCase()}. ${remainingGuesses} guesses available.`;
+
+    const history = $("colourGameGuesses");
+    history.replaceChildren();
+    guesses.forEach(guess => {
+      const chip = document.createElement("span");
+      chip.textContent = guess;
+      history.appendChild(chip);
+    });
   }
 
-  $("afterHoursJoin").onclick = async () => {
-    if (!roomRef) return;
-    const role = myRole();
+  async function expireColourRound(startedAt) {
+    if (colourExpiryInProgress === startedAt) return;
+    const targetRoomRef = roomRef;
+    if (!targetRoomRef) return;
+    colourExpiryInProgress = startedAt;
     try {
       await runTransaction(db, async tx => {
-        const snapshot = await tx.get(roomRef);
+        const snapshot = await tx.get(targetRoomRef);
         if (!snapshot.exists()) return;
-        const game = snapshot.data().afterHours || emptyAfterHours();
+        const game = snapshot.data().colourGame || emptyColourGame();
+        if (game.startedAt !== startedAt || game.solved || game.timedOut || game.outOfGuesses ||
+            Date.now() < startedAt + COLOUR_ROUND_SECONDS * 1000) return;
+        tx.update(targetRoomRef, { colourGame: { ...game, timedOut: true } });
+      });
+    } catch (err) {
+      console.error(err);
+      note("The colour round could not be ended when time ran out. Please try again.");
+    } finally {
+      colourExpiryInProgress = null;
+    }
+  }
+
+  $("colourSecretForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!roomRef) return;
+    const colour = $("colourSecretInput").value.normalize("NFC").trim();
+    if (!isSingleWord(colour)) {
+      note("Please choose one colour using letters only.");
+      return;
+    }
+    const role = myRole();
+    const startedAt = Date.now();
+    try {
+      const result = await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return "unavailable";
+        const game = snapshot.data().colourGame || emptyColourGame();
+        if (game.setter !== role || game.colour || game.solved || game.timedOut || game.outOfGuesses) return "not-your-turn";
         tx.update(roomRef, {
-          afterHours: { ...game, ready: { ...(game.ready || {}), [role]: true } }
+          colourGame: { ...game, colour, guesses: [], solved: false, timedOut: false, outOfGuesses: false, startedAt }
         });
+        return "saved";
       });
+      if (result === "saved") $("colourSecretInput").value = "";
+      else if (result === "unavailable") note("The room is no longer available.");
+      else note("It is not your turn to choose a colour.");
     } catch (err) {
       console.error(err);
-      note("Your confirmation could not be saved. Please try again.");
+      note("Your colour could not be saved. Please try again.");
     }
-  };
+  });
 
-  $("afterHoursDrawButton").onclick = async () => {
+  $("colourGuessForm").addEventListener("submit", async event => {
+    event.preventDefault();
     if (!roomRef) return;
+    const guess = $("colourGuessInput").value.normalize("NFC").trim();
+    if (!isSingleWord(guess)) {
+      note("Please guess one colour using letters only.");
+      return;
+    }
     const role = myRole();
     try {
-      await runTransaction(db, async tx => {
+      const result = await runTransaction(db, async tx => {
         const snapshot = await tx.get(roomRef);
-        if (!snapshot.exists()) return;
-        const game = snapshot.data().afterHours || emptyAfterHours();
-        if (!game.ready?.a || !game.ready?.b || game.turn !== role || game.activePrompt != null) return;
-        const promptIndex = ((game.promptIndex || 0) % AFTER_HOURS_PROMPTS.length + AFTER_HOURS_PROMPTS.length) % AFTER_HOURS_PROMPTS.length;
-        tx.update(roomRef, { afterHours: { ...game, activePrompt: promptIndex } });
-      });
-    } catch (err) {
-      console.error(err);
-      note("A prompt could not be drawn. Please try again.");
-    }
-  };
-
-  async function finishAfterHoursTurn() {
-    if (!roomRef) return;
-    const role = myRole();
-    try {
-      await runTransaction(db, async tx => {
-        const snapshot = await tx.get(roomRef);
-        if (!snapshot.exists()) return;
-        const game = snapshot.data().afterHours || emptyAfterHours();
-        if (!game.ready?.a || !game.ready?.b || game.turn !== role || game.activePrompt == null) return;
+        if (!snapshot.exists()) return "unavailable";
+        const game = snapshot.data().colourGame || emptyColourGame();
+        if (game.setter === role || !game.colour || game.solved || game.timedOut || game.outOfGuesses) return "not-your-turn";
+        if (Date.now() >= game.startedAt + COLOUR_ROUND_SECONDS * 1000) {
+          tx.update(roomRef, { colourGame: { ...game, timedOut: true } });
+          return "time-up";
+        }
+        if (normalizeColour(guess).charAt(0) !== normalizeColour(game.colour).charAt(0)) return "wrong-letter";
+        const guesses = Array.isArray(game.guesses) ? game.guesses : [];
+        const normalizedGuess = normalizeColour(guess);
+        if (guesses.some(previous => normalizeColour(previous) === normalizedGuess)) return "already-guessed";
+        const nextGuesses = [...guesses, guess];
+        const correct = normalizedGuess === normalizeColour(game.colour);
         tx.update(roomRef, {
-          afterHours: {
+          colourGame: {
             ...game,
-            turn: role === "a" ? "b" : "a",
-            promptIndex: (game.activePrompt + 1) % AFTER_HOURS_PROMPTS.length,
-            activePrompt: null
+            guesses: nextGuesses,
+            solved: correct,
+            outOfGuesses: !correct && nextGuesses.length >= COLOUR_MAX_GUESSES
+          }
+        });
+        return "saved";
+      });
+      if (result === "saved") $("colourGuessInput").value = "";
+      else if (result === "unavailable") note("The room is no longer available.");
+      else if (result === "wrong-letter") note("Your colour must begin with the letter your partner gave.");
+      else if (result === "already-guessed") note("You already tried that colour.");
+      else if (result === "time-up") note("Time ran out before that guess could be counted.");
+      else note("It is not your turn to guess right now.");
+    } catch (err) {
+      console.error(err);
+      note("Your guess could not be saved. Please try again.");
+    }
+  });
+
+  $("colourGameNext").addEventListener("click", async () => {
+    if (!roomRef) return;
+    try {
+      await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return;
+        const game = snapshot.data().colourGame || emptyColourGame();
+        if (!game.solved && !game.timedOut && !game.outOfGuesses) return;
+        tx.update(roomRef, {
+          colourGame: {
+            ...emptyColourGame(),
+            setter: game.setter === "a" ? "b" : "a",
+            round: (game.round || 0) + 1
           }
         });
       });
     } catch (err) {
       console.error(err);
-      note("That turn could not be saved. Please try again.");
+      note("The next colour round could not be started. Please try again.");
+    }
+  });
+
+  /* =====================================================================
+     GUESS THE CODE
+     ===================================================================== */
+  const emptyCodeGame = () => ({
+    codes: { a: "", b: "" },
+    guesses: { a: [], b: [] },
+    solved: { a: false, b: false },
+    round: 0
+  });
+  const isSixDigitCode = code => /^[0-9]{6}$/.test(code);
+  const CODE_FEEDBACK = {
+    exact: "exact place",
+    misplaced: "right digit, wrong place",
+    absent: "not in the code"
+  };
+
+  function renderCodeGame() {
+    const game = roomData.codeGame || emptyCodeGame();
+    const codes = game.codes || { a: "", b: "" };
+    const guesses = game.guesses || { a: [], b: [] };
+    const solved = game.solved || { a: false, b: false };
+    const role = myRole();
+    const otherRole = role === "a" ? "b" : "a";
+    const bothCodesSet = isSixDigitCode(codes.a || "") && isSixDigitCode(codes.b || "");
+    const bothSolved = !!solved.a && !!solved.b;
+    const myGuesses = Array.isArray(guesses[role]) ? guesses[role] : [];
+    const theirGuesses = Array.isArray(guesses[otherRole]) ? guesses[otherRole] : [];
+    const myPending = myGuesses.some(entry => !Array.isArray(entry.feedback));
+    $("codeSecretForm").hidden = !roomRef || !!codes[role] || bothCodesSet || bothSolved;
+    $("codeGuessForm").hidden = !roomRef || !bothCodesSet || !!solved[role] || myPending || bothSolved;
+    $("codeSecretSubmit").disabled = !roomRef;
+    $("codeGuessSubmit").disabled = !roomRef;
+    $("codeGameNext").hidden = !roomRef || !bothSolved;
+
+    $("codeGameStatus").textContent = bothSolved
+      ? "You both cracked the codes — well played! ❦"
+      : !bothCodesSet
+        ? codes[role]
+          ? `Your code is set — waiting for ${labelFor(otherRole)} to set theirs.`
+          : codes[otherRole]
+            ? `${labelFor(otherRole)} has set a code. Choose yours to begin.`
+            : "Choose a secret code with exactly six digits."
+        : solved[role]
+          ? `You cracked ${labelFor(otherRole)}’s code — waiting for them to crack yours.`
+          : myPending
+            ? "Your partner is marking each digit in your guess."
+            : `Guess ${labelFor(otherRole)}’s code.`;
+
+    const history = $("codeGameHistory");
+    history.replaceChildren();
+    [role, otherRole].forEach(guesser => {
+      const entries = Array.isArray(guesses[guesser]) ? guesses[guesser] : [];
+      entries.forEach((entry, index) => {
+        const card = document.createElement("section");
+        card.className = "code-guess-card";
+        const title = document.createElement("div");
+        title.textContent = `${labelFor(guesser)}’s guess ${index + 1}`;
+        const digits = document.createElement("div");
+        digits.className = "code-guess-digits";
+        digits.textContent = entry.value;
+        card.append(title, digits);
+
+        if (guesser === otherRole && !Array.isArray(entry.feedback) && !bothSolved) {
+          const feedbackForm = document.createElement("form");
+          feedbackForm.className = "code-feedback-form";
+          const grid = document.createElement("div");
+          grid.className = "code-feedback-grid";
+          for (let position = 0; position < 6; position++) {
+            const label = document.createElement("label");
+            label.textContent = `digit ${position + 1}`;
+            const select = document.createElement("select");
+            select.required = true;
+            select.setAttribute("aria-label", `Feedback for digit ${position + 1}`);
+            const prompt = document.createElement("option");
+            prompt.value = "";
+            prompt.textContent = "choose";
+            prompt.disabled = true;
+            prompt.selected = true;
+            select.appendChild(prompt);
+            Object.entries(CODE_FEEDBACK).forEach(([value, description]) => {
+              const option = document.createElement("option");
+              option.value = value;
+              option.textContent = description;
+              select.appendChild(option);
+            });
+            label.appendChild(select);
+            grid.appendChild(label);
+          }
+          const submit = document.createElement("button");
+          submit.className = "btn";
+          submit.type = "submit";
+          submit.textContent = "send feedback";
+          feedbackForm.append(grid, submit);
+          feedbackForm.addEventListener("submit", event => {
+            event.preventDefault();
+            saveCodeFeedback(guesser, index, Array.from(grid.querySelectorAll("select"), select => select.value));
+          });
+          card.appendChild(feedbackForm);
+        } else if (Array.isArray(entry.feedback)) {
+          const feedback = document.createElement("div");
+          feedback.className = "code-feedback-result";
+          feedback.textContent = entry.feedback.map((result, position) =>
+            `digit ${position + 1}: ${CODE_FEEDBACK[result] || "unmarked"}`
+          ).join(" · ");
+          card.appendChild(feedback);
+          if (entry.feedback.every(result => result === "exact")) {
+            const result = document.createElement("b");
+            result.textContent = ` ${labelFor(guesser)} cracked the code!`;
+            card.appendChild(result);
+          }
+        } else {
+          const pending = document.createElement("div");
+          pending.className = "code-feedback-result";
+          pending.textContent = "Waiting for feedback.";
+          card.appendChild(pending);
+        }
+        history.appendChild(card);
+      });
+    });
+  }
+
+  $("codeSecretForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!roomRef) return;
+    const code = $("codeSecretInput").value;
+    if (!isSixDigitCode(code)) {
+      note("Enter exactly six digits for your code.");
+      return;
+    }
+    const role = myRole();
+    try {
+      const result = await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return "unavailable";
+        const game = snapshot.data().codeGame || emptyCodeGame();
+        const codes = game.codes || { a: "", b: "" };
+        if (codes[role] || (isSixDigitCode(codes.a || "") && isSixDigitCode(codes.b || ""))) return "already-set";
+        tx.update(roomRef, { codeGame: { ...game, codes: { ...codes, [role]: code } } });
+        return "saved";
+      });
+      if (result === "saved") $("codeSecretInput").value = "";
+      else if (result === "unavailable") note("The room is no longer available.");
+      else note("Your code is already set for this round.");
+    } catch (err) {
+      console.error(err);
+      note("Your code could not be saved. Please try again.");
+    }
+  });
+
+  $("codeGuessForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!roomRef) return;
+    const value = $("codeGuessInput").value;
+    if (!isSixDigitCode(value)) {
+      note("Enter a guess containing exactly six digits.");
+      return;
+    }
+    const role = myRole();
+    try {
+      const result = await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return "unavailable";
+        const game = snapshot.data().codeGame || emptyCodeGame();
+        const codes = game.codes || { a: "", b: "" };
+        if (!isSixDigitCode(codes.a || "") || !isSixDigitCode(codes.b || "")) return "not-ready";
+        if (game.solved?.[role]) return "solved";
+        const guesses = game.guesses || { a: [], b: [] };
+        const ownGuesses = Array.isArray(guesses[role]) ? guesses[role] : [];
+        if (ownGuesses.some(entry => !Array.isArray(entry.feedback))) return "feedback-pending";
+        tx.update(roomRef, {
+          codeGame: {
+            ...game,
+            guesses: { ...guesses, [role]: [...ownGuesses, { value, feedback: null }] }
+          }
+        });
+        return "saved";
+      });
+      if (result === "saved") $("codeGuessInput").value = "";
+      else if (result === "unavailable") note("The room is no longer available.");
+      else if (result === "not-ready") note("Both players must set a code first.");
+      else if (result === "solved") note("You have already cracked your partner’s code.");
+      else note("Wait for feedback on your previous guess first.");
+    } catch (err) {
+      console.error(err);
+      note("Your guess could not be saved. Please try again.");
+    }
+  });
+
+  async function saveCodeFeedback(guesser, guessIndex, feedback) {
+    if (!roomRef || !Array.isArray(feedback) || feedback.length !== 6 ||
+        feedback.some(result => !Object.hasOwn(CODE_FEEDBACK, result))) {
+      note("Choose feedback for all six digits.");
+      return;
+    }
+    const reviewer = myRole();
+    try {
+      const result = await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return "unavailable";
+        const game = snapshot.data().codeGame || emptyCodeGame();
+        const guesses = game.guesses || { a: [], b: [] };
+        const reviewQueue = Array.isArray(guesses[guesser]) ? [...guesses[guesser]] : [];
+        const entry = reviewQueue[guessIndex];
+        const codeOwner = guesser === "a" ? "b" : "a";
+        if (reviewer !== codeOwner || !entry || Array.isArray(entry.feedback)) return "not-pending";
+        entry.feedback = feedback;
+        const solved = { ...(game.solved || { a: false, b: false }) };
+        if (feedback.every(result => result === "exact")) solved[guesser] = true;
+        tx.update(roomRef, {
+          codeGame: { ...game, guesses: { ...guesses, [guesser]: reviewQueue }, solved }
+        });
+        return "saved";
+      });
+      if (result === "unavailable") note("The room is no longer available.");
+      else if (result === "not-pending") note("That guess is no longer waiting for feedback.");
+    } catch (err) {
+      console.error(err);
+      note("The feedback could not be saved. Please try again.");
     }
   }
-  $("afterHoursDone").onclick = finishAfterHoursTurn;
-  $("afterHoursPass").onclick = finishAfterHoursTurn;
 
-  $("afterHoursStop").onclick = async () => {
+  $("codeGameNext").addEventListener("click", async () => {
     if (!roomRef) return;
     try {
       await runTransaction(db, async tx => {
         const snapshot = await tx.get(roomRef);
         if (!snapshot.exists()) return;
-        const game = snapshot.data().afterHours || emptyAfterHours();
+        const game = snapshot.data().codeGame || emptyCodeGame();
+        if (!game.solved?.a || !game.solved?.b) return;
         tx.update(roomRef, {
-          afterHours: { ...game, ready: { a: false, b: false }, activePrompt: null, turn: "a" }
+          codeGame: { ...emptyCodeGame(), round: (game.round || 0) + 1 }
         });
       });
     } catch (err) {
       console.error(err);
-      note("The game could not be paused. Please try again.");
+      note("Another code round could not be started. Please try again.");
     }
-  };
+  });
+
+  /* =====================================================================
+     GUESS MY NUMBER
+     ===================================================================== */
+  const emptyNumberGame = () => ({
+    numbers: { a: null, b: null },
+    guesses: { a: [], b: [] },
+    winner: "",
+    round: 0
+  });
+
+  function renderNumberGame() {
+    const game = roomData.numberGame || emptyNumberGame();
+    const numbers = game.numbers || {};
+    const guesses = game.guesses || {};
+    const role = myRole();
+    const otherRole = role === "a" ? "b" : "a";
+    const bothSet = numbers.a !== null && numbers.a !== undefined && numbers.b !== null && numbers.b !== undefined;
+    const won = Boolean(game.winner);
+    $("numberSecretForm").hidden = !roomRef || bothSet || numbers[role] !== null && numbers[role] !== undefined || won;
+    $("numberGuessForm").hidden = !roomRef || !bothSet || won;
+    $("numberGameAgain").hidden = !roomRef || !won;
+    $("numberSecretSubmit").disabled = !roomRef;
+    $("numberGuessSubmit").disabled = !roomRef;
+
+    if (won) {
+      $("numberGameStatus").textContent =
+        `${labelFor(game.winner)} guessed first and wins this round ❦ ${labelFor("a")}'s number was ${numbers.a}; ${labelFor("b")}'s was ${numbers.b}.`;
+    } else if (bothSet) {
+      $("numberGameStatus").textContent = `Both numbers are set — guess ${labelFor(otherRole)}'s number.`;
+    } else if (numbers[role] !== null && numbers[role] !== undefined) {
+      $("numberGameStatus").textContent = `Your number is set — waiting for ${labelFor(otherRole)} to choose.`;
+    } else {
+      $("numberGameStatus").textContent = numbers[otherRole] !== null && numbers[otherRole] !== undefined
+        ? `${labelFor(otherRole)} has chosen. Set your number to begin.`
+        : "Choose your number without showing it to your person.";
+    }
+
+    const history = $("numberGameGuesses");
+    history.replaceChildren();
+    ["a", "b"].forEach(guesser => {
+      (Array.isArray(guesses[guesser]) ? guesses[guesser] : []).forEach(entry => {
+        const line = document.createElement("p");
+        const response = entry.hint === "correct" ? "correct — that was it!" : `go ${entry.hint}`;
+        line.textContent = `${labelFor(guesser)} guessed ${entry.value}: ${response}`;
+        history.appendChild(line);
+      });
+    });
+  }
+
+  $("numberSecretForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!roomRef) return;
+    const number = Number($("numberSecretInput").value);
+    if (!Number.isInteger(number) || number < 1 || number > 100) {
+      note("Choose a whole number from 1 to 100.");
+      return;
+    }
+    const role = myRole();
+    try {
+      const result = await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return "unavailable";
+        const game = snapshot.data().numberGame || emptyNumberGame();
+        const numbers = game.numbers || { a: null, b: null };
+        if (game.winner) return "round-over";
+        if ((numbers[role] !== null && numbers[role] !== undefined) ||
+            (numbers.a !== null && numbers.a !== undefined && numbers.b !== null && numbers.b !== undefined)) return "already-set";
+        tx.update(roomRef, {
+          numberGame: { ...game, numbers: { ...numbers, [role]: number } }
+        });
+        return "saved";
+      });
+      if (result === "saved") $("numberSecretInput").value = "";
+      else if (result === "unavailable") note("The room is no longer available.");
+      else if (result === "round-over") note("This round has already been won.");
+      else note("Your number has already been set for this round.");
+    } catch (err) {
+      console.error(err);
+      note("Your number could not be saved. Please try again.");
+    }
+  });
+
+  $("numberGuessForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!roomRef) return;
+    const guess = Number($("numberGuessInput").value);
+    if (!Number.isInteger(guess) || guess < 1 || guess > 100) {
+      note("Guess a whole number from 1 to 100.");
+      return;
+    }
+    const role = myRole();
+    const targetRole = role === "a" ? "b" : "a";
+    try {
+      const result = await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return "unavailable";
+        const game = snapshot.data().numberGame || emptyNumberGame();
+        const numbers = game.numbers || { a: null, b: null };
+        if (game.winner) return "round-over";
+        if (numbers.a === null || numbers.a === undefined ||
+            numbers.b === null || numbers.b === undefined) return "not-ready";
+        const playerGuesses = Array.isArray(game.guesses?.[role]) ? game.guesses[role] : [];
+        if (playerGuesses.some(entry => entry.value === guess)) return "already-guessed";
+        const hint = guess === numbers[targetRole] ? "correct" : numbers[targetRole] > guess ? "higher" : "lower";
+        tx.update(roomRef, {
+          [`numberGame.guesses.${role}`]: [...playerGuesses, { value: guess, hint }],
+          ...(hint === "correct" ? { "numberGame.winner": role } : {})
+        });
+        return "saved";
+      });
+      if (result === "saved") $("numberGuessInput").value = "";
+      else if (result === "unavailable") note("The room is no longer available.");
+      else if (result === "not-ready") note("Both numbers must be set before guessing begins.");
+      else if (result === "round-over") note("This round has already been won.");
+      else note("You already tried that number.");
+    } catch (err) {
+      console.error(err);
+      note("Your guess could not be saved. Please try again.");
+    }
+  });
+
+  $("numberGameAgain").addEventListener("click", async () => {
+    if (!roomRef) return;
+    try {
+      await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return;
+        const game = snapshot.data().numberGame || emptyNumberGame();
+        if (!game.winner) return;
+        tx.update(roomRef, {
+          numberGame: {
+            ...emptyNumberGame(),
+            round: (game.round || 0) + 1
+          }
+        });
+      });
+    } catch (err) {
+      console.error(err);
+      note("Another round could not be started. Please try again.");
+    }
+  });
 
   /* =====================================================================
      OUR MEMORY BOOK
