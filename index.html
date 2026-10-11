@@ -27,7 +27,7 @@
     background:
       radial-gradient(ellipse at 50% 0%, #e6dcc3 0%, var(--desk) 60%, #c9bd9f 100%),
       repeating-linear-gradient(135deg, #00000005 0 1px, transparent 1px 5px);
-    min-height:100vh; padding:2rem 1rem 3rem;
+    min-height:100vh; padding:1rem;
   }
   button,input{font-family:inherit; color:inherit}
   button:focus-visible,input:focus-visible{outline:2px solid var(--red); outline-offset:3px}
@@ -40,6 +40,11 @@
     border-radius:3px;
     box-shadow:0 1px 0 #fff8 inset, 0 30px 60px -20px #3a2c1a66, 0 0 0 1px #b8a982;
   }
+  .book.home-view{
+    width:min(1420px,100%); max-width:1420px; height:calc(100dvh - 2rem); min-height:0;
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); overflow:hidden;
+  }
+  .book.game-view{width:min(1180px,100%); height:calc(100dvh - 2rem); min-height:0; grid-template-columns:1fr; overflow:hidden}
   .book::before{ /* gutter shadow */
     content:""; position:absolute; top:0; bottom:0; left:calc(50% - 38px); width:76px; pointer-events:none; z-index:2;
     background:linear-gradient(to right, transparent, #3a2c1a22 46%, #3a2c1a33 50%, #3a2c1a22 54%, transparent);
@@ -107,6 +112,43 @@
   .closed p{font-family:var(--fell); font-style:italic; font-size:1.5rem; max-width:18ch; margin:0}
 
   .chapter{display:none} .chapter.on{display:block}
+  .chapter-nav{display:flex; align-items:center; justify-content:space-between; gap:1rem}
+  #homeButton{display:none}
+  .game-view #homeButton{display:inline-block}
+  .game-view .page.left,.game-view #closed,.game-view .toc,.game-view .right > .orn{display:none !important}
+  .game-view .folio{display:none}
+  .game-view .page.right{height:100%; min-height:0; overflow:auto}
+  .home-view .page{min-height:0; padding:clamp(.8rem,2vh,1.5rem) clamp(.8rem,2vw,1.6rem)}
+  .home-view .page.left{display:flex; flex-direction:column; gap:.35rem}
+  .home-view .page.left > .orn,.home-view .page.left > h2,.home-view .page.left > .lede,.home-view .folio{display:none}
+  .home-view h1{font-size:clamp(1.8rem,3.2vw,2.7rem); margin:0}
+  .home-view .kicker{font-size:.78rem}
+  .home-view #note{margin:.2rem 0; padding:.3rem .55rem; font-size:.9rem}
+  .home-view .roombox{padding:.5rem 0; margin:.1rem 0; flex:none}
+  .home-view .roombox .row{gap:.4rem}
+  .home-view .roombox .orn{margin:.25rem 0 !important}
+  .home-view .roombox .btn{padding:.2rem .7rem}
+  .home-view .inroom{padding:.35rem 0}
+  .home-view .code{font-size:1.5rem}
+  .home-view figure.stage{display:flex; flex:1 1 auto; flex-direction:column; min-height:0; margin:.15rem 0}
+  .home-view .screen{flex:1; min-height:80px; padding-top:0}
+  .home-view figcaption{padding:.1rem 0; font-size:.8rem}
+  .home-view .controls{margin:.1rem 0; gap:.35rem}
+  .home-view .controls .btn{padding:.15rem .65rem; font-size:.88rem}
+  .home-view .chapter-nav{margin-bottom:.15rem}
+  .home-view .right .kicker{font-size:.85rem}
+  .home-view .page.right{display:flex; flex-direction:column}
+  .home-view .toc{display:grid; flex:1; grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:repeat(3,minmax(0,1fr)); align-content:stretch; gap:.35rem; margin:.2rem 0; min-height:0}
+  .home-view .toc li{min-width:0}
+  .home-view .toc button{height:100%; min-height:clamp(54px,10vh,82px); padding:.35rem; flex-direction:column; align-items:center; justify-content:center; gap:0; border:1px solid var(--rule); background:#fffdf680; text-align:center; font-size:clamp(.8rem,1.3vw,1rem); line-height:1.1}
+  .home-view .toc button:hover,.home-view .toc button.on{background:#efe0b8}
+  .home-view .toc .chap{margin:0; font-size:.72em; line-height:1.1}
+  .home-view .toc .dots,.home-view .toc .pg{display:none}
+  .home-view .closed{position:static; z-index:auto; display:block; background:none; padding:.2rem 0; text-align:left}
+  .home-view .closed p{max-width:none; font-family:var(--serif); font-size:.9rem; color:var(--sepia)}
+  .home-view:not(.room-ready) .toc button{opacity:.7}
+  .home-view:not(.room-ready) .toc button:hover{background:#fffdf680}
+  .game-view .page{padding:clamp(1rem,3vh,2rem) clamp(1rem,4vw,3rem)}
 
   /* ---------- crossword ---------- */
   .cwwrap{overflow-x:auto; padding:.3rem 0 .6rem}
@@ -235,6 +277,44 @@
     .cell input{font-size:1.05rem}
     .booth-options{grid-template-columns:1fr}
   }
+  @media(max-width:700px){
+    body{height:100dvh; min-height:0; overflow:hidden; padding:.35rem}
+    .book.home-view{height:calc(100dvh - .7rem); grid-template-columns:1fr; grid-template-rows:minmax(0, .92fr) minmax(0, 1.08fr)}
+    .home-view .page{padding:.55rem .7rem; overflow:hidden}
+    .home-view .page.left{gap:.15rem}
+    .home-view h1{font-size:1.75rem}
+    .home-view .kicker{font-size:.68rem; letter-spacing:.14em}
+    .home-view .roombox{padding:.3rem 0}
+    .home-view .roombox .row{flex-wrap:nowrap}
+    .home-view .field{min-width:0}
+    .home-view .field label{font-size:.7rem}
+    .home-view .field input{font-size:.9rem}
+    .home-view .roombox .btn{font-size:.82rem; letter-spacing:.07em; white-space:nowrap; padding:.18rem .45rem}
+    .home-view .roombox .orn{font-size:.75rem; line-height:1}
+    .home-view #inroom[style*="display: block"]{display:flex !important; align-items:center; justify-content:space-between; gap:.5rem}
+    .home-view #inroom .code{font-size:1.25rem}
+    .home-view #inroom .row{justify-content:flex-end; flex-wrap:wrap}
+    .home-view #inroom .linkbtn{font-size:.78rem}
+    .home-view figure.stage{margin:0; padding:.3rem .3rem .15rem}
+    .home-view .screen{min-height:0; flex:1}
+    .home-view figcaption{font-size:.72rem}
+    .home-view .controls .btn{font-size:.78rem; padding:.1rem .45rem}
+    .home-view .chapter-nav{min-height:1.2rem}
+    .home-view .toc{gap:.25rem; grid-template-columns:repeat(3,minmax(0,1fr)); flex:1; align-content:stretch}
+    .home-view .toc button{min-height:0; height:100%; padding:.2rem; font-size:clamp(.73rem,3.2vw,.9rem)}
+    .home-view .toc .chap{font-size:.68em}
+    .home-view .closed p{font-size:.75rem}
+    .game-view{height:calc(100dvh - .7rem) !important}
+    .game-view .page.right{padding:.65rem .8rem; overflow:auto; overscroll-behavior:contain}
+    .game-view h2{font-size:1.3rem}
+    .game-view .chapter-nav{margin-bottom:.4rem}
+  }
+  @media(max-width:420px){
+    .home-view .page{padding:.45rem .55rem}
+    .home-view .toc button{letter-spacing:0}
+    .home-view .roombox .btn{font-size:.76rem}
+    .game-view .page.right{padding:.5rem .6rem}
+  }
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
     *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important}
@@ -243,10 +323,10 @@
 </head>
 
 <body>
-<div class="book">
+<div class="book home-view" id="book">
 
   <!-- ================= LEFT PAGE : the call ================= -->
-  <section class="page left">
+  <section class="page left" aria-label="Video call and room">
     <div class="kicker">a book for two</div>
     <h1>Tu ne Hu</h1>
     <div class="orn">❦</div>
@@ -301,10 +381,12 @@
   </section>
 
   <!-- ================= RIGHT PAGE : the games ================= -->
-  <section class="page right">
-    <div id="closed" class="closed"><p>the book is closed — open a room to begin ❦</p></div>
-
-    <div class="kicker">contents</div>
+  <section class="page right" aria-label="Games and shared memories">
+    <div class="chapter-nav">
+      <div class="kicker">contents</div>
+      <button class="btn" id="homeButton" type="button">back to home</button>
+    </div>
+    <div id="closed" class="closed"><p>Open a room to play together. ❦</p></div>
     <ul class="toc" id="toc">
       <li><button data-ch="crossword"><span class="chap">ii.</span><span class="t">the crossword</span><span class="dots"></span><span class="pg">3</span></button></li>
       <li><button data-ch="hundred"><span class="chap">iii.</span><span class="t">the hundred words</span><span class="dots"></span><span class="pg">9</span></button></li>
@@ -699,7 +781,7 @@
         callerCandidates: [], calleeCandidates: [],
         names: { a: myName() },
         members: { a: auth.currentUser.uid, b: null },
-        chapter: "crossword",
+        chapter: "home",
         crossword: { puzzle: 0, cells: {} },
         hundred: makeHundred(null),
         hangman: { word: pick(HANG_WORDS), guesses: [] },
@@ -810,10 +892,14 @@
     roomRef = null; roomId = null; roomData = null; roomMemories = [];
     memoryRenderVersion++;
     memoryLocalPhotos.clear();
+    $("book").classList.add("home-view");
+    $("book").classList.remove("game-view", "room-ready");
+    document.querySelectorAll(".chapter").forEach(chapter => chapter.classList.remove("on"));
+    document.querySelectorAll("#toc button").forEach(button => button.classList.remove("on"));
     $("lobby").style.display = "block";
     $("inroom").style.display = "none";
     $("callControls").style.display = "none";
-    $("closed").style.display = "flex";
+    $("closed").style.display = "block";
     $("muteBtn").textContent = "mute"; $("camBtn").textContent = "camera off";
     $("connectionStatus").textContent = "fig. 1 — waiting for two";
     if (!quiet) note("You left the room. Open a new one whenever you like.");
@@ -849,12 +935,32 @@
   };
 
   document.querySelectorAll("#toc button").forEach(b => {
-    b.onclick = () => { if (roomRef) updateDoc(roomRef, { chapter: b.dataset.ch }).catch(console.error); };
+    b.onclick = () => {
+      if (!roomRef) {
+        note("Open a room first, then choose a game to play together.");
+        return;
+      }
+      updateDoc(roomRef, { chapter: b.dataset.ch }).catch(err => {
+        console.error(err);
+        note("Could not open that chapter. Please try again.");
+      });
+    };
+  });
+  $("homeButton").addEventListener("click", () => {
+    if (roomRef) updateDoc(roomRef, { chapter: "home" }).catch(err => {
+      console.error(err);
+      note("Could not return to the home page. Please try again.");
+    });
   });
 
   function renderAll() {
     if (!roomData) return;
-    const ch = roomData.chapter || "crossword";
+    const ch = roomData.chapter || "home";
+    const isHome = ch === "home";
+    $("book").classList.toggle("home-view", isHome);
+    $("book").classList.toggle("game-view", !isHome);
+    $("book").classList.toggle("room-ready", Boolean(roomRef));
+    $("closed").style.display = roomRef ? "none" : "block";
     document.querySelectorAll("#toc button").forEach(b => b.classList.toggle("on", b.dataset.ch === ch));
     document.querySelectorAll(".chapter").forEach(s => s.classList.toggle("on", s.id === "ch-" + ch));
     if (ch === "crossword") renderCrossword();
