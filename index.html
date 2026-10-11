@@ -225,6 +225,24 @@
   .memory-thought b{display:block; margin-bottom:.2rem; color:var(--red); font-size:.85rem; font-style:normal; font-variant:small-caps; letter-spacing:.08em}
   .memory-contribute{display:grid; gap:.45rem; margin-top:.8rem}
   .memory-contribute textarea{width:100%; min-height:4rem; padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit; resize:vertical}
+  .memory-camera{display:grid; gap:.55rem; margin-top:.9rem; padding:.8rem; border:1px solid var(--rule); background:#fbf6ea}
+  .memory-camera video,.memory-camera img{display:block; width:min(100%,320px); max-height:420px; margin:auto; aspect-ratio:3/4; object-fit:cover; background:#30261d}
+  .memory-camera video[hidden],.memory-camera img[hidden]{display:none}
+  .memory-pair-keepsake{margin:1rem 0; padding:1rem; border:1px solid var(--rule); background:#fffaf0; box-shadow:0 5px 16px #3a2c1a12; text-align:center}
+  .memory-pair-keepsake h3{margin:.1rem 0; color:var(--red); font-family:var(--fell); font-size:1.55rem; font-weight:400}
+  .memory-pair-date{margin:.1rem 0 .8rem; color:var(--sepia); font-style:italic}
+  .memory-pair{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem}
+  .memory-pair figure{margin:0; padding:.4rem; border:1px solid var(--rule); background:#fffdf6}
+  .memory-pair img{display:block; width:100%; aspect-ratio:3/4; object-fit:cover}
+  .memory-pair figcaption{padding:.35rem 0 0; color:var(--red); font-variant:small-caps; letter-spacing:.08em}
+  .memory-pair-keepsake .small{margin:.65rem 0 0}
+  body.print-memory *{visibility:hidden !important}
+  body.print-memory .memory-pair-keepsake,body.print-memory .memory-pair-keepsake *{visibility:visible !important}
+  @media print{
+    body.print-memory{padding:0; background:#fff}
+    body.print-memory .memory-pair-keepsake{position:absolute; top:0; left:0; width:100%; max-width:800px; margin:0; box-shadow:none}
+    body.print-memory .memory-pair-keepsake .btn{display:none}
+  }
   .memory-local-photos{display:grid; gap:.35rem; margin-top:.8rem; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.06em}
   .memory-local-photos input{max-width:100%; font:inherit; font-variant:normal; letter-spacing:normal}
   .memory-keepsake[hidden]{display:none}
@@ -413,7 +431,7 @@
     <!-- ---- shared memories ---- -->
     <div class="chapter" id="ch-memories">
       <h2>our memory book</h2>
-      <p class="small" style="margin-top:0">Save little chapters from the places you have been. Add a place, a date, and your own thought. Your person can add theirs too. For your own keepsake, choose 1–4 photos from your device. They are not uploaded or saved by this site, so select them again next time.</p>
+      <p class="small" style="margin-top:0">Save little chapters from the places you have been. Add a place and your own thought, then each take a selfie. Your live camera preview stays on your device; the shared keepsake appears only after both of you choose to share a photo. You can still choose extra photos for a private, device-only keepsake.</p>
       <form class="memory-form" id="memoryForm">
         <label for="memoryPlace">place or title
           <input type="text" id="memoryPlace" maxlength="60" placeholder="e.g. our days in Turkey" required>
@@ -507,6 +525,8 @@
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
   import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, runTransaction }
     from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject }
+    from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
   /* =====================================================================
      SETTINGS
@@ -519,6 +539,7 @@
    apiKey: "AIzaSyAkbJgkuJxPX9_GjALpIFMMEAGRru_ity8",
   authDomain: "tu-ne-hu.firebaseapp.com",
   projectId: "tu-ne-hu",
+  storageBucket: "tu-ne-hu.firebasestorage.app",
   messagingSenderId: "579692726493",
   appId: "1:579692726493:web:a550cfa59d3d2e5c137334",
   measurementId: "G-J4MQ3DE333"
@@ -581,7 +602,7 @@
   /* =====================================================================
      FIREBASE + STATE
      ===================================================================== */
-  let db, auth, authReady;
+  let db, auth, authReady, storage;
   let roomRef = null, roomId = null, roomData = null, unsub = null, memoriesUnsub = null;
   let roomMemories = [];
   let isCreator = false;
@@ -590,6 +611,7 @@
   try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
+    storage = getStorage(app);
     auth = getAuth(app);
     authReady = signInAnonymously(auth).catch(err => {
       console.error("Sign-in error:", err);
@@ -708,6 +730,7 @@
     roomRef = null; roomId = null; roomData = null; roomMemories = [];
     memoryRenderVersion++;
     memoryLocalPhotos.clear();
+    clearMemoryCaptureStates();
     $("book").classList.add("home-view");
     $("book").classList.remove("game-view", "room-ready");
     document.querySelectorAll(".chapter").forEach(chapter => chapter.classList.remove("on"));
@@ -764,6 +787,7 @@
     }
     const ch = removedChapter ? "home" : roomData.chapter || "home";
     const isHome = ch === "home";
+    if (ch !== "memories") stopMemoryCameras();
     $("book").classList.toggle("home-view", isHome);
     $("book").classList.toggle("game-view", !isHome);
     $("book").classList.toggle("room-ready", Boolean(roomRef));
@@ -1772,7 +1796,23 @@
   const MAX_MEMORY_PHOTOS = 4;
   const MAX_SOURCE_PHOTO_SIZE = 15 * 1024 * 1024;
   const memoryLocalPhotos = new Map();
+  const memoryCaptureStates = new Map();
   let memoryRenderVersion = 0;
+
+  function stopMemoryCameras() {
+    memoryCaptureStates.forEach(state => {
+      if (state.stream) state.stream.getTracks().forEach(track => track.stop());
+      state.stream = null;
+    });
+  }
+
+  function clearMemoryCaptureStates() {
+    stopMemoryCameras();
+    memoryCaptureStates.forEach(state => {
+      if (state.objectUrl) URL.revokeObjectURL(state.objectUrl);
+    });
+    memoryCaptureStates.clear();
+  }
 
   function validateMemoryPhoto(file) {
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
@@ -1929,6 +1969,86 @@
     }, "image/png");
   }
 
+  async function createSelfieBlob(video) {
+    if (!video.videoWidth || !video.videoHeight) throw new Error("Wait for your camera preview to appear, then try again.");
+    const scale = Math.min(1, 960 / video.videoWidth, 1280 / video.videoHeight);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(video.videoWidth * scale);
+    canvas.height = Math.round(video.videoHeight * scale);
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("This browser could not capture your photo.");
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    for (let quality = 0.84; quality >= 0.48; quality -= 0.08) {
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(result => result ? resolve(result) : reject(new Error("Your photo could not be prepared.")), "image/jpeg", quality);
+      });
+      if (blob.size <= 1.8 * 1024 * 1024) return blob;
+    }
+    throw new Error("This photo is too large to share. Please try again in better light.");
+  }
+
+  function renderPairedKeepsake(container, memory, version) {
+    const selfies = memory.selfies || {};
+    if (!selfies.a || !selfies.b) return;
+    if (!/^[a]-[A-Za-z0-9-]+\.jpg$/.test(selfies.a) || !/^[b]-[A-Za-z0-9-]+\.jpg$/.test(selfies.b)) {
+      container.textContent = "The shared photos could not be opened. Please retake them.";
+      return;
+    }
+    const status = document.createElement("p");
+    status.className = "small";
+    status.textContent = "Making your shared photo page…";
+    container.appendChild(status);
+
+    Promise.all([
+      getDownloadURL(storageRef(storage, `rooms/${roomId}/memories/${memory.id}/${selfies.a}`)),
+      getDownloadURL(storageRef(storage, `rooms/${roomId}/memories/${memory.id}/${selfies.b}`))
+    ]).then(urls => {
+      if (version !== memoryRenderVersion || !container.isConnected) return;
+      container.replaceChildren();
+      const title = document.createElement("h3");
+      title.textContent = memory.place || "a little memory";
+      container.appendChild(title);
+      if (memory.date) {
+        const date = document.createElement("p");
+        date.className = "memory-pair-date";
+        const parsedDate = new Date(`${memory.date}T00:00:00`);
+        date.textContent = Number.isNaN(parsedDate.getTime())
+          ? memory.date
+          : new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(parsedDate);
+        container.appendChild(date);
+      }
+      const portraits = document.createElement("div");
+      portraits.className = "memory-pair";
+      ["a", "b"].forEach((role, index) => {
+        const figure = document.createElement("figure");
+        const image = document.createElement("img");
+        image.src = urls[index];
+        image.alt = `${labelFor(role)}’s selfie`;
+        const caption = document.createElement("figcaption");
+        caption.textContent = labelFor(role);
+        figure.append(image, caption);
+        portraits.appendChild(figure);
+      });
+      const printButton = document.createElement("button");
+      printButton.type = "button";
+      printButton.className = "btn";
+      printButton.textContent = "print our keepsake";
+      printButton.addEventListener("click", () => {
+        document.body.classList.add("print-memory");
+        window.print();
+      });
+      container.append(portraits, printButton);
+    }).catch(err => {
+      console.error(err);
+      if (version === memoryRenderVersion && container.isConnected) {
+        status.textContent = "The shared photo page could not be prepared. Please check your connection and try again.";
+      }
+    });
+  }
+
+  window.addEventListener("afterprint", () => document.body.classList.remove("print-memory"));
+
   function renderMemories() {
     const list = $("memoryList");
     const version = ++memoryRenderVersion;
@@ -1979,6 +2099,196 @@
         thoughtSection.appendChild(block);
       });
       article.appendChild(thoughtSection);
+
+      const selfies = memory.selfies || {};
+      const pairKeepsake = document.createElement("section");
+      pairKeepsake.className = "memory-pair-keepsake";
+      pairKeepsake.setAttribute("aria-label", `Shared photo keepsake from ${memory.place || "this memory"}`);
+      renderPairedKeepsake(pairKeepsake, memory, version);
+      if (selfies.a && selfies.b) article.appendChild(pairKeepsake);
+
+      const role = myRole();
+      const captureState = memoryCaptureStates.get(memory.id) || {
+        stream: null,
+        blob: null,
+        objectUrl: null,
+        sharedPath: "",
+        uploading: false,
+        message: ""
+      };
+      memoryCaptureStates.set(memory.id, captureState);
+      const camera = document.createElement("section");
+      camera.className = "memory-camera";
+      const cameraTitle = document.createElement("b");
+      cameraTitle.textContent = "take your own selfie";
+      const cameraHelp = document.createElement("span");
+      cameraHelp.className = "small";
+      cameraHelp.textContent = "Your camera preview stays on this device. Your photo is shared only when you press the share button, and your person cannot open either photo until they share theirs too.";
+      const video = document.createElement("video");
+      video.autoplay = true;
+      video.playsInline = true;
+      video.muted = true;
+      video.hidden = !captureState.stream;
+      video.setAttribute("aria-label", "Your private live camera preview");
+      if (captureState.stream) video.srcObject = captureState.stream;
+      const localPreview = document.createElement("img");
+      localPreview.alt = "Your private selfie preview";
+      localPreview.hidden = !captureState.objectUrl;
+      if (captureState.objectUrl) localPreview.src = captureState.objectUrl;
+      const cameraStatus = document.createElement("p");
+      cameraStatus.className = "small";
+      cameraStatus.setAttribute("role", "status");
+      cameraStatus.setAttribute("aria-live", "polite");
+      const ownSelfiePath = selfies[role] || "";
+      if (captureState.message) {
+        cameraStatus.textContent = captureState.message;
+      } else if (captureState.uploading) {
+        cameraStatus.textContent = "Sharing your photo securely…";
+      } else if (captureState.blob && !captureState.sharedPath) {
+        cameraStatus.textContent = "Only you can see this preview. Share it when you’re ready.";
+      } else if ((ownSelfiePath || captureState.sharedPath) && selfies.a && selfies.b) {
+        cameraStatus.textContent = "Both photos are together in your keepsake above.";
+      } else if (ownSelfiePath || captureState.sharedPath) {
+        cameraStatus.textContent = "Your photo is shared privately. It will open for both of you after your person shares theirs.";
+      } else {
+        cameraStatus.textContent = "Open your camera when you’re ready to take a photo.";
+      }
+      const cameraTools = document.createElement("div");
+      cameraTools.className = "tools";
+      const cameraStart = document.createElement("button");
+      cameraStart.type = "button";
+      cameraStart.className = "btn";
+      cameraStart.textContent = ownSelfiePath ? "retake my selfie" : "open my camera";
+      cameraStart.hidden = Boolean(captureState.stream);
+      const cameraCapture = document.createElement("button");
+      cameraCapture.type = "button";
+      cameraCapture.className = "btn";
+      cameraCapture.textContent = "capture selfie";
+      cameraCapture.hidden = !captureState.stream;
+      const cameraRetake = document.createElement("button");
+      cameraRetake.type = "button";
+      cameraRetake.className = "btn";
+      cameraRetake.textContent = "retake";
+      cameraRetake.hidden = !captureState.blob || captureState.uploading;
+      const cameraShare = document.createElement("button");
+      cameraShare.type = "button";
+      cameraShare.className = "btn red";
+      cameraShare.textContent = "share my photo";
+      cameraShare.hidden = !captureState.blob || captureState.uploading || Boolean(captureState.sharedPath);
+      cameraShare.disabled = captureState.uploading;
+      cameraTools.append(cameraStart, cameraCapture, cameraRetake, cameraShare);
+      camera.append(cameraTitle, cameraHelp, video, localPreview, cameraStatus, cameraTools);
+      article.appendChild(camera);
+
+      cameraStart.addEventListener("click", async () => {
+        try {
+          if (!navigator.mediaDevices?.getUserMedia) {
+            throw new Error("Camera access needs a secure HTTPS connection and a supported browser.");
+          }
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user" },
+            audio: false
+          });
+          captureState.stream = stream;
+          captureState.message = "";
+          video.srcObject = stream;
+          video.hidden = false;
+          cameraCapture.hidden = false;
+          cameraStart.hidden = true;
+          cameraRetake.hidden = true;
+          cameraShare.hidden = true;
+          localPreview.hidden = true;
+          cameraStatus.textContent = "Your live camera preview is private to you.";
+        } catch (err) {
+          console.error(err);
+          captureState.message = err.message || "Camera access was unavailable. Check your browser permission and try again.";
+          cameraStatus.textContent = captureState.message;
+        }
+      });
+      cameraCapture.addEventListener("click", async () => {
+        try {
+          const blob = await createSelfieBlob(video);
+          if (captureState.objectUrl) URL.revokeObjectURL(captureState.objectUrl);
+          captureState.blob = blob;
+          captureState.sharedPath = "";
+          captureState.message = "";
+          captureState.objectUrl = URL.createObjectURL(blob);
+          if (captureState.stream) captureState.stream.getTracks().forEach(track => track.stop());
+          captureState.stream = null;
+          video.srcObject = null;
+          video.hidden = true;
+          localPreview.src = captureState.objectUrl;
+          localPreview.hidden = false;
+          cameraCapture.hidden = true;
+          cameraStart.hidden = false;
+          cameraRetake.hidden = false;
+          cameraShare.hidden = false;
+          cameraStatus.textContent = "Only you can see this preview. Share it when you’re ready.";
+        } catch (err) {
+          console.error(err);
+          captureState.message = err.message || "Your photo could not be captured. Please try again.";
+          cameraStatus.textContent = captureState.message;
+        }
+      });
+      cameraRetake.addEventListener("click", () => {
+        if (captureState.objectUrl) URL.revokeObjectURL(captureState.objectUrl);
+        captureState.blob = null;
+        captureState.objectUrl = null;
+        captureState.message = "";
+        localPreview.removeAttribute("src");
+        localPreview.hidden = true;
+        cameraRetake.hidden = true;
+        cameraShare.hidden = true;
+        cameraStatus.textContent = "Open your camera when you’re ready to take another photo.";
+      });
+      cameraShare.addEventListener("click", async () => {
+        if (!captureState.blob || !roomRef || !storage) return;
+        const photoBlob = captureState.blob;
+        const memoryReference = doc(roomRef, "memories", memory.id);
+        const currentRoomId = roomId;
+        const currentRole = role;
+        const randomId = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, "0")).join("");
+        const fileName = `${currentRole}-${randomId}.jpg`;
+        captureState.uploading = true;
+        captureState.message = "";
+        cameraShare.disabled = true;
+        cameraRetake.disabled = true;
+        cameraStatus.textContent = "Sharing your photo securely…";
+        try {
+          await uploadBytes(
+            storageRef(storage, `rooms/${currentRoomId}/memories/${memory.id}/${fileName}`),
+            photoBlob,
+            { contentType: "image/jpeg" }
+          );
+          const replacedPath = await runTransaction(db, async transaction => {
+            const snapshot = await transaction.get(memoryReference);
+            if (!snapshot.exists()) throw new Error("This memory page is no longer available.");
+            const currentSelfies = snapshot.data().selfies || { a: "", b: "" };
+            transaction.update(memoryReference, {
+              selfies: { ...currentSelfies, [currentRole]: fileName }
+            });
+            return currentSelfies[currentRole] || "";
+          });
+          captureState.sharedPath = fileName;
+          captureState.uploading = false;
+          captureState.message = "";
+          renderMemories();
+          if (replacedPath && replacedPath !== fileName) {
+            try {
+              await deleteObject(storageRef(storage, `rooms/${currentRoomId}/memories/${memory.id}/${replacedPath}`));
+            } catch (err) {
+              console.error(err);
+              captureState.message = "Your new selfie is shared, but the previous photo could not be cleared.";
+              renderMemories();
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          captureState.uploading = false;
+          captureState.message = `Your photo could not be shared. ${err.message || "Please try again."}`;
+          renderMemories();
+        }
+      });
 
       const photoLabel = document.createElement("label");
       photoLabel.className = "memory-local-photos";
@@ -2132,6 +2442,7 @@
         note: "",
         thoughts: { a: myRole() === "a" ? thought : "", b: myRole() === "b" ? thought : "" },
         photos: [],
+        selfies: { a: "", b: "" },
         createdAt: Date.now(),
         createdBy: auth.currentUser.uid
       });

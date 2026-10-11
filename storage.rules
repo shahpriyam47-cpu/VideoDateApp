@@ -10,12 +10,39 @@ service firebase.storage {
         && (room.data.members.a == request.auth.uid || room.data.members.b == request.auth.uid);
     }
 
+    function selfieMemory(roomId, memoryId) {
+      return firestore.get(
+        /databases/(default)/documents/artifacts/our-little-room/public/data/rooms/$(roomId)/memories/$(memoryId)
+      );
+    }
+
+    function selfieOwner(roomId, fileName) {
+      let room = firestore.get(
+        /databases/(default)/documents/artifacts/our-little-room/public/data/rooms/$(roomId)
+      );
+      let role = fileName.matches('a-[a-zA-Z0-9-]+[.]jpg') ? 'a' : 'b';
+      return request.auth != null
+        && (fileName.matches('a-[a-zA-Z0-9-]+[.]jpg') || fileName.matches('b-[a-zA-Z0-9-]+[.]jpg'))
+        && room.data.members[role] == request.auth.uid;
+    }
+
     match /rooms/{roomId}/memories/{memoryId}/{fileName} {
-      allow read: if signedInRoomMember(roomId);
-      allow create: if signedInRoomMember(roomId)
+      allow read: if signedInRoomMember(roomId)
+        && (
+          (
+            selfieMemory(roomId, memoryId).data.selfies.a == fileName
+            && selfieMemory(roomId, memoryId).data.selfies.b != ''
+          ) || (
+            selfieMemory(roomId, memoryId).data.selfies.b == fileName
+            && selfieMemory(roomId, memoryId).data.selfies.a != ''
+          )
+        );
+      allow create: if selfieOwner(roomId, fileName)
         && request.resource.size <= 2 * 1024 * 1024
         && request.resource.contentType == 'image/jpeg';
-      allow delete: if signedInRoomMember(roomId);
+      allow delete: if selfieOwner(roomId, fileName)
+        && fileName != selfieMemory(roomId, memoryId).data.selfies.a
+        && fileName != selfieMemory(roomId, memoryId).data.selfies.b;
       allow update: if false;
     }
   }

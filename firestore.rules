@@ -50,8 +50,8 @@ service cloud.firestore {
       match /memories/{memoryId} {
         allow read: if roomParticipant(roomId);
         allow create: if roomParticipant(roomId)
-          && request.resource.data.keys().hasOnly(['place', 'date', 'note', 'thoughts', 'photos', 'createdAt', 'createdBy'])
-          && request.resource.data.keys().hasAll(['place', 'date', 'note', 'thoughts', 'photos', 'createdAt', 'createdBy'])
+          && request.resource.data.keys().hasOnly(['place', 'date', 'note', 'thoughts', 'photos', 'selfies', 'createdAt', 'createdBy'])
+          && request.resource.data.keys().hasAll(['place', 'date', 'note', 'thoughts', 'photos', 'selfies', 'createdAt', 'createdBy'])
           && request.resource.data.place is string
           && request.resource.data.place.size() > 0
           && request.resource.data.place.size() <= 60
@@ -67,18 +67,46 @@ service cloud.firestore {
           && request.resource.data.thoughts[roomRole(roomId) == 'a' ? 'b' : 'a'] == ''
           && request.resource.data.photos is list
           && request.resource.data.photos.size() <= 4
+          && request.resource.data.selfies is map
+          && request.resource.data.selfies.keys().hasOnly(['a', 'b'])
+          && request.resource.data.selfies.keys().hasAll(['a', 'b'])
+          && request.resource.data.selfies.a == ''
+          && request.resource.data.selfies.b == ''
           && request.resource.data.createdAt is int
           && request.resource.data.createdBy == request.auth.uid;
         allow update: if roomParticipant(roomId)
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['thoughts'])
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['thoughts', 'selfies'])
           && request.resource.data.thoughts is map
           && request.resource.data.thoughts.keys().hasOnly(['a', 'b'])
           && request.resource.data.thoughts.keys().hasAll(['a', 'b'])
-          && request.resource.data.thoughts[roomRole(roomId)] is string
-          && request.resource.data.thoughts[roomRole(roomId)].size() > 0
-          && request.resource.data.thoughts[roomRole(roomId)].size() <= 250
+          && (
+            request.resource.data.thoughts[roomRole(roomId)]
+              == resource.data.get('thoughts', {'a': '', 'b': ''})[roomRole(roomId)]
+            || (
+              request.resource.data.thoughts[roomRole(roomId)] is string
+              && request.resource.data.thoughts[roomRole(roomId)].size() > 0
+              && request.resource.data.thoughts[roomRole(roomId)].size() <= 250
+            )
+          )
           && request.resource.data.thoughts[roomRole(roomId) == 'a' ? 'b' : 'a']
-            == resource.data.get('thoughts', {'a': '', 'b': ''})[roomRole(roomId) == 'a' ? 'b' : 'a'];
+            == resource.data.get('thoughts', {'a': '', 'b': ''})[roomRole(roomId) == 'a' ? 'b' : 'a']
+          && request.resource.data.selfies is map
+          && request.resource.data.selfies.keys().hasOnly(['a', 'b'])
+          && request.resource.data.selfies.keys().hasAll(['a', 'b'])
+          && request.resource.data.selfies[roomRole(roomId) == 'a' ? 'b' : 'a']
+            == resource.data.get('selfies', {'a': '', 'b': ''})[roomRole(roomId) == 'a' ? 'b' : 'a']
+          && (
+            request.resource.data.selfies[roomRole(roomId)]
+              == resource.data.get('selfies', {'a': '', 'b': ''})[roomRole(roomId)]
+            || (
+              request.resource.data.selfies[roomRole(roomId)] is string
+              && request.resource.data.selfies[roomRole(roomId)].size() > 0
+              && request.resource.data.selfies[roomRole(roomId)].size() <= 100
+              && request.resource.data.selfies[roomRole(roomId)].matches(
+                roomRole(roomId) == 'a' ? 'a-[a-zA-Z0-9-]+[.]jpg' : 'b-[a-zA-Z0-9-]+[.]jpg'
+              )
+            )
+          );
         allow delete: if false;
       }
     }
