@@ -477,7 +477,7 @@
     <!-- ---- guess my number ---- -->
     <div class="chapter" id="ch-number-game">
       <h2>guess my number</h2>
-      <p class="small" style="margin-top:0">Each choose a secret whole number from 1 to 100. Once both numbers are set, guess your person's number. They will tell you to go higher or lower — first to guess correctly wins.</p>
+      <p class="small" style="margin-top:0">Each choose a secret whole number from 1 to 100. Once both numbers are set, take turns guessing your person's number. Only one person can guess at a time — first to guess correctly wins.</p>
       <form class="number-game-form" id="numberSecretForm">
         <label for="numberSecretInput">your secret number (1–100)</label>
         <input type="number" id="numberSecretInput" min="1" max="100" step="1" inputmode="numeric" required>
@@ -1675,6 +1675,7 @@
   const emptyNumberGame = () => ({
     numbers: { a: null, b: null },
     guesses: { a: [], b: [] },
+    turn: "a",
     winner: "",
     round: 0
   });
@@ -1687,17 +1688,22 @@
     const otherRole = role === "a" ? "b" : "a";
     const bothSet = numbers.a !== null && numbers.a !== undefined && numbers.b !== null && numbers.b !== undefined;
     const won = Boolean(game.winner);
+    const turn = game.turn === "b" ? "b" : "a";
+    const isYourTurn = bothSet && !won && turn === role;
     $("numberSecretForm").hidden = !roomRef || bothSet || numbers[role] !== null && numbers[role] !== undefined || won;
     $("numberGuessForm").hidden = !roomRef || !bothSet || won;
     $("numberGameAgain").hidden = !roomRef || !won;
     $("numberSecretSubmit").disabled = !roomRef;
-    $("numberGuessSubmit").disabled = !roomRef;
+    $("numberGuessInput").disabled = !isYourTurn;
+    $("numberGuessSubmit").disabled = !isYourTurn;
 
     if (won) {
       $("numberGameStatus").textContent =
         `${labelFor(game.winner)} guessed first and wins this round ❦ ${labelFor("a")}'s number was ${numbers.a}; ${labelFor("b")}'s was ${numbers.b}.`;
     } else if (bothSet) {
-      $("numberGameStatus").textContent = `Both numbers are set — guess ${labelFor(otherRole)}'s number.`;
+      $("numberGameStatus").textContent = isYourTurn
+        ? `Both numbers are set — it’s your turn to guess ${labelFor(otherRole)}'s number.`
+        : `Both numbers are set — waiting for ${labelFor(turn)} to guess. You can guess after they submit.`;
     } else if (numbers[role] !== null && numbers[role] !== undefined) {
       $("numberGameStatus").textContent = `Your number is set — waiting for ${labelFor(otherRole)} to choose.`;
     } else {
@@ -1737,7 +1743,7 @@
         if ((numbers[role] !== null && numbers[role] !== undefined) ||
             (numbers.a !== null && numbers.a !== undefined && numbers.b !== null && numbers.b !== undefined)) return "already-set";
         tx.update(roomRef, {
-          numberGame: { ...game, numbers: { ...numbers, [role]: number } }
+          numberGame: { ...game, numbers: { ...numbers, [role]: number }, turn: game.turn === "b" ? "b" : "a" }
         });
         return "saved";
       });
@@ -1770,11 +1776,14 @@
         if (game.winner) return "round-over";
         if (numbers.a === null || numbers.a === undefined ||
             numbers.b === null || numbers.b === undefined) return "not-ready";
+        const turn = game.turn === "b" ? "b" : "a";
+        if (turn !== role) return "not-your-turn";
         const playerGuesses = Array.isArray(game.guesses?.[role]) ? game.guesses[role] : [];
         if (playerGuesses.some(entry => entry.value === guess)) return "already-guessed";
         const hint = guess === numbers[targetRole] ? "correct" : numbers[targetRole] > guess ? "higher" : "lower";
         tx.update(roomRef, {
           [`numberGame.guesses.${role}`]: [...playerGuesses, { value: guess, hint }],
+          "numberGame.turn": targetRole,
           ...(hint === "correct" ? { "numberGame.winner": role } : {})
         });
         return "saved";
@@ -1783,6 +1792,7 @@
       else if (result === "unavailable") note("The room is no longer available.");
       else if (result === "not-ready") note("Both numbers must be set before guessing begins.");
       else if (result === "round-over") note("This round has already been won.");
+      else if (result === "not-your-turn") note("Wait for your partner to submit their guess before taking your turn.");
       else note("You already tried that number.");
     } catch (err) {
       console.error(err);
