@@ -104,6 +104,27 @@ service cloud.firestore {
 
       allow delete: if false;
 
+      match /photoBoothNotes/{role} {
+        function validNote(data) {
+          return data.keys().hasOnly(['hint', 'updatedAt'])
+            && data.keys().hasAll(['hint', 'updatedAt'])
+            && data.hint is string
+            && data.hint.size() <= 250
+            && data.updatedAt is int;
+        }
+
+        allow read: if roomParticipant(roomId);
+        allow create: if roomParticipant(roomId)
+          && (role == 'a' || role == 'b')
+          && role == roomRole(roomId)
+          && validNote(request.resource.data);
+        allow update: if roomParticipant(roomId)
+          && role == roomRole(roomId)
+          && validNote(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hint', 'updatedAt']);
+        allow delete: if false;
+      }
+
       match /photoBooth/{fileName} {
         allow read: if roomParticipant(roomId)
           && photoBoothPairReady()

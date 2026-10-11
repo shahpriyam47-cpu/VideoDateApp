@@ -191,16 +191,22 @@
   .booth-camera video{display:block; width:min(100%,360px); max-height:480px; margin:auto; aspect-ratio:3/4; object-fit:cover; background:#30261d}
   .booth-camera video[hidden]{display:none}
   .booth-card{max-width:760px; margin:1rem auto; padding:1.2rem; border:1px solid var(--rule); background:linear-gradient(145deg,#fffaf0,#eee2c9); box-shadow:0 8px 24px #3a2c1a20; text-align:center}
-  .booth-card h3{margin:.1rem 0; color:var(--red); font-family:var(--fell); font-size:1.7rem; font-weight:400}
-  .booth-card-title{margin:.1rem 0 .8rem; color:var(--sepia); font-style:italic}
+  .booth-card-date{margin:0 0 .8rem; color:var(--sepia); font-style:italic}
   .booth-portraits{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem}
   .booth-portraits figure{margin:0; padding:.45rem; border:1px solid var(--rule); background:#fffdf6}
   .booth-portraits img{display:block; width:100%; aspect-ratio:3/4; object-fit:cover; background:#eee2c9}
   .booth-portraits img[hidden],.booth-waiting[hidden]{display:none}
   .booth-portraits figcaption{padding:.35rem 0 0; color:var(--red); font-variant:small-caps; letter-spacing:.08em}
+  .booth-notes{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; margin:.9rem 0}
+  .booth-notes section{display:grid; gap:.3rem; min-width:0; padding:.65rem; border:1px solid var(--rule); background:#fffdf680}
+  .booth-notes label{display:grid; gap:.3rem; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
+  .booth-notes textarea{width:100%; min-height:5rem; padding:.45rem; border:1px solid var(--rule); background:#fffdf6; color:var(--ink); font:italic 1rem var(--serif); font-variant:normal; letter-spacing:normal; resize:vertical}
+  .booth-notes textarea:read-only{background:#f5efdf; color:var(--sepia)}
+  .booth-notes .btn{justify-self:center}
   .booth-waiting{display:flex; min-height:150px; aspect-ratio:3/4; align-items:center; justify-content:center; padding:.7rem; color:var(--sepia); font-style:italic}
   .booth-card[hidden]{display:none}
   .booth-status{min-height:1.5em; text-align:center; color:var(--sepia); font-style:italic}
+  @media(max-width:520px){.booth-notes{grid-template-columns:1fr}}
   @media(max-width:420px){.booth-card{padding:.6rem}.booth-portraits{gap:.4rem}.booth-waiting{min-height:100px}}
   .memory-local-photos{display:grid; gap:.35rem; margin-top:.8rem; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.06em}
   .memory-local-photos input{max-width:100%; font:inherit; font-variant:normal; letter-spacing:normal}
@@ -355,11 +361,22 @@
         </div>
       </section>
       <section class="booth-card" id="boothCard" aria-label="Your shared selfie card" hidden>
-        <h3>together, in a little moment</h3>
-        <p class="booth-card-title">a photo booth card from Tu ne Hu</p>
+        <p class="booth-card-date">our date: <time id="boothDate"></time></p>
         <div class="booth-portraits">
           <figure><img id="boothPhotoA" alt="" hidden><div id="boothWaitingA" class="booth-waiting">waiting for the first selfie…</div><figcaption id="boothNameA"></figcaption></figure>
           <figure><img id="boothPhotoB" alt="" hidden><div id="boothWaitingB" class="booth-waiting">waiting for the second selfie…</div><figcaption id="boothNameB"></figcaption></figure>
+        </div>
+        <div class="booth-notes">
+          <section>
+            <label for="boothHintA" id="boothHintLabelA"></label>
+            <textarea id="boothHintA" maxlength="250" placeholder="Write a little note of your own…"></textarea>
+            <button class="btn" id="boothHintSaveA" type="button">save my note</button>
+          </section>
+          <section>
+            <label for="boothHintB" id="boothHintLabelB"></label>
+            <textarea id="boothHintB" maxlength="250" placeholder="Write a little note of your own…"></textarea>
+            <button class="btn" id="boothHintSaveB" type="button">save my note</button>
+          </section>
         </div>
         <p class="booth-status" id="boothCardStatus" role="status" aria-live="polite"></p>
         <button class="btn" id="boothDownload" type="button" hidden>download our selfie card</button>
@@ -535,7 +552,9 @@
      FIREBASE + STATE
      ===================================================================== */
   let db, auth, authReady;
-  let roomRef = null, roomId = null, roomData = null, unsub = null, memoriesUnsub = null;
+  let roomRef = null, roomId = null, roomData = null, unsub = null, memoriesUnsub = null, photoBoothNotesUnsub = null;
+  let photoBoothNotes = { a: "", b: "" };
+  let photoBoothNotesReady = false;
   let roomMemories = [];
   let isCreator = false;
   const myRole = () => (isCreator ? "a" : "b");
@@ -650,15 +669,35 @@
       console.error(err);
       $("memoryStatus").textContent = "The memory book could not be opened. Check that the Firestore rules were updated.";
     });
+    if (photoBoothNotesUnsub) photoBoothNotesUnsub();
+    photoBoothNotes = { a: "", b: "" };
+    photoBoothNotesReady = false;
+    photoBoothNotesUnsub = onSnapshot(collection(roomRef, "photoBoothNotes"), snapshot => {
+      photoBoothNotes = { a: "", b: "" };
+      snapshot.docs.forEach(noteSnapshot => {
+        if (noteSnapshot.id === "a" || noteSnapshot.id === "b") {
+          const hint = noteSnapshot.data().hint;
+          photoBoothNotes[noteSnapshot.id] = typeof hint === "string" ? hint : "";
+        }
+      });
+      photoBoothNotesReady = true;
+      if (roomData?.chapter === "photo-booth") renderPhotoBooth();
+    }, err => {
+      console.error(err);
+      $("boothCardStatus").textContent = "Photo booth notes could not be loaded. Check the Firestore rules and try again.";
+    });
   }
 
   async function leaveRoom(quiet) {
     if (unsub) { unsub(); unsub = null; }
     if (memoriesUnsub) { memoriesUnsub(); memoriesUnsub = null; }
+    if (photoBoothNotesUnsub) { photoBoothNotesUnsub(); photoBoothNotesUnsub = null; }
     clearInterval(colourTimer);
     colourTimer = null;
     colourExpiryInProgress = null;
     roomRef = null; roomId = null; roomData = null; roomMemories = [];
+    photoBoothNotes = { a: "", b: "" };
+    photoBoothNotesReady = false;
     memoryRenderVersion++;
     memoryLocalPhotos.clear();
     clearPhotoBoothState();
@@ -1638,6 +1677,58 @@
     decodingPairKey: "",
     renderVersion: 0
   };
+  const photoBoothNotesBusy = { a: false, b: false };
+
+  function localPhotoBoothDate() {
+    const date = new Date();
+    const value = [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0")
+    ].join("-");
+    return {
+      value,
+      label: new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(date)
+    };
+  }
+
+  function renderPhotoBoothNotes() {
+    const role = myRole();
+    ["a", "b"].forEach(noteRole => {
+      const suffix = noteRole.toUpperCase();
+      const textarea = $(`boothHint${suffix}`);
+      const saveButton = $(`boothHintSave${suffix}`);
+      $(`boothHintLabel${suffix}`).textContent = `${labelFor(noteRole)}’s custom hint`;
+      textarea.readOnly = noteRole !== role;
+      textarea.disabled = !photoBoothNotesReady;
+      saveButton.hidden = noteRole !== role;
+      saveButton.disabled = !photoBoothNotesReady || photoBoothNotesBusy[noteRole];
+      if (document.activeElement !== textarea) textarea.value = photoBoothNotes[noteRole];
+    });
+  }
+
+  ["a", "b"].forEach(role => {
+    $(`boothHintSave${role.toUpperCase()}`).addEventListener("click", async () => {
+      if (!roomRef || photoBoothNotesBusy[role] || myRole() !== role) return;
+      const hint = $(`boothHint${role.toUpperCase()}`).value.trim();
+      photoBoothNotesBusy[role] = true;
+      renderPhotoBoothNotes();
+      $("boothCardStatus").textContent = "Saving your note…";
+      try {
+        await setDoc(doc(collection(roomRef, "photoBoothNotes"), role), {
+          hint,
+          updatedAt: Date.now()
+        });
+        $("boothCardStatus").textContent = "Your note is saved on the shared photo card.";
+      } catch (err) {
+        console.error(err);
+        $("boothCardStatus").textContent = "Your note could not be saved. Check the Firestore rules and try again.";
+      } finally {
+        photoBoothNotesBusy[role] = false;
+        renderPhotoBoothNotes();
+      }
+    });
+  });
 
   function stopPhotoBoothCamera() {
     if (photoBoothState.stream) {
@@ -1994,7 +2085,7 @@
     if (!card || card.hidden) return;
     const canvas = document.createElement("canvas");
     canvas.width = 1200;
-    canvas.height = 1050;
+    canvas.height = 1420;
     const context = canvas.getContext("2d");
     if (!context) {
       $("boothCardStatus").textContent = "This browser could not prepare the photo card.";
@@ -2005,28 +2096,48 @@
     context.textAlign = "center";
     context.fillStyle = "#82715b";
     context.font = '26px Georgia, serif';
-    context.fillText("A LITTLE PHOTO BOOTH MOMENT", 600, 58);
+    context.fillText("OUR PHOTO BOOTH", 600, 58);
     context.fillStyle = "#873b32";
-    context.font = 'italic 46px Georgia, serif';
-    context.fillText("together, in a little moment", 600, 125);
+    context.font = 'italic 36px Georgia, serif';
+    const date = localPhotoBoothDate();
+    context.fillText(date.label, 600, 112);
     const images = ["boothPhotoA", "boothPhotoB"].map(id => $(id));
     try {
       images.forEach((image, index) => {
         if (!image.complete || !image.naturalWidth) throw new Error("Both photos need to finish loading before downloading the card.");
         const x = 95 + index * 520;
-        const y = 180;
+        const y = 155;
         const width = 490;
-        const height = 650;
+        const height = 590;
         context.fillStyle = "#fffdf6";
         context.fillRect(x - 12, y - 12, width + 24, height + 24);
         drawMemoryPhoto(context, image, x, y, width, height);
         context.fillStyle = "#873b32";
         context.font = '30px Georgia, serif';
-        context.fillText(labelFor(index === 0 ? "a" : "b"), x + width / 2, 890);
+        context.fillText(labelFor(index === 0 ? "a" : "b"), x + width / 2, 785);
       });
+      ["a", "b"].forEach((role, index) => {
+        const x = 75 + index * 535;
+        context.fillStyle = "#fffdf6";
+        context.strokeStyle = "#cdbf9f";
+        context.lineWidth = 2;
+        context.fillRect(x, 830, 510, 470);
+        context.strokeRect(x, 830, 510, 470);
+        context.textAlign = "center";
+        context.fillStyle = "#873b32";
+        context.font = '26px Georgia, serif';
+        context.fillText(`${labelFor(role)}’s little note`, x + 255, 880);
+        context.textAlign = "left";
+        context.fillStyle = "#30261d";
+        context.font = 'italic 27px "IM Fell English", Georgia, serif';
+        const hint = photoBoothNotes[role] || "A little note is still to come…";
+        wrapMemoryText(context, `“${hint}”`, 430, 10)
+          .forEach((line, lineIndex) => context.fillText(line, x + 40, 930 + lineIndex * 34));
+      });
+      context.textAlign = "center";
       context.fillStyle = "#873b32";
       context.font = '40px Georgia, serif';
-      context.fillText("❦", 600, 970);
+      context.fillText("❦", 600, 1360);
       canvas.toBlob(blob => {
         if (!blob) {
           $("boothCardStatus").textContent = "The photo card could not be downloaded. Please try again.";
@@ -2068,6 +2179,10 @@
     const pairExists = Boolean(selfies.a && selfies.b);
     card.hidden = !pairExists;
     $("boothDownload").hidden = true;
+    const date = localPhotoBoothDate();
+    $("boothDate").dateTime = date.value;
+    $("boothDate").textContent = date.label;
+    renderPhotoBoothNotes();
     if (!pairExists || !roomId) {
       if (photoBoothState.pairKey || photoBoothState.loadingPairKey) {
         photoBoothState.renderVersion++;
@@ -2108,8 +2223,10 @@
       Promise.all(images.map(image => image.decode())).then(() => {
         if (version !== photoBoothState.renderVersion || photoBoothState.pairKey !== pairKey) return;
         photoBoothState.decodingPairKey = "";
-        $("boothDownload").hidden = false;
-        $("boothCardStatus").textContent = "Your shared selfie card is ready. Download a copy to keep.";
+        $("boothDownload").hidden = !photoBoothNotesReady;
+        $("boothCardStatus").textContent = photoBoothNotesReady
+          ? "Your shared selfie card is ready. Add your custom hint, then download a copy to keep."
+          : "Loading your shared custom hints…";
       }).catch(err => {
         console.error(err);
         if (version !== photoBoothState.renderVersion) return;
