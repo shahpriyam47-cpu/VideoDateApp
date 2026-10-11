@@ -45,5 +45,51 @@ service firebase.storage {
         && fileName != selfieMemory(roomId, memoryId).data.selfies.b;
       allow update: if false;
     }
+
+    function photoBoothSelfie(roomId, fileName) {
+      let room = firestore.get(
+        /databases/(default)/documents/artifacts/our-little-room/public/data/rooms/$(roomId)
+      );
+      let selfies = room.data.get('photoBooth', {'selfies': {'a': '', 'b': ''}}).get(
+        'selfies',
+        {'a': '', 'b': ''}
+      );
+      return (fileName.matches('a-[a-zA-Z0-9-]+[.]jpg') && selfies.a == fileName)
+        || (fileName.matches('b-[a-zA-Z0-9-]+[.]jpg') && selfies.b == fileName);
+    }
+
+    function photoBoothPairReady(roomId) {
+      let room = firestore.get(
+        /databases/(default)/documents/artifacts/our-little-room/public/data/rooms/$(roomId)
+      );
+      let selfies = room.data.get('photoBooth', {'selfies': {'a': '', 'b': ''}}).get(
+        'selfies',
+        {'a': '', 'b': ''}
+      );
+      return selfies.a is string && selfies.a != ''
+        && selfies.b is string && selfies.b != '';
+    }
+
+    function photoBoothOwner(roomId, fileName) {
+      let room = firestore.get(
+        /databases/(default)/documents/artifacts/our-little-room/public/data/rooms/$(roomId)
+      );
+      let role = fileName.matches('a-[a-zA-Z0-9-]+[.]jpg') ? 'a' : 'b';
+      return request.auth != null
+        && (fileName.matches('a-[a-zA-Z0-9-]+[.]jpg') || fileName.matches('b-[a-zA-Z0-9-]+[.]jpg'))
+        && room.data.members[role] == request.auth.uid;
+    }
+
+    match /rooms/{roomId}/photo-booth/{fileName} {
+      allow read: if signedInRoomMember(roomId)
+        && photoBoothPairReady(roomId)
+        && photoBoothSelfie(roomId, fileName);
+      allow create: if photoBoothOwner(roomId, fileName)
+        && request.resource.size <= 2 * 1024 * 1024
+        && request.resource.contentType == 'image/jpeg';
+      allow delete: if photoBoothOwner(roomId, fileName)
+        && !photoBoothSelfie(roomId, fileName);
+      allow update: if false;
+    }
   }
 }

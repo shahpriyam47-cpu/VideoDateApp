@@ -225,24 +225,21 @@
   .memory-thought b{display:block; margin-bottom:.2rem; color:var(--red); font-size:.85rem; font-style:normal; font-variant:small-caps; letter-spacing:.08em}
   .memory-contribute{display:grid; gap:.45rem; margin-top:.8rem}
   .memory-contribute textarea{width:100%; min-height:4rem; padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit; resize:vertical}
-  .memory-camera{display:grid; gap:.55rem; margin-top:.9rem; padding:.8rem; border:1px solid var(--rule); background:#fbf6ea}
-  .memory-camera video,.memory-camera img{display:block; width:min(100%,320px); max-height:420px; margin:auto; aspect-ratio:3/4; object-fit:cover; background:#30261d}
-  .memory-camera video[hidden],.memory-camera img[hidden]{display:none}
-  .memory-pair-keepsake{margin:1rem 0; padding:1rem; border:1px solid var(--rule); background:#fffaf0; box-shadow:0 5px 16px #3a2c1a12; text-align:center}
-  .memory-pair-keepsake h3{margin:.1rem 0; color:var(--red); font-family:var(--fell); font-size:1.55rem; font-weight:400}
-  .memory-pair-date{margin:.1rem 0 .8rem; color:var(--sepia); font-style:italic}
-  .memory-pair{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem}
-  .memory-pair figure{margin:0; padding:.4rem; border:1px solid var(--rule); background:#fffdf6}
-  .memory-pair img{display:block; width:100%; aspect-ratio:3/4; object-fit:cover}
-  .memory-pair figcaption{padding:.35rem 0 0; color:var(--red); font-variant:small-caps; letter-spacing:.08em}
-  .memory-pair-keepsake .small{margin:.65rem 0 0}
-  body.print-memory *{visibility:hidden !important}
-  body.print-memory .memory-pair-keepsake,body.print-memory .memory-pair-keepsake *{visibility:visible !important}
-  @media print{
-    body.print-memory{padding:0; background:#fff}
-    body.print-memory .memory-pair-keepsake{position:absolute; top:0; left:0; width:100%; max-width:800px; margin:0; box-shadow:none}
-    body.print-memory .memory-pair-keepsake .btn{display:none}
-  }
+  .booth-camera{display:grid; gap:.55rem; margin:1rem 0; padding:1rem; border:1px solid var(--rule); background:#fbf6ea}
+  .booth-camera video{display:block; width:min(100%,360px); max-height:480px; margin:auto; aspect-ratio:3/4; object-fit:cover; background:#30261d}
+  .booth-camera video[hidden]{display:none}
+  .booth-card{max-width:760px; margin:1rem auto; padding:1.2rem; border:1px solid var(--rule); background:linear-gradient(145deg,#fffaf0,#eee2c9); box-shadow:0 8px 24px #3a2c1a20; text-align:center}
+  .booth-card h3{margin:.1rem 0; color:var(--red); font-family:var(--fell); font-size:1.7rem; font-weight:400}
+  .booth-card-title{margin:.1rem 0 .8rem; color:var(--sepia); font-style:italic}
+  .booth-portraits{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem}
+  .booth-portraits figure{margin:0; padding:.45rem; border:1px solid var(--rule); background:#fffdf6}
+  .booth-portraits img{display:block; width:100%; aspect-ratio:3/4; object-fit:cover; background:#eee2c9}
+  .booth-portraits img[hidden],.booth-waiting[hidden]{display:none}
+  .booth-portraits figcaption{padding:.35rem 0 0; color:var(--red); font-variant:small-caps; letter-spacing:.08em}
+  .booth-waiting{display:flex; min-height:150px; aspect-ratio:3/4; align-items:center; justify-content:center; padding:.7rem; color:var(--sepia); font-style:italic}
+  .booth-card[hidden]{display:none}
+  .booth-status{min-height:1.5em; text-align:center; color:var(--sepia); font-style:italic}
+  @media(max-width:420px){.booth-card{padding:.6rem}.booth-portraits{gap:.4rem}.booth-waiting{min-height:100px}}
   .memory-local-photos{display:grid; gap:.35rem; margin-top:.8rem; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.06em}
   .memory-local-photos input{max-width:100%; font:inherit; font-variant:normal; letter-spacing:normal}
   .memory-keepsake[hidden]{display:none}
@@ -361,9 +358,10 @@
       <li><button data-ch="would-you-rather"><span class="chap">iv.</span><span class="t">a little choice</span><span class="dots"></span><span class="pg">25</span></button></li>
       <li><button data-ch="secret-word"><span class="chap">v.</span><span class="t">your secret word</span><span class="dots"></span><span class="pg">31</span></button></li>
       <li><button data-ch="memories"><span class="chap">vi.</span><span class="t">our memory book</span><span class="dots"></span><span class="pg">39</span></button></li>
-      <li><button data-ch="number-game"><span class="chap">vii.</span><span class="t">guess my number</span><span class="dots"></span><span class="pg">43</span></button></li>
-      <li><button data-ch="colour-game"><span class="chap">viii.</span><span class="t">guess the colour</span><span class="dots"></span><span class="pg">47</span></button></li>
-      <li><button data-ch="code-game"><span class="chap">ix.</span><span class="t">guess the code</span><span class="dots"></span><span class="pg">51</span></button></li>
+      <li><button data-ch="photo-booth"><span class="chap">vii.</span><span class="t">photo booth</span><span class="dots"></span><span class="pg">43</span></button></li>
+      <li><button data-ch="number-game"><span class="chap">viii.</span><span class="t">guess my number</span><span class="dots"></span><span class="pg">47</span></button></li>
+      <li><button data-ch="colour-game"><span class="chap">ix.</span><span class="t">guess the colour</span><span class="dots"></span><span class="pg">51</span></button></li>
+      <li><button data-ch="code-game"><span class="chap">x.</span><span class="t">guess the code</span><span class="dots"></span><span class="pg">55</span></button></li>
     </ul>
     <div class="orn" style="margin:.4rem 0 1rem">❦</div>
 
@@ -431,7 +429,7 @@
     <!-- ---- shared memories ---- -->
     <div class="chapter" id="ch-memories">
       <h2>our memory book</h2>
-      <p class="small" style="margin-top:0">Save little chapters from the places you have been. Add a place and your own thought, then each take a selfie. Your live camera preview stays on your device; the shared keepsake appears only after both of you choose to share a photo. You can still choose extra photos for a private, device-only keepsake.</p>
+      <p class="small" style="margin-top:0">Save little chapters from the places you have been. Add a place, a date, and your own thought. For a shared selfie collage, visit the photo booth. For a private keepsake, choose 1–4 photos from this device; they are not uploaded or saved by this site.</p>
       <form class="memory-form" id="memoryForm">
         <label for="memoryPlace">place or title
           <input type="text" id="memoryPlace" maxlength="60" placeholder="e.g. our days in Turkey" required>
@@ -448,6 +446,32 @@
       </form>
       <div class="msg" id="memoryStatus" role="status" aria-live="polite"></div>
       <div class="memory-list" id="memoryList" aria-live="polite"></div>
+    </div>
+
+    <!-- ---- shared photo booth ---- -->
+    <div class="chapter" id="ch-photo-booth">
+      <h2>our photo booth</h2>
+      <p class="small" style="margin-top:0">Take turns capturing a selfie. Each capture is shared with your room right away; the paired photo card appears once you have both taken one. Your live camera preview is only visible on your own device.</p>
+      <section class="booth-camera" aria-label="Take your photo booth selfie">
+        <b id="boothCameraTitle">your live selfie</b>
+        <video id="boothVideo" autoplay playsinline muted aria-label="Your private live camera preview" hidden></video>
+        <p class="booth-status" id="boothStatus" role="status" aria-live="polite">Open your camera when you’re ready.</p>
+        <div class="tools" style="justify-content:center">
+          <button class="btn" id="boothStart" type="button">open my camera</button>
+          <button class="btn" id="boothCapture" type="button" hidden>capture &amp; share selfie</button>
+          <button class="btn" id="boothRetake" type="button" hidden>retake my selfie</button>
+        </div>
+      </section>
+      <section class="booth-card" id="boothCard" aria-label="Your shared selfie card" hidden>
+        <h3>together, in a little moment</h3>
+        <p class="booth-card-title">a photo booth card from Tu ne Hu</p>
+        <div class="booth-portraits">
+          <figure><img id="boothPhotoA" alt="" hidden><div id="boothWaitingA" class="booth-waiting">waiting for the first selfie…</div><figcaption id="boothNameA"></figcaption></figure>
+          <figure><img id="boothPhotoB" alt="" hidden><div id="boothWaitingB" class="booth-waiting">waiting for the second selfie…</div><figcaption id="boothNameB"></figcaption></figure>
+        </div>
+        <p class="booth-status" id="boothCardStatus" role="status" aria-live="polite"></p>
+        <button class="btn" id="boothDownload" type="button" hidden>download our selfie card</button>
+      </section>
     </div>
 
     <!-- ---- guess my number ---- -->
@@ -525,7 +549,7 @@
   import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
   import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, runTransaction }
     from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject }
+  import { getStorage, ref as storageRef, uploadBytes, getBytes, deleteObject }
     from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
   /* =====================================================================
@@ -730,7 +754,7 @@
     roomRef = null; roomId = null; roomData = null; roomMemories = [];
     memoryRenderVersion++;
     memoryLocalPhotos.clear();
-    clearMemoryCaptureStates();
+    clearPhotoBoothState();
     $("book").classList.add("home-view");
     $("book").classList.remove("game-view", "room-ready");
     document.querySelectorAll(".chapter").forEach(chapter => chapter.classList.remove("on"));
@@ -778,7 +802,7 @@
 
   function renderAll() {
     if (!roomData) return;
-    const removedChapter = ["photo-booth", "hangman", "tic-tac-toe", "after-hours"].includes(roomData.chapter);
+    const removedChapter = ["hangman", "tic-tac-toe", "after-hours"].includes(roomData.chapter);
     if (removedChapter && roomRef) {
       updateDoc(roomRef, { chapter: "home" }).catch(err => {
         console.error(err);
@@ -787,7 +811,7 @@
     }
     const ch = removedChapter ? "home" : roomData.chapter || "home";
     const isHome = ch === "home";
-    if (ch !== "memories") stopMemoryCameras();
+    if (ch !== "photo-booth") stopPhotoBoothCamera();
     $("book").classList.toggle("home-view", isHome);
     $("book").classList.toggle("game-view", !isHome);
     $("book").classList.toggle("room-ready", Boolean(roomRef));
@@ -799,6 +823,7 @@
     if (ch === "would-you-rather") renderWouldYouRather();
     if (ch === "secret-word") renderSecretWord();
     if (ch === "memories") renderMemories();
+    if (ch === "photo-booth") renderPhotoBooth();
     if (ch === "number-game") renderNumberGame();
     if (roomData.colourGame) renderColourGame();
     if (ch === "code-game") renderCodeGame();
@@ -1796,22 +1821,43 @@
   const MAX_MEMORY_PHOTOS = 4;
   const MAX_SOURCE_PHOTO_SIZE = 15 * 1024 * 1024;
   const memoryLocalPhotos = new Map();
-  const memoryCaptureStates = new Map();
   let memoryRenderVersion = 0;
+  const photoBoothState = {
+    stream: null,
+    busy: false,
+    message: "",
+    pairKey: "",
+    pairUrls: [],
+    loadingPairKey: "",
+    decodingPairKey: "",
+    renderVersion: 0
+  };
 
-  function stopMemoryCameras() {
-    memoryCaptureStates.forEach(state => {
-      if (state.stream) state.stream.getTracks().forEach(track => track.stop());
-      state.stream = null;
-    });
+  function stopPhotoBoothCamera() {
+    if (photoBoothState.stream) {
+      photoBoothState.stream.getTracks().forEach(track => track.stop());
+      photoBoothState.stream = null;
+      $("boothVideo").srcObject = null;
+      $("boothVideo").hidden = true;
+      $("boothCapture").hidden = true;
+      $("boothStart").hidden = false;
+    }
+    if (photoBoothState.loadingPairKey) {
+      photoBoothState.loadingPairKey = "";
+      photoBoothState.decodingPairKey = "";
+      photoBoothState.renderVersion++;
+    }
   }
 
-  function clearMemoryCaptureStates() {
-    stopMemoryCameras();
-    memoryCaptureStates.forEach(state => {
-      if (state.objectUrl) URL.revokeObjectURL(state.objectUrl);
-    });
-    memoryCaptureStates.clear();
+  function clearPhotoBoothState() {
+    stopPhotoBoothCamera();
+    photoBoothState.message = "";
+    photoBoothState.pairUrls.forEach(url => URL.revokeObjectURL(url));
+    photoBoothState.pairUrls = [];
+    photoBoothState.pairKey = "";
+    photoBoothState.loadingPairKey = "";
+    photoBoothState.busy = false;
+    photoBoothState.renderVersion++;
   }
 
   function validateMemoryPhoto(file) {
@@ -1824,15 +1870,17 @@
   }
 
   function drawMemoryPhoto(context, image, x, y, width, height) {
-    const sourceRatio = image.width / image.height;
+    const sourceWidth = image.naturalWidth || image.width;
+    const sourceHeight = image.naturalHeight || image.height;
+    const sourceRatio = sourceWidth / sourceHeight;
     const targetRatio = width / height;
-    let sx = 0, sy = 0, sw = image.width, sh = image.height;
+    let sx = 0, sy = 0, sw = sourceWidth, sh = sourceHeight;
     if (sourceRatio > targetRatio) {
-      sw = image.height * targetRatio;
-      sx = (image.width - sw) / 2;
+      sw = sourceHeight * targetRatio;
+      sx = (sourceWidth - sw) / 2;
     } else {
-      sh = image.width / targetRatio;
-      sy = (image.height - sh) / 2;
+      sh = sourceWidth / targetRatio;
+      sy = (sourceHeight - sh) / 2;
     }
     context.save();
     context.beginPath();
@@ -1988,66 +2036,300 @@
     throw new Error("This photo is too large to share. Please try again in better light.");
   }
 
-  function renderPairedKeepsake(container, memory, version) {
-    const selfies = memory.selfies || {};
-    if (!selfies.a || !selfies.b) return;
-    if (!/^[a]-[A-Za-z0-9-]+\.jpg$/.test(selfies.a) || !/^[b]-[A-Za-z0-9-]+\.jpg$/.test(selfies.b)) {
-      container.textContent = "The shared photos could not be opened. Please retake them.";
+  $("boothStart").addEventListener("click", async () => {
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Camera access needs a secure HTTPS connection and a supported browser.");
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+        audio: false
+      });
+      photoBoothState.stream = stream;
+      photoBoothState.message = "";
+      $("boothVideo").srcObject = stream;
+      $("boothVideo").hidden = false;
+      $("boothStart").hidden = true;
+      $("boothCapture").hidden = false;
+      $("boothStatus").textContent = "Your live camera preview is private to you.";
+    } catch (err) {
+      console.error(err);
+      photoBoothState.message = err.message || "Camera access was unavailable. Check your browser permission and try again.";
+      $("boothStatus").textContent = photoBoothState.message;
+    }
+  });
+
+  $("boothCapture").addEventListener("click", async () => {
+    if (!roomRef || !roomId || !auth.currentUser || !storage || photoBoothState.busy) return;
+    photoBoothState.busy = true;
+    $("boothCapture").disabled = true;
+    $("boothStatus").textContent = "Capturing and sharing your selfie…";
+    try {
+      const blob = await createSelfieBlob($("boothVideo"));
+      const currentRoomId = roomId;
+      const currentRoomRef = roomRef;
+      const role = myRole();
+      const randomId = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, "0")).join("");
+      const fileName = `${role}-${randomId}.jpg`;
+      const destination = storageRef(storage, `rooms/${currentRoomId}/photo-booth/${fileName}`);
+
+      await uploadBytes(destination, blob, { contentType: "image/jpeg" });
+      try {
+        if (roomId !== currentRoomId || roomRef !== currentRoomRef) {
+          throw new Error("You left this room before the selfie could be shared.");
+        }
+        photoBoothState.message = "";
+        const updateResult = await runTransaction(db, async transaction => {
+          const snapshot = await transaction.get(currentRoomRef);
+          if (!snapshot.exists()) throw new Error("This room is no longer available.");
+          const booth = snapshot.data().photoBooth || { selfies: { a: "", b: "" }, updatedAt: 0 };
+          const previous = booth.selfies?.[role] || "";
+          const updatedBooth = {
+            selfies: { ...(booth.selfies || { a: "", b: "" }), [role]: fileName },
+            updatedAt: Date.now()
+          };
+          transaction.update(currentRoomRef, {
+            photoBooth: updatedBooth
+          });
+          return { previous, photoBooth: updatedBooth };
+        });
+        if (roomId !== currentRoomId || roomRef !== currentRoomRef) return;
+        roomData = { ...roomData, photoBooth: updateResult.photoBooth };
+        if (updateResult.previous && updateResult.previous !== fileName) {
+          try {
+            await deleteObject(storageRef(storage, `rooms/${currentRoomId}/photo-booth/${updateResult.previous}`));
+          } catch (err) {
+            console.error(err);
+            photoBoothState.message = "Your new selfie was captured, but the previous copy could not be cleared.";
+          }
+        }
+      } catch (err) {
+        try {
+          await deleteObject(destination);
+        } catch (cleanupError) {
+          console.error("Could not remove an unrecorded photo booth upload:", cleanupError);
+        }
+        throw err;
+      }
+
+      stopPhotoBoothCamera();
+      $("boothStatus").textContent = photoBoothState.message || "Your selfie is shared with your partner. You can retake it any time.";
+      renderPhotoBooth();
+    } catch (err) {
+      console.error(err);
+      photoBoothState.message = err.message || "Your photo could not be shared. Please try again.";
+      $("boothStatus").textContent = photoBoothState.message;
+      $("boothCapture").disabled = false;
+    } finally {
+      photoBoothState.busy = false;
+      if (roomId === currentRoomId && roomData?.chapter === "photo-booth") renderPhotoBooth();
+    }
+  });
+
+  $("boothRetake").addEventListener("click", async () => {
+    if (!roomRef || !roomId || photoBoothState.busy) return;
+    photoBoothState.busy = true;
+    const currentRoomId = roomId;
+    const currentRoomRef = roomRef;
+    const role = myRole();
+    photoBoothState.message = "";
+    $("boothRetake").hidden = true;
+    $("boothStatus").textContent = "Removing your previous selfie…";
+    try {
+      const updateResult = await runTransaction(db, async transaction => {
+        const snapshot = await transaction.get(currentRoomRef);
+        if (!snapshot.exists()) throw new Error("This room is no longer available.");
+        const booth = snapshot.data().photoBooth || { selfies: { a: "", b: "" } };
+        const selfies = booth.selfies || { a: "", b: "" };
+        const previous = selfies[role] || "";
+        const updatedBooth = {
+          ...booth,
+          selfies: { ...selfies, [role]: "" },
+          updatedAt: Date.now()
+        };
+        transaction.update(currentRoomRef, {
+          photoBooth: updatedBooth
+        });
+        return { previous, photoBooth: updatedBooth };
+      });
+      if (roomId === currentRoomId && roomRef === currentRoomRef) {
+        roomData = { ...roomData, photoBooth: updateResult.photoBooth };
+      }
+      if (updateResult.previous) {
+        try {
+          await deleteObject(storageRef(storage, `rooms/${currentRoomId}/photo-booth/${updateResult.previous}`));
+        } catch (err) {
+          console.error(err);
+          photoBoothState.message = "Your previous selfie was removed from the booth, but its stored copy could not be deleted.";
+        }
+      }
+      $("boothStatus").textContent = photoBoothState.message || "Your old selfie is removed. Open your camera to take another.";
+      if (roomId === currentRoomId && roomRef === currentRoomRef) renderPhotoBooth();
+    } catch (err) {
+      console.error(err);
+      photoBoothState.message = `Your selfie could not be reset. ${err.message || "Please try again."}`;
+      $("boothStatus").textContent = photoBoothState.message;
+      $("boothRetake").hidden = false;
+    } finally {
+      photoBoothState.busy = false;
+      if (roomId === currentRoomId && roomRef === currentRoomRef && roomData?.chapter === "photo-booth") renderPhotoBooth();
+    }
+  });
+
+  $("boothDownload").addEventListener("click", () => {
+    const card = $("boothCard");
+    if (!card || card.hidden) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 1050;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      $("boothCardStatus").textContent = "This browser could not prepare the photo card.";
       return;
     }
-    const status = document.createElement("p");
-    status.className = "small";
-    status.textContent = "Making your shared photo page…";
-    container.appendChild(status);
+    context.fillStyle = "#fffaf0";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.textAlign = "center";
+    context.fillStyle = "#82715b";
+    context.font = '26px Georgia, serif';
+    context.fillText("A LITTLE PHOTO BOOTH MOMENT", 600, 58);
+    context.fillStyle = "#873b32";
+    context.font = 'italic 46px Georgia, serif';
+    context.fillText("together, in a little moment", 600, 125);
+    const images = ["boothPhotoA", "boothPhotoB"].map(id => $(id));
+    try {
+      images.forEach((image, index) => {
+        if (!image.complete || !image.naturalWidth) throw new Error("Both photos need to finish loading before downloading the card.");
+        const x = 95 + index * 520;
+        const y = 180;
+        const width = 490;
+        const height = 650;
+        context.fillStyle = "#fffdf6";
+        context.fillRect(x - 12, y - 12, width + 24, height + 24);
+        drawMemoryPhoto(context, image, x, y, width, height);
+        context.fillStyle = "#873b32";
+        context.font = '30px Georgia, serif';
+        context.fillText(labelFor(index === 0 ? "a" : "b"), x + width / 2, 890);
+      });
+      context.fillStyle = "#873b32";
+      context.font = '40px Georgia, serif';
+      context.fillText("❦", 600, 970);
+      canvas.toBlob(blob => {
+        if (!blob) {
+          $("boothCardStatus").textContent = "The photo card could not be downloaded. Please try again.";
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "our-photo-booth-card.png";
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }, "image/png");
+    } catch (err) {
+      console.error(err);
+      $("boothCardStatus").textContent = err.message || "The photo card could not be downloaded.";
+    }
+  });
 
-    Promise.all([
-      getDownloadURL(storageRef(storage, `rooms/${roomId}/memories/${memory.id}/${selfies.a}`)),
-      getDownloadURL(storageRef(storage, `rooms/${roomId}/memories/${memory.id}/${selfies.b}`))
-    ]).then(urls => {
-      if (version !== memoryRenderVersion || !container.isConnected) return;
-      container.replaceChildren();
-      const title = document.createElement("h3");
-      title.textContent = memory.place || "a little memory";
-      container.appendChild(title);
-      if (memory.date) {
-        const date = document.createElement("p");
-        date.className = "memory-pair-date";
-        const parsedDate = new Date(`${memory.date}T00:00:00`);
-        date.textContent = Number.isNaN(parsedDate.getTime())
-          ? memory.date
-          : new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(parsedDate);
-        container.appendChild(date);
+  function renderPhotoBooth() {
+    const booth = roomData?.photoBooth || { selfies: { a: "", b: "" } };
+    const selfies = booth.selfies || { a: "", b: "" };
+    const ownSelfie = selfies[myRole()] || "";
+    $("boothCameraTitle").textContent = `your live selfie, ${labelFor(myRole())}`;
+    $("boothStart").hidden = Boolean(photoBoothState.stream) || Boolean(ownSelfie);
+    $("boothCapture").hidden = !photoBoothState.stream;
+    $("boothCapture").disabled = photoBoothState.busy;
+    $("boothRetake").hidden = !ownSelfie || photoBoothState.busy;
+    $("boothStatus").textContent = photoBoothState.message || (photoBoothState.busy
+      ? "Capturing and sharing your selfie…"
+      : ownSelfie
+        ? selfies.a && selfies.b
+          ? "Both selfies are in your shared card below."
+          : "Your selfie is shared. Waiting for your partner to take theirs."
+        : selfies[myRole() === "a" ? "b" : "a"]
+          ? "Your partner has taken their selfie. Take yours to make your photo card."
+          : "Open your camera when you’re ready.");
+
+    const card = $("boothCard");
+    const pairExists = Boolean(selfies.a && selfies.b);
+    card.hidden = !pairExists;
+    $("boothDownload").hidden = true;
+    if (!pairExists || !roomId) {
+      if (photoBoothState.pairKey || photoBoothState.loadingPairKey) {
+        photoBoothState.renderVersion++;
+        photoBoothState.loadingPairKey = "";
+        photoBoothState.decodingPairKey = "";
+        photoBoothState.pairUrls.forEach(url => URL.revokeObjectURL(url));
+        photoBoothState.pairUrls = [];
+        photoBoothState.pairKey = "";
+        ["A", "B"].forEach(suffix => {
+          $(`boothPhoto${suffix}`).removeAttribute("src");
+          $(`boothWaiting${suffix}`).hidden = false;
+        });
       }
-      const portraits = document.createElement("div");
-      portraits.className = "memory-pair";
-      ["a", "b"].forEach((role, index) => {
-        const figure = document.createElement("figure");
-        const image = document.createElement("img");
-        image.src = urls[index];
-        image.alt = `${labelFor(role)}’s selfie`;
-        const caption = document.createElement("figcaption");
-        caption.textContent = labelFor(role);
-        figure.append(image, caption);
-        portraits.appendChild(figure);
+      return;
+    }
+
+    ["a", "b"].forEach((role, index) => {
+      $(`boothName${role.toUpperCase()}`).textContent = labelFor(role);
+      $(`boothWaiting${role.toUpperCase()}`).hidden = false;
+      $(`boothWaiting${role.toUpperCase()}`).textContent = `preparing ${labelFor(role)}’s selfie…`;
+      $(`boothPhoto${role.toUpperCase()}`).hidden = true;
+    });
+    const pairKey = `${roomId}/${selfies.a}/${selfies.b}`;
+    if (photoBoothState.pairKey === pairKey) {
+      const images = ["A", "B"].map((suffix, index) => {
+        const image = $(`boothPhoto${suffix}`);
+        if (image.src !== photoBoothState.pairUrls[index]) image.src = photoBoothState.pairUrls[index];
+        image.hidden = false;
+        $(`boothWaiting${suffix}`).hidden = true;
+        return image;
       });
-      const printButton = document.createElement("button");
-      printButton.type = "button";
-      printButton.className = "btn";
-      printButton.textContent = "print our keepsake";
-      printButton.addEventListener("click", () => {
-        document.body.classList.add("print-memory");
-        window.print();
+      if (!photoBoothState.decodingPairKey && !$("boothDownload").hidden) return;
+      if (photoBoothState.decodingPairKey === pairKey) return;
+      photoBoothState.decodingPairKey = pairKey;
+      const version = ++photoBoothState.renderVersion;
+      $("boothDownload").hidden = true;
+      $("boothCardStatus").textContent = "Finishing your photo card…";
+      Promise.all(images.map(image => image.decode())).then(() => {
+        if (version !== photoBoothState.renderVersion || photoBoothState.pairKey !== pairKey) return;
+        photoBoothState.decodingPairKey = "";
+        $("boothDownload").hidden = false;
+        $("boothCardStatus").textContent = "Your shared selfie card is ready. Download a copy to keep.";
+      }).catch(err => {
+        console.error(err);
+        if (version !== photoBoothState.renderVersion) return;
+        photoBoothState.decodingPairKey = "";
+        $("boothCardStatus").textContent = "The paired photo card could not be displayed. Please try again.";
       });
-      container.append(portraits, printButton);
+      return;
+    }
+    if (photoBoothState.loadingPairKey === pairKey) return;
+    photoBoothState.pairUrls.forEach(url => URL.revokeObjectURL(url));
+    photoBoothState.pairUrls = [];
+    photoBoothState.pairKey = "";
+    photoBoothState.decodingPairKey = "";
+    photoBoothState.loadingPairKey = pairKey;
+    const version = ++photoBoothState.renderVersion;
+    $("boothCardStatus").textContent = "Putting your two selfies together…";
+
+    Promise.all(["a", "b"].map(role => getBytes(
+      storageRef(storage, `rooms/${roomId}/photo-booth/${selfies[role]}`),
+      2 * 1024 * 1024
+    ))).then(bytes => {
+      if (version !== photoBoothState.renderVersion || !card.isConnected) return;
+      photoBoothState.pairUrls = bytes.map(data => URL.createObjectURL(new Blob([data], { type: "image/jpeg" })));
+      photoBoothState.pairKey = pairKey;
+      photoBoothState.loadingPairKey = "";
+      renderPhotoBooth();
     }).catch(err => {
       console.error(err);
-      if (version === memoryRenderVersion && container.isConnected) {
-        status.textContent = "The shared photo page could not be prepared. Please check your connection and try again.";
-      }
+      if (version !== photoBoothState.renderVersion) return;
+      photoBoothState.loadingPairKey = "";
+      $("boothCardStatus").textContent = "The paired photo card could not be loaded. Check Firebase Storage rules and try again.";
     });
   }
-
-  window.addEventListener("afterprint", () => document.body.classList.remove("print-memory"));
 
   function renderMemories() {
     const list = $("memoryList");
@@ -2099,196 +2381,6 @@
         thoughtSection.appendChild(block);
       });
       article.appendChild(thoughtSection);
-
-      const selfies = memory.selfies || {};
-      const pairKeepsake = document.createElement("section");
-      pairKeepsake.className = "memory-pair-keepsake";
-      pairKeepsake.setAttribute("aria-label", `Shared photo keepsake from ${memory.place || "this memory"}`);
-      renderPairedKeepsake(pairKeepsake, memory, version);
-      if (selfies.a && selfies.b) article.appendChild(pairKeepsake);
-
-      const role = myRole();
-      const captureState = memoryCaptureStates.get(memory.id) || {
-        stream: null,
-        blob: null,
-        objectUrl: null,
-        sharedPath: "",
-        uploading: false,
-        message: ""
-      };
-      memoryCaptureStates.set(memory.id, captureState);
-      const camera = document.createElement("section");
-      camera.className = "memory-camera";
-      const cameraTitle = document.createElement("b");
-      cameraTitle.textContent = "take your own selfie";
-      const cameraHelp = document.createElement("span");
-      cameraHelp.className = "small";
-      cameraHelp.textContent = "Your camera preview stays on this device. Your photo is shared only when you press the share button, and your person cannot open either photo until they share theirs too.";
-      const video = document.createElement("video");
-      video.autoplay = true;
-      video.playsInline = true;
-      video.muted = true;
-      video.hidden = !captureState.stream;
-      video.setAttribute("aria-label", "Your private live camera preview");
-      if (captureState.stream) video.srcObject = captureState.stream;
-      const localPreview = document.createElement("img");
-      localPreview.alt = "Your private selfie preview";
-      localPreview.hidden = !captureState.objectUrl;
-      if (captureState.objectUrl) localPreview.src = captureState.objectUrl;
-      const cameraStatus = document.createElement("p");
-      cameraStatus.className = "small";
-      cameraStatus.setAttribute("role", "status");
-      cameraStatus.setAttribute("aria-live", "polite");
-      const ownSelfiePath = selfies[role] || "";
-      if (captureState.message) {
-        cameraStatus.textContent = captureState.message;
-      } else if (captureState.uploading) {
-        cameraStatus.textContent = "Sharing your photo securely…";
-      } else if (captureState.blob && !captureState.sharedPath) {
-        cameraStatus.textContent = "Only you can see this preview. Share it when you’re ready.";
-      } else if ((ownSelfiePath || captureState.sharedPath) && selfies.a && selfies.b) {
-        cameraStatus.textContent = "Both photos are together in your keepsake above.";
-      } else if (ownSelfiePath || captureState.sharedPath) {
-        cameraStatus.textContent = "Your photo is shared privately. It will open for both of you after your person shares theirs.";
-      } else {
-        cameraStatus.textContent = "Open your camera when you’re ready to take a photo.";
-      }
-      const cameraTools = document.createElement("div");
-      cameraTools.className = "tools";
-      const cameraStart = document.createElement("button");
-      cameraStart.type = "button";
-      cameraStart.className = "btn";
-      cameraStart.textContent = ownSelfiePath ? "retake my selfie" : "open my camera";
-      cameraStart.hidden = Boolean(captureState.stream);
-      const cameraCapture = document.createElement("button");
-      cameraCapture.type = "button";
-      cameraCapture.className = "btn";
-      cameraCapture.textContent = "capture selfie";
-      cameraCapture.hidden = !captureState.stream;
-      const cameraRetake = document.createElement("button");
-      cameraRetake.type = "button";
-      cameraRetake.className = "btn";
-      cameraRetake.textContent = "retake";
-      cameraRetake.hidden = !captureState.blob || captureState.uploading;
-      const cameraShare = document.createElement("button");
-      cameraShare.type = "button";
-      cameraShare.className = "btn red";
-      cameraShare.textContent = "share my photo";
-      cameraShare.hidden = !captureState.blob || captureState.uploading || Boolean(captureState.sharedPath);
-      cameraShare.disabled = captureState.uploading;
-      cameraTools.append(cameraStart, cameraCapture, cameraRetake, cameraShare);
-      camera.append(cameraTitle, cameraHelp, video, localPreview, cameraStatus, cameraTools);
-      article.appendChild(camera);
-
-      cameraStart.addEventListener("click", async () => {
-        try {
-          if (!navigator.mediaDevices?.getUserMedia) {
-            throw new Error("Camera access needs a secure HTTPS connection and a supported browser.");
-          }
-          const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "user" },
-            audio: false
-          });
-          captureState.stream = stream;
-          captureState.message = "";
-          video.srcObject = stream;
-          video.hidden = false;
-          cameraCapture.hidden = false;
-          cameraStart.hidden = true;
-          cameraRetake.hidden = true;
-          cameraShare.hidden = true;
-          localPreview.hidden = true;
-          cameraStatus.textContent = "Your live camera preview is private to you.";
-        } catch (err) {
-          console.error(err);
-          captureState.message = err.message || "Camera access was unavailable. Check your browser permission and try again.";
-          cameraStatus.textContent = captureState.message;
-        }
-      });
-      cameraCapture.addEventListener("click", async () => {
-        try {
-          const blob = await createSelfieBlob(video);
-          if (captureState.objectUrl) URL.revokeObjectURL(captureState.objectUrl);
-          captureState.blob = blob;
-          captureState.sharedPath = "";
-          captureState.message = "";
-          captureState.objectUrl = URL.createObjectURL(blob);
-          if (captureState.stream) captureState.stream.getTracks().forEach(track => track.stop());
-          captureState.stream = null;
-          video.srcObject = null;
-          video.hidden = true;
-          localPreview.src = captureState.objectUrl;
-          localPreview.hidden = false;
-          cameraCapture.hidden = true;
-          cameraStart.hidden = false;
-          cameraRetake.hidden = false;
-          cameraShare.hidden = false;
-          cameraStatus.textContent = "Only you can see this preview. Share it when you’re ready.";
-        } catch (err) {
-          console.error(err);
-          captureState.message = err.message || "Your photo could not be captured. Please try again.";
-          cameraStatus.textContent = captureState.message;
-        }
-      });
-      cameraRetake.addEventListener("click", () => {
-        if (captureState.objectUrl) URL.revokeObjectURL(captureState.objectUrl);
-        captureState.blob = null;
-        captureState.objectUrl = null;
-        captureState.message = "";
-        localPreview.removeAttribute("src");
-        localPreview.hidden = true;
-        cameraRetake.hidden = true;
-        cameraShare.hidden = true;
-        cameraStatus.textContent = "Open your camera when you’re ready to take another photo.";
-      });
-      cameraShare.addEventListener("click", async () => {
-        if (!captureState.blob || !roomRef || !storage) return;
-        const photoBlob = captureState.blob;
-        const memoryReference = doc(roomRef, "memories", memory.id);
-        const currentRoomId = roomId;
-        const currentRole = role;
-        const randomId = Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, "0")).join("");
-        const fileName = `${currentRole}-${randomId}.jpg`;
-        captureState.uploading = true;
-        captureState.message = "";
-        cameraShare.disabled = true;
-        cameraRetake.disabled = true;
-        cameraStatus.textContent = "Sharing your photo securely…";
-        try {
-          await uploadBytes(
-            storageRef(storage, `rooms/${currentRoomId}/memories/${memory.id}/${fileName}`),
-            photoBlob,
-            { contentType: "image/jpeg" }
-          );
-          const replacedPath = await runTransaction(db, async transaction => {
-            const snapshot = await transaction.get(memoryReference);
-            if (!snapshot.exists()) throw new Error("This memory page is no longer available.");
-            const currentSelfies = snapshot.data().selfies || { a: "", b: "" };
-            transaction.update(memoryReference, {
-              selfies: { ...currentSelfies, [currentRole]: fileName }
-            });
-            return currentSelfies[currentRole] || "";
-          });
-          captureState.sharedPath = fileName;
-          captureState.uploading = false;
-          captureState.message = "";
-          renderMemories();
-          if (replacedPath && replacedPath !== fileName) {
-            try {
-              await deleteObject(storageRef(storage, `rooms/${currentRoomId}/memories/${memory.id}/${replacedPath}`));
-            } catch (err) {
-              console.error(err);
-              captureState.message = "Your new selfie is shared, but the previous photo could not be cleared.";
-              renderMemories();
-            }
-          }
-        } catch (err) {
-          console.error(err);
-          captureState.uploading = false;
-          captureState.message = `Your photo could not be shared. ${err.message || "Please try again."}`;
-          renderMemories();
-        }
-      });
 
       const photoLabel = document.createElement("label");
       photoLabel.className = "memory-local-photos";
@@ -2447,7 +2539,7 @@
         createdBy: auth.currentUser.uid
       });
       $("memoryForm").reset();
-      $("memoryStatus").textContent = "Your memory page is saved. Each of you can choose your own private photos for a keepsake. ❦";
+      $("memoryStatus").textContent = "Your memory page is saved. Visit the photo booth to make a shared selfie card. ❦";
     } catch (err) {
       console.error(err);
       $("memoryStatus").textContent = `The memory could not be saved. ${err.message || "Please try again."}`;

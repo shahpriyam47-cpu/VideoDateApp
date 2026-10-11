@@ -23,6 +23,32 @@ service cloud.firestore {
           && (data.members.a == request.auth.uid || data.members.b == request.auth.uid);
       }
 
+      function photoBoothUpdateAllowed() {
+        let oldBooth = resource.data.get('photoBooth', {'selfies': {'a': '', 'b': ''}});
+        let newBooth = request.resource.data.get('photoBooth', {'selfies': {'a': '', 'b': ''}});
+        let role = roomRole(roomId);
+        let otherRole = role == 'a' ? 'b' : 'a';
+        return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['photoBooth'])
+          || (
+            newBooth is map
+            && newBooth.keys().hasOnly(['selfies', 'updatedAt'])
+            && newBooth.keys().hasAll(['selfies', 'updatedAt'])
+            && newBooth.selfies is map
+            && newBooth.selfies.keys().hasOnly(['a', 'b'])
+            && newBooth.selfies.keys().hasAll(['a', 'b'])
+            && newBooth.selfies[otherRole] == oldBooth.get('selfies', {'a': '', 'b': ''})[otherRole]
+            && newBooth.selfies[role] is string
+            && newBooth.selfies[role].size() <= 100
+            && (
+              newBooth.selfies[role] == ''
+              || newBooth.selfies[role].matches(
+                role == 'a' ? 'a-[a-zA-Z0-9-]+[.]jpg' : 'b-[a-zA-Z0-9-]+[.]jpg'
+              )
+            )
+            && newBooth.updatedAt is int
+          );
+      }
+
       allow create: if signedIn()
         && request.resource.data.members.a == request.auth.uid
         && request.resource.data.members.b == null;
@@ -36,6 +62,7 @@ service cloud.firestore {
       allow update: if (
         isMember(resource.data)
         && request.resource.data.members == resource.data.members
+        && photoBoothUpdateAllowed()
       ) || (
         signedIn()
         && resource.data.members.b == null
