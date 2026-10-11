@@ -327,6 +327,22 @@
       { urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"] }
     ]
   };
+  const TURN_CREDENTIALS_URL = "https://bitter-star-199f.shahpriyam47.workers.dev";
+
+  async function peerConfiguration() {
+    if (!TURN_CREDENTIALS_URL) return ICE_SERVERS;
+
+    const response = await fetch(TURN_CREDENTIALS_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error("Could not get video relay credentials. Check the Cloudflare Worker setup.");
+    const relayServers = await response.json();
+    if (!Array.isArray(relayServers) || !relayServers.some(server => {
+      const urls = Array.isArray(server.urls) ? server.urls : [server.urls];
+      return urls.some(url => typeof url === "string" && /^turns?:/i.test(url));
+    })) {
+      throw new Error("The relay service did not return a TURN server. Check your Metered account settings.");
+    }
+    return { iceServers: [...ICE_SERVERS.iceServers, ...relayServers] };
+  }
 
   /* =====================================================================
      CONTENT  (edit freely: add your own words, clues, inside jokes)
@@ -418,8 +434,8 @@
     }
   }
 
-  function buildPeer() {
-    pc = new RTCPeerConnection(ICE_SERVERS);
+  function buildPeer(configuration) {
+    pc = new RTCPeerConnection(configuration);
     seenCaller = 0; seenCallee = 0; remoteSetting = false;
     localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
     pc.ontrack = e => { $("remoteVideo").srcObject = e.streams[0]; };
@@ -445,8 +461,9 @@
       note("");
       await authReady;
       await leaveRoom(true);
+      const configuration = await peerConfiguration();
       await getLocalMedia();
-      buildPeer();
+      buildPeer(configuration);
       isCaller = true;
       roomId = makeCode();
       roomRef = roomDoc(roomId);
@@ -494,8 +511,9 @@
       const data = snap.data();
       if (data.answer) { note("That room already has two people. Ask your partner to open a fresh room."); roomId = null; return; }
 
+      const configuration = await peerConfiguration();
       await getLocalMedia();
-      buildPeer();
+      buildPeer(configuration);
       isCaller = false;
 
       pc.onicecandidate = e => {
