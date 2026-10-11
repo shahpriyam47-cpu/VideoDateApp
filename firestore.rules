@@ -12,6 +12,11 @@ service cloud.firestore {
         && (room.data.members.a == request.auth.uid || room.data.members.b == request.auth.uid);
     }
 
+    function roomRole(roomId) {
+      let room = get(/databases/$(database)/documents/artifacts/our-little-room/public/data/rooms/$(roomId));
+      return room.data.members.a == request.auth.uid ? 'a' : 'b';
+    }
+
     match /artifacts/our-little-room/public/data/rooms/{roomId} {
       function isMember(data) {
         return request.auth != null
@@ -45,20 +50,37 @@ service cloud.firestore {
       match /memories/{memoryId} {
         allow read: if roomParticipant(roomId);
         allow create: if roomParticipant(roomId)
-          && request.resource.data.keys().hasOnly(['place', 'date', 'note', 'photos', 'createdAt', 'createdBy'])
-          && request.resource.data.keys().hasAll(['place', 'date', 'note', 'photos', 'createdAt', 'createdBy'])
+          && request.resource.data.keys().hasOnly(['place', 'date', 'note', 'thoughts', 'photos', 'createdAt', 'createdBy'])
+          && request.resource.data.keys().hasAll(['place', 'date', 'note', 'thoughts', 'photos', 'createdAt', 'createdBy'])
           && request.resource.data.place is string
           && request.resource.data.place.size() > 0
           && request.resource.data.place.size() <= 60
           && request.resource.data.date is string
           && request.resource.data.note is string
           && request.resource.data.note.size() <= 500
+          && request.resource.data.thoughts is map
+          && request.resource.data.thoughts.keys().hasOnly(['a', 'b'])
+          && request.resource.data.thoughts.keys().hasAll(['a', 'b'])
+          && request.resource.data.thoughts[roomRole(roomId)] is string
+          && request.resource.data.thoughts[roomRole(roomId)].size() > 0
+          && request.resource.data.thoughts[roomRole(roomId)].size() <= 250
+          && request.resource.data.thoughts[roomRole(roomId) == 'a' ? 'b' : 'a'] == ''
           && request.resource.data.photos is list
           && request.resource.data.photos.size() > 0
           && request.resource.data.photos.size() <= 4
           && request.resource.data.createdAt is int
           && request.resource.data.createdBy == request.auth.uid;
-        allow update, delete: if false;
+        allow update: if roomParticipant(roomId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['thoughts'])
+          && request.resource.data.thoughts is map
+          && request.resource.data.thoughts.keys().hasOnly(['a', 'b'])
+          && request.resource.data.thoughts.keys().hasAll(['a', 'b'])
+          && request.resource.data.thoughts[roomRole(roomId)] is string
+          && request.resource.data.thoughts[roomRole(roomId)].size() > 0
+          && request.resource.data.thoughts[roomRole(roomId)].size() <= 250
+          && request.resource.data.thoughts[roomRole(roomId) == 'a' ? 'b' : 'a']
+            == resource.data.get('thoughts', {'a': '', 'b': ''})[roomRole(roomId) == 'a' ? 'b' : 'a'];
+        allow delete: if false;
       }
     }
   }
