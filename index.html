@@ -164,6 +164,11 @@
   .choice-card.chosen{border-color:var(--red); background:#efe0b866}
   .choice-card button{width:100%}
   .vote-result{text-align:center; color:var(--sepia); font-style:italic; min-height:1.5rem}
+  .secret-word-form{display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem; margin:1rem 0}
+  .secret-word-form input{flex:1 1 150px; min-width:0; padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit}
+  .secret-word-form[hidden],#secretWordNext[hidden]{display:none}
+  .secret-word-guesses{display:flex; flex-wrap:wrap; justify-content:center; gap:.4rem; margin:.7rem 0}
+  .secret-word-guesses span{padding:.15rem .55rem; border:1px solid var(--rule); color:var(--sepia); font-style:italic}
 
   /* ---------- photo booth ---------- */
   .booth-options{display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin:.8rem 0}
@@ -278,6 +283,7 @@
       <li><button data-ch="tic-tac-toe"><span class="chap">v.</span><span class="t">noughts &amp; crosses</span><span class="dots"></span><span class="pg">21</span></button></li>
       <li><button data-ch="would-you-rather"><span class="chap">vi.</span><span class="t">a little choice</span><span class="dots"></span><span class="pg">25</span></button></li>
       <li><button data-ch="photo-booth"><span class="chap">vii.</span><span class="t">the photo booth</span><span class="dots"></span><span class="pg">31</span></button></li>
+      <li><button data-ch="secret-word"><span class="chap">viii.</span><span class="t">your secret word</span><span class="dots"></span><span class="pg">35</span></button></li>
     </ul>
     <div class="orn" style="margin:.4rem 0 1rem">❦</div>
 
@@ -341,6 +347,25 @@
       <div class="choice-card" id="wyrCardB"><p id="wyrOptionB"></p><button class="btn" id="wyrVoteB">i choose this</button></div>
       <div class="vote-result" id="wyrResult" aria-live="polite"></div>
       <div class="tools" style="justify-content:center"><button class="btn" id="wyrNext">next choice</button></div>
+    </div>
+
+    <!-- ---- your secret word ---- -->
+    <div class="chapter" id="ch-secret-word">
+      <h2>your secret word</h2>
+      <p class="small" style="margin-top:0">Take turns: one of you writes a secret word, and the other guesses until they find it. Then swap.</p>
+      <div class="msg" id="secretWordStatus" aria-live="polite"></div>
+      <form class="secret-word-form" id="secretWordForm">
+        <label for="secretWordInput">your secret word</label>
+        <input type="text" id="secretWordInput" maxlength="24" autocomplete="off" autocapitalize="none" placeholder="write one word" required>
+        <button class="btn" id="secretWordSet" type="submit">set secret word</button>
+      </form>
+      <form class="secret-word-form" id="secretGuessForm">
+        <label for="secretGuessInput">your guess</label>
+        <input type="text" id="secretGuessInput" maxlength="24" autocomplete="off" autocapitalize="none" placeholder="type your guess" required>
+        <button class="btn" id="secretGuessSubmit" type="submit">guess</button>
+      </form>
+      <div class="secret-word-guesses" id="secretWordGuesses" aria-label="Previous guesses"></div>
+      <div class="tools" style="justify-content:center"><button class="btn" id="secretWordNext" type="button">swap turns &amp; play again</button></div>
     </div>
 
     <!-- ---- photo booth ---- -->
@@ -573,6 +598,7 @@
         hangman: { word: pick(HANG_WORDS), guesses: [] },
         ticTacToe: { board: Array(9).fill(""), first: "a", turn: "a", winner: "", round: 0 },
         wouldYouRather: { index: 0, votes: {} },
+        secretWord: { setter: "a", word: "", guesses: [], solved: false, round: 0 },
         created: Date.now()
       });
       await pc.setLocalDescription(offer);
@@ -715,6 +741,7 @@
     if (ch === "hangman") renderHangman();
     if (ch === "tic-tac-toe") renderTicTacToe();
     if (ch === "would-you-rather") renderWouldYouRather();
+    if (ch === "secret-word") renderSecretWord();
   }
 
   /* =====================================================================
@@ -1128,6 +1155,126 @@
     } catch (err) {
       console.error(err);
       note("The next choice could not be loaded. Please try again.");
+    }
+  };
+
+  /* =====================================================================
+     YOUR SECRET WORD
+     ===================================================================== */
+  const emptySecretWord = () => ({ setter: "a", word: "", guesses: [], solved: false, round: 0 });
+  const normalizeSecretWord = word => word.normalize("NFC").trim().toLowerCase();
+  const isSingleWord = word => /^\p{L}+$/u.test(word);
+
+  function renderSecretWord() {
+    const game = roomData.secretWord || emptySecretWord();
+    const guesses = Array.isArray(game.guesses) ? game.guesses : [];
+    const setting = myRole() === game.setter;
+    const hasWord = typeof game.word === "string" && !!game.word;
+    $("secretWordForm").hidden = !roomRef || !setting || hasWord || game.solved;
+    $("secretGuessForm").hidden = !roomRef || setting || !hasWord || game.solved;
+    $("secretWordNext").hidden = !roomRef || !game.solved;
+    $("secretWordSet").disabled = !roomRef;
+    $("secretGuessSubmit").disabled = !roomRef;
+    $("secretWordGuesses").replaceChildren();
+    guesses.forEach(guess => {
+      const chip = document.createElement("span");
+      chip.textContent = guess;
+      $("secretWordGuesses").appendChild(chip);
+    });
+
+    $("secretWordStatus").textContent = game.solved
+      ? `${labelFor(game.setter === "a" ? "b" : "a")} guessed it — the word was “${game.word}”. swap turns for another round ❦`
+      : !hasWord
+        ? `${labelFor(game.setter)} is writing the secret word…`
+        : setting
+          ? `your word is set — waiting for ${labelFor(game.setter === "a" ? "b" : "a")} to guess`
+          : "your turn — keep guessing until you find the word";
+  }
+
+  $("secretWordForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!roomRef) return;
+    const word = $("secretWordInput").value.normalize("NFC").trim();
+    if (!isSingleWord(word)) {
+      note("Please enter one word using letters only.");
+      return;
+    }
+    const role = myRole();
+    try {
+      await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return;
+        const game = snapshot.data().secretWord || emptySecretWord();
+        if (game.setter !== role || game.word || game.solved) return;
+        tx.update(roomRef, {
+          secretWord: { ...game, word, guesses: [], solved: false }
+        });
+      });
+      $("secretWordInput").value = "";
+    } catch (err) {
+      console.error(err);
+      note("Your secret word could not be saved. Please try again.");
+    }
+  });
+
+  $("secretGuessForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!roomRef) return;
+    const guess = $("secretGuessInput").value.normalize("NFC").trim();
+    if (!isSingleWord(guess)) {
+      note("Please enter one word using letters only.");
+      return;
+    }
+    const role = myRole();
+    try {
+      const result = await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return "unavailable";
+        const game = snapshot.data().secretWord || emptySecretWord();
+        if (game.setter === role || !game.word || game.solved) return "not-your-turn";
+        const guesses = Array.isArray(game.guesses) ? game.guesses : [];
+        const key = normalizeSecretWord(guess);
+        if (guesses.some(previous => normalizeSecretWord(previous) === key)) return "already-guessed";
+        tx.update(roomRef, {
+          secretWord: {
+            ...game,
+            guesses: [...guesses, guess],
+            solved: key === normalizeSecretWord(game.word)
+          }
+        });
+        return "saved";
+      });
+      $("secretGuessInput").value = "";
+      if (result === "already-guessed") note("You already tried that word.");
+      else if (result === "not-your-turn") note("It is not your turn to guess right now.");
+      else if (result === "unavailable") note("The room is no longer available.");
+    } catch (err) {
+      console.error(err);
+      note("Your guess could not be saved. Please try again.");
+    }
+  });
+
+  $("secretWordNext").onclick = async () => {
+    if (!roomRef) return;
+    try {
+      await runTransaction(db, async tx => {
+        const snapshot = await tx.get(roomRef);
+        if (!snapshot.exists()) return;
+        const game = snapshot.data().secretWord || emptySecretWord();
+        if (!game.solved) return;
+        tx.update(roomRef, {
+          secretWord: {
+            setter: game.setter === "a" ? "b" : "a",
+            word: "",
+            guesses: [],
+            solved: false,
+            round: (game.round || 0) + 1
+          }
+        });
+      });
+    } catch (err) {
+      console.error(err);
+      note("The next turn could not be started. Please try again.");
     }
   };
 
