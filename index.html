@@ -129,64 +129,27 @@
   .home-view:not(.room-ready) .toc button:hover{background:#fffdf680}
   .game-view .page{padding:clamp(1rem,3vh,2rem) clamp(1rem,4vw,3rem)}
 
-  /* ---------- crossword ---------- */
-  .cwwrap{overflow-x:auto; padding:.3rem 0 .6rem}
-  #cwGrid{display:grid; gap:0; width:max-content; margin:0 auto}
-  .cell{position:relative; width:40px; height:40px}
-  .cell.block{visibility:hidden}
-  .cell input{
-    width:100%; height:100%; border:1px solid var(--ink); margin:-.5px; background:#fbf6ea; text-align:center; text-transform:uppercase;
-    font-family:var(--fell); font-size:1.4rem; padding:0; outline:none; cursor:pointer; caret-color:transparent; border-radius:0; color:var(--ink);
-  }
-  .cell input.inword{background:#efe0b8}
-  .cell input.sel{background:#e4c98a}
-  .cell input.by-a{color:var(--red)} .cell input.by-b{color:var(--blue)}
-  .cell input.wrong{background:#e9b8aa; text-decoration:line-through}
-  .cell .num{position:absolute; top:1px; left:3px; font-size:.65rem; line-height:1; color:var(--sepia); pointer-events:none; z-index:2}
-  .clues{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:.8rem; font-size:1rem}
-  .clues h3{font-variant:small-caps; letter-spacing:.2em; font-weight:400; font-size:.95rem; color:var(--sepia); margin:.2rem 0; border-bottom:1px solid var(--rule)}
-  .clues ol{list-style:none; padding:0; margin:.2rem 0}
-  .clues li{padding:.12rem .3rem; cursor:pointer; line-height:1.25; margin-bottom:.2rem}
-  .clues li b{color:var(--red); font-weight:600; margin-right:.3rem}
-  .clues li.on{background:#e4c98a66}
   .tools{display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; margin:.5rem 0}
   .msg{min-height:1.7rem; text-align:center; font-family:var(--fell); font-style:italic; font-size:1.25rem; color:var(--green)}
 
-  /* ---------- hundred words ---------- */
-  .target{text-align:center; margin:.2rem 0 .6rem}
-  .target b{font-family:var(--fell); font-size:2.2rem; font-weight:400; font-style:italic; color:var(--red); border-bottom:2px solid var(--red); padding:0 .5rem}
-  .score{display:flex; justify-content:center; gap:1.2rem; font-variant:small-caps; letter-spacing:.12em}
-  .score .a{color:var(--red)} .score .b{color:var(--blue)}
-  #cloud{display:grid; grid-template-columns:repeat(auto-fill,minmax(62px,1fr)); gap:.1rem .2rem; margin:.7rem 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); padding:.6rem 0}
-  #cloud button{background:none; border:0; padding:.2rem 0; cursor:pointer; font-style:italic; font-size:1.02rem; text-align:center}
-  #cloud button:hover:not(:disabled){text-decoration:underline; text-underline-offset:3px}
-  #cloud button.a{color:var(--red); text-decoration:line-through; font-weight:600}
-  #cloud button.b{color:var(--blue); text-decoration:line-through; font-weight:600}
-  #cloud button.nope{animation:nope .3s}
-  @keyframes nope{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-
   /* ---------- little games ---------- */
-  .choice-card{border:1px solid var(--rule); background:#fbf6ea; padding:1rem; margin:.55rem 0; text-align:center}
-  .choice-card p{font-family:var(--fell); font-size:1.3rem; margin:0 0 .6rem}
-  .choice-card.chosen{border-color:var(--red); background:#efe0b866}
-  .choice-card button{width:100%}
-  .vote-result{text-align:center; color:var(--sepia); font-style:italic; min-height:1.5rem}
-  .secret-word-form{display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem; margin:1rem 0}
-  .secret-word-form input{flex:1 1 150px; min-width:0; padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit}
-  .secret-word-form[hidden],#secretWordNext[hidden]{display:none}
-  .secret-word-guesses{display:flex; flex-wrap:wrap; justify-content:center; gap:.4rem; margin:.7rem 0}
-  .secret-word-guesses span{padding:.15rem .55rem; border:1px solid var(--rule); color:var(--sepia); font-style:italic}
   .number-game-form{display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-end; gap:.5rem; margin:1rem 0}
   .number-game-form label{flex-basis:100%; text-align:center; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
   .number-game-form input{width:min(100%,12rem); padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit}
   .number-game-form[hidden],#numberGameAgain[hidden]{display:none}
-  .number-game-guesses{display:grid; gap:.3rem; max-width:32rem; margin:.7rem auto}
+  .number-game-history{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; max-width:42rem; margin:.9rem auto}
+  .number-game-history section{min-width:0; padding:.65rem; border:1px solid var(--rule); background:#fffdf680}
+  .number-game-history h3{margin:0 0 .35rem; color:var(--red); font-size:1rem; font-weight:400; font-variant:small-caps; letter-spacing:.1em; text-align:center}
+  .number-game-guesses{display:grid; gap:.3rem}
   .number-game-guesses p{margin:0; padding:.3rem .55rem; border-bottom:1px solid var(--rule); text-align:center; color:var(--sepia); font-style:italic}
+  .number-game-guesses p:last-child{border-bottom:0}
   .colour-letter{margin:.7rem auto; text-align:center; font-family:var(--fell); font-size:2.6rem; color:var(--red)}
   .colour-game-form{display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem; margin:1rem 0}
   .colour-game-form[hidden],#colourGameNext[hidden]{display:none}
   .colour-game-form label{flex-basis:100%; text-align:center; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
   .colour-game-form input{width:min(100%,15rem); padding:.45rem; border:1px solid var(--rule); background:#fbf6ea; color:var(--ink); font:inherit}
+  .colour-game-guesses{display:flex; flex-wrap:wrap; justify-content:center; gap:.4rem; margin:.7rem 0}
+  .colour-game-guesses span{padding:.15rem .55rem; border:1px solid var(--rule); color:var(--sepia); font-style:italic}
   .code-game-form{display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem; margin:1rem 0}
   .code-game-form[hidden],#codeGameNext[hidden]{display:none}
   .code-game-form label{flex-basis:100%; text-align:center; color:var(--sepia); font-size:.9rem; font-variant:small-caps; letter-spacing:.08em}
@@ -247,8 +210,6 @@
     .page{padding:1.6rem 1.2rem 3.2rem; min-height:0}
     .page.left{border-bottom:1px dashed var(--rule)}
     h1{font-size:2.4rem}
-    .cell{width:34px; height:34px} .cell input{font-size:1.2rem}
-    .clues{grid-template-columns:1fr}
   }
   @media (max-width:420px){
     body{font-size:17px}
@@ -256,10 +217,7 @@
     .row{gap:.55rem}
     .row .btn{padding-right:.7rem; padding-left:.7rem}
     .code{font-size:1.8rem}
-    #cloud{grid-template-columns:repeat(5,minmax(0,1fr))}
-    #cloud button{font-size:.95rem}
-    .cell{width:30px; height:30px}
-    .cell input{font-size:1.05rem}
+    .number-game-history{grid-template-columns:1fr}
   }
   @media(max-width:700px){
     body{height:100dvh; min-height:0; overflow:hidden; padding:.35rem}
@@ -347,78 +305,13 @@
     </div>
     <div id="closed" class="closed"><p>Open a room to play together. ❦</p></div>
     <ul class="toc" id="toc">
-      <li><button data-ch="crossword"><span class="chap">ii.</span><span class="t">the crossword</span><span class="dots"></span><span class="pg">3</span></button></li>
-      <li><button data-ch="hundred"><span class="chap">iii.</span><span class="t">the hundred words</span><span class="dots"></span><span class="pg">9</span></button></li>
-      <li><button data-ch="would-you-rather"><span class="chap">iv.</span><span class="t">a little choice</span><span class="dots"></span><span class="pg">25</span></button></li>
-      <li><button data-ch="secret-word"><span class="chap">v.</span><span class="t">your secret word</span><span class="dots"></span><span class="pg">31</span></button></li>
-      <li><button data-ch="memories"><span class="chap">vi.</span><span class="t">our memory book</span><span class="dots"></span><span class="pg">39</span></button></li>
-      <li><button data-ch="photo-booth"><span class="chap">vii.</span><span class="t">photo booth</span><span class="dots"></span><span class="pg">43</span></button></li>
-      <li><button data-ch="number-game"><span class="chap">viii.</span><span class="t">guess my number</span><span class="dots"></span><span class="pg">47</span></button></li>
-      <li><button data-ch="colour-game"><span class="chap">ix.</span><span class="t">guess the colour</span><span class="dots"></span><span class="pg">51</span></button></li>
-      <li><button data-ch="code-game"><span class="chap">x.</span><span class="t">guess the code</span><span class="dots"></span><span class="pg">55</span></button></li>
+      <li><button data-ch="memories"><span class="chap">ii.</span><span class="t">our memory book</span><span class="dots"></span><span class="pg">3</span></button></li>
+      <li><button data-ch="photo-booth"><span class="chap">iii.</span><span class="t">photo booth</span><span class="dots"></span><span class="pg">7</span></button></li>
+      <li><button data-ch="number-game"><span class="chap">iv.</span><span class="t">guess my number</span><span class="dots"></span><span class="pg">11</span></button></li>
+      <li><button data-ch="colour-game"><span class="chap">v.</span><span class="t">guess the colour</span><span class="dots"></span><span class="pg">15</span></button></li>
+      <li><button data-ch="code-game"><span class="chap">vi.</span><span class="t">guess the code</span><span class="dots"></span><span class="pg">19</span></button></li>
     </ul>
     <div class="orn" style="margin:.4rem 0 1rem">❦</div>
-
-    <!-- ---- crossword ---- -->
-    <div class="chapter" id="ch-crossword">
-      <h2 id="cwTitle">a romantic evening</h2>
-      <p class="small" style="margin-top:0">Type together. Your letters are <span style="color:var(--red)">red ink</span>, hers/his are <span style="color:var(--blue)">blue ink</span>. Click a square twice to switch between across and down.</p>
-      <div class="cwwrap"><div id="cwGrid"></div></div>
-      <div class="msg" id="cwMsg"></div>
-      <div class="tools">
-        <button class="btn" id="cwCheck">check</button>
-        <button class="btn" id="cwNext">next puzzle</button>
-        <button class="linkbtn" id="cwClear">clear all</button>
-      </div>
-      <div class="clues">
-        <div><h3>across</h3><ol id="cwAcross"></ol></div>
-        <div><h3>down</h3><ol id="cwDown"></ol></div>
-      </div>
-    </div>
-
-    <!-- ---- hundred words ---- -->
-    <div class="chapter" id="ch-hundred">
-      <h2>the hundred words</h2>
-      <p class="small" style="margin-top:0">One word is called. It is hiding nine times among a hundred. Tap them before the other does — the first tap keeps the word.</p>
-      <div class="target">find: <b id="hwTarget">—</b></div>
-      <div class="score"><span class="a" id="hwScoreA"></span><span class="b" id="hwScoreB"></span></div>
-      <div id="cloud"></div>
-      <div class="msg" id="hwMsg"></div>
-      <div class="tools">
-        <button class="btn" id="hwNew">new round</button>
-        <button class="linkbtn" id="hwReset">reset score</button>
-      </div>
-    </div>
-
-    <!-- ---- would you rather ---- -->
-    <div class="chapter" id="ch-would-you-rather">
-      <h2>a little choice</h2>
-      <p class="small" style="margin-top:0">Pick one without peeking. Your answers meet when you have both chosen.</p>
-      <div class="msg" id="wyrQuestion"></div>
-      <div class="choice-card" id="wyrCardA"><p id="wyrOptionA"></p><button class="btn" id="wyrVoteA">i choose this</button></div>
-      <div class="choice-card" id="wyrCardB"><p id="wyrOptionB"></p><button class="btn" id="wyrVoteB">i choose this</button></div>
-      <div class="vote-result" id="wyrResult" aria-live="polite"></div>
-      <div class="tools" style="justify-content:center"><button class="btn" id="wyrNext">next choice</button></div>
-    </div>
-
-    <!-- ---- your secret word ---- -->
-    <div class="chapter" id="ch-secret-word">
-      <h2>your secret word</h2>
-      <p class="small" style="margin-top:0">Take turns: one of you writes a secret word, and the other guesses until they find it. Then swap.</p>
-      <div class="msg" id="secretWordStatus" aria-live="polite"></div>
-      <form class="secret-word-form" id="secretWordForm">
-        <label for="secretWordInput">your secret word</label>
-        <input type="text" id="secretWordInput" maxlength="24" autocomplete="off" autocapitalize="none" placeholder="write one word" required>
-        <button class="btn" id="secretWordSet" type="submit">set secret word</button>
-      </form>
-      <form class="secret-word-form" id="secretGuessForm">
-        <label for="secretGuessInput">your guess</label>
-        <input type="text" id="secretGuessInput" maxlength="24" autocomplete="off" autocapitalize="none" placeholder="type your guess" required>
-        <button class="btn" id="secretGuessSubmit" type="submit">guess</button>
-      </form>
-      <div class="secret-word-guesses" id="secretWordGuesses" aria-label="Previous guesses"></div>
-      <div class="tools" style="justify-content:center"><button class="btn" id="secretWordNext" type="button">swap turns &amp; play again</button></div>
-    </div>
 
     <!-- ---- shared memories ---- -->
     <div class="chapter" id="ch-memories">
@@ -483,7 +376,16 @@
         <input type="number" id="numberGuessInput" min="1" max="100" step="1" inputmode="numeric" required>
         <button class="btn" id="numberGuessSubmit" type="submit">make a guess</button>
       </form>
-      <div class="number-game-guesses" id="numberGameGuesses" aria-live="polite"></div>
+      <div class="number-game-history">
+        <section aria-labelledby="numberGameLabelA">
+          <h3 id="numberGameLabelA"></h3>
+          <div class="number-game-guesses" id="numberGameGuessesA" aria-live="polite"></div>
+        </section>
+        <section aria-labelledby="numberGameLabelB">
+          <h3 id="numberGameLabelB"></h3>
+          <div class="number-game-guesses" id="numberGameGuessesB" aria-live="polite"></div>
+        </section>
+      </div>
       <div class="tools" style="justify-content:center">
         <button class="btn" id="numberGameAgain" type="button" hidden>play another round</button>
       </div>
@@ -507,7 +409,7 @@
         <input type="text" id="colourGuessInput" maxlength="24" autocomplete="off" autocapitalize="none" placeholder="a colour beginning with the letter" required>
         <button class="btn" id="colourGuessSubmit" type="submit">guess</button>
       </form>
-      <div class="secret-word-guesses" id="colourGameGuesses" aria-label="Previous colour guesses"></div>
+      <div class="colour-game-guesses" id="colourGameGuesses" aria-label="Previous colour guesses"></div>
       <div class="tools" style="justify-content:center">
         <button class="btn" id="colourGameNext" type="button" hidden>swap turns &amp; play again</button>
       </div>
@@ -792,7 +694,10 @@
 
   function renderAll() {
     if (!roomData) return;
-    const removedChapter = ["hangman", "tic-tac-toe", "after-hours"].includes(roomData.chapter);
+    const removedChapter = [
+      "crossword", "hundred", "would-you-rather", "secret-word",
+      "hangman", "tic-tac-toe", "after-hours"
+    ].includes(roomData.chapter);
     if (removedChapter && roomRef) {
       updateDoc(roomRef, { chapter: "home" }).catch(err => {
         console.error(err);
@@ -808,10 +713,6 @@
     $("closed").style.display = roomRef ? "none" : "block";
     document.querySelectorAll("#toc button").forEach(b => b.classList.toggle("on", b.dataset.ch === ch));
     document.querySelectorAll(".chapter").forEach(s => s.classList.toggle("on", s.id === "ch-" + ch));
-    if (ch === "crossword") renderCrossword();
-    if (ch === "hundred") renderHundred();
-    if (ch === "would-you-rather") renderWouldYouRather();
-    if (ch === "secret-word") renderSecretWord();
     if (ch === "memories") renderMemories();
     if (ch === "photo-booth") renderPhotoBooth();
     if (ch === "number-game") renderNumberGame();
@@ -958,20 +859,6 @@
     $("cwMsg").textContent = solved ? "solved, together ❦" : "";
   }
 
-  $("cwCheck").onclick = () => {
-    cwShowCheck = true; renderCrossword();
-    clearTimeout(cwTimer); cwTimer = setTimeout(() => { cwShowCheck = false; if (roomData) renderCrossword(); }, 4000);
-  };
-  $("cwNext").onclick = () => {
-    if (!roomRef) return;
-    const next = ((roomData.crossword?.puzzle || 0) + 1) % PUZZLES.length;
-    updateDoc(roomRef, { crossword: { puzzle: next, cells: {} } }).catch(console.error);
-  };
-  $("cwClear").onclick = () => {
-    if (!roomRef || !confirm("Clear every letter on this puzzle for both of you?")) return;
-    updateDoc(roomRef, { crossword: { puzzle: roomData.crossword?.puzzle || 0, cells: {} } }).catch(console.error);
-  };
-
   /* =====================================================================
      THE HUNDRED WORDS
      ===================================================================== */
@@ -1032,9 +919,6 @@
     } catch (err) { console.error(err); }
   }
 
-  $("hwNew").onclick = () => { if (roomRef) updateDoc(roomRef, { hundred: makeHundred(roomData.hundred) }).catch(console.error); };
-  $("hwReset").onclick = () => { if (roomRef) updateDoc(roomRef, { "hundred.totals": { a: 0, b: 0 } }).catch(console.error); };
-
   /* =====================================================================
      A LITTLE CHOICE
      ===================================================================== */
@@ -1078,27 +962,6 @@
       note("Your choice could not be saved. Please try again.");
     }
   }
-  $("wyrVoteA").onclick = () => voteWouldYouRather("a");
-  $("wyrVoteB").onclick = () => voteWouldYouRather("b");
-  $("wyrNext").onclick = async () => {
-    if (!roomRef) return;
-    const currentIndex = roomData.wouldYouRather?.index || 0;
-    try {
-      await runTransaction(db, async tx => {
-        const snapshot = await tx.get(roomRef);
-        if (!snapshot.exists()) return;
-        const current = snapshot.data().wouldYouRather || { index: 0, votes: {} };
-        if (current.index !== currentIndex || !(current.votes?.a && current.votes?.b)) return;
-        tx.update(roomRef, {
-          wouldYouRather: { index: (current.index + 1) % CHOICES.length, votes: {} }
-        });
-      });
-    } catch (err) {
-      console.error(err);
-      note("The next choice could not be loaded. Please try again.");
-    }
-  };
-
   /* =====================================================================
      YOUR SECRET WORD
      ===================================================================== */
@@ -1131,93 +994,6 @@
           ? `your word is set — waiting for ${labelFor(game.setter === "a" ? "b" : "a")} to guess`
           : "your turn — keep guessing until you find the word";
   }
-
-  $("secretWordForm").addEventListener("submit", async event => {
-    event.preventDefault();
-    if (!roomRef) return;
-    const word = $("secretWordInput").value.normalize("NFC").trim();
-    if (!isSingleWord(word)) {
-      note("Please enter one word using letters only.");
-      return;
-    }
-    const role = myRole();
-    try {
-      await runTransaction(db, async tx => {
-        const snapshot = await tx.get(roomRef);
-        if (!snapshot.exists()) return;
-        const game = snapshot.data().secretWord || emptySecretWord();
-        if (game.setter !== role || game.word || game.solved) return;
-        tx.update(roomRef, {
-          secretWord: { ...game, word, guesses: [], solved: false }
-        });
-      });
-      $("secretWordInput").value = "";
-    } catch (err) {
-      console.error(err);
-      note("Your secret word could not be saved. Please try again.");
-    }
-  });
-
-  $("secretGuessForm").addEventListener("submit", async event => {
-    event.preventDefault();
-    if (!roomRef) return;
-    const guess = $("secretGuessInput").value.normalize("NFC").trim();
-    if (!isSingleWord(guess)) {
-      note("Please enter one word using letters only.");
-      return;
-    }
-    const role = myRole();
-    try {
-      const result = await runTransaction(db, async tx => {
-        const snapshot = await tx.get(roomRef);
-        if (!snapshot.exists()) return "unavailable";
-        const game = snapshot.data().secretWord || emptySecretWord();
-        if (game.setter === role || !game.word || game.solved) return "not-your-turn";
-        const guesses = Array.isArray(game.guesses) ? game.guesses : [];
-        const key = normalizeSecretWord(guess);
-        if (guesses.some(previous => normalizeSecretWord(previous) === key)) return "already-guessed";
-        tx.update(roomRef, {
-          secretWord: {
-            ...game,
-            guesses: [...guesses, guess],
-            solved: key === normalizeSecretWord(game.word)
-          }
-        });
-        return "saved";
-      });
-      $("secretGuessInput").value = "";
-      if (result === "already-guessed") note("You already tried that word.");
-      else if (result === "not-your-turn") note("It is not your turn to guess right now.");
-      else if (result === "unavailable") note("The room is no longer available.");
-    } catch (err) {
-      console.error(err);
-      note("Your guess could not be saved. Please try again.");
-    }
-  });
-
-  $("secretWordNext").onclick = async () => {
-    if (!roomRef) return;
-    try {
-      await runTransaction(db, async tx => {
-        const snapshot = await tx.get(roomRef);
-        if (!snapshot.exists()) return;
-        const game = snapshot.data().secretWord || emptySecretWord();
-        if (!game.solved) return;
-        tx.update(roomRef, {
-          secretWord: {
-            setter: game.setter === "a" ? "b" : "a",
-            word: "",
-            guesses: [],
-            solved: false,
-            round: (game.round || 0) + 1
-          }
-        });
-      });
-    } catch (err) {
-      console.error(err);
-      note("The next turn could not be started. Please try again.");
-    }
-  };
 
   /* =====================================================================
      GUESS THE COLOUR
@@ -1706,13 +1482,21 @@
         : "Choose your number without showing it to your person.";
     }
 
-    const history = $("numberGameGuesses");
-    history.replaceChildren();
     ["a", "b"].forEach(guesser => {
-      (Array.isArray(guesses[guesser]) ? guesses[guesser] : []).forEach(entry => {
+      $(`numberGameLabel${guesser.toUpperCase()}`).textContent = `${labelFor(guesser)}’s guesses`;
+      const history = $(`numberGameGuesses${guesser.toUpperCase()}`);
+      history.replaceChildren();
+      const entries = Array.isArray(guesses[guesser]) ? guesses[guesser] : [];
+      if (!entries.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "No guesses yet.";
+        history.appendChild(empty);
+        return;
+      }
+      entries.forEach(entry => {
         const line = document.createElement("p");
         const response = entry.hint === "correct" ? "correct — that was it!" : `go ${entry.hint}`;
-        line.textContent = `${labelFor(guesser)} guessed ${entry.value}: ${response}`;
+        line.textContent = `${entry.value}: ${response}`;
         history.appendChild(line);
       });
     });
